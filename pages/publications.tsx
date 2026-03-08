@@ -1,50 +1,16 @@
 "use client";
-import Link from "next/link";
 
-import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuList,
-    navigationMenuTriggerStyle,
-  } from "@/components/ui/navigation-menu"  
-  import Image from "next/image"
-
-    import Head from "next/head";
+import Head from "next/head";
+import Navbar from "@/components/navbar"
+import Footer from "@/components/footer";
 
   export default function Publications() { 
     return (
         <>
         <Head>
-            <title>AUCOHL Publications</title>
+            <title>ASIC Design School Publications</title>
         </Head>
-        <NavigationMenu className="fixed left-1/2 transform -translate-x-1/2 z-50 mt-4 sm:mt-8 md:mt-12 max-w-[90%] sm:max-w-[75%] md:max-w-[80%] lg:max-w-none">
-            <NavigationMenuList className="flex gap-6 sm:gap-12 md:gap-16 lg:gap-30 w-auto">
-                <NavigationMenuItem>
-                <Link href="/">
-                    <Image
-                    src="/orange.png"
-                    alt="Logo"
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="w-auto max-w-full sm:max-w-[250px] md:max-w-[300px] lg:max-w-[350px] h-auto mx-auto p-3"
-                    />
-                </Link>
-                </NavigationMenuItem>
-                    <div className="flex">
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                    <Link href="/members">
-                        Members
-                    </Link>          
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-                    <Link href="/publications">
-                        Publications
-                    </Link>
-                    </NavigationMenuItem>
-                    </div>
-                </NavigationMenuList>
-            </NavigationMenu>
+        <Navbar />
 
             {/* Latest Publications */}
       <section className="py-24 px-4 bg-blue-500">
@@ -283,6 +249,8 @@ import {
           </div>
         </div>
       </section>
+
+      <Footer />
         </>
     )
   }  
