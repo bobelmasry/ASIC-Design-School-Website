@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { supabase } from "@/lib/supabase"
 
 type User = {
   id: string
@@ -14,7 +15,7 @@ type AuthContextType = {
   isAuthenticated: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (name: string, email: string, password: string) => Promise<void>
-  signOut: () => void
+  signOut: () => Promise<void>
   openAuthModal: () => void
   closeAuthModal: () => void
   isAuthModalOpen: boolean
@@ -26,29 +27,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User>(null)
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false)
 
-  const signIn = async (email: string, _password: string) => {
-    // Simulated sign in - in production, this would hit your API
-    setUser({
-      id: "1",
-      name: email.split("@")[0],
+  // Load session on startup
+  React.useEffect(() => {
+    const loadUser = async () => {
+      const { data } = await supabase.auth.getSession()
+
+      const sessionUser = data.session?.user
+      if (sessionUser) {
+        setUser({
+          id: sessionUser.id,
+          name: sessionUser.user_metadata?.full_name || "User",
+          email: sessionUser.email!,
+          avatar: `https://ui-avatars.com/api/?name=${
+            sessionUser.user_metadata?.full_name || "User"
+          }&background=0ea5e9&color=fff`,
+        })
+      }
+    }
+
+    loadUser()
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        const sessionUser = session?.user
+
+        if (sessionUser) {
+          setUser({
+            id: sessionUser.id,
+            name: sessionUser.user_metadata?.full_name || "User",
+            email: sessionUser.email!,
+            avatar: `https://ui-avatars.com/api/?name=${
+              sessionUser.user_metadata?.full_name || "User"
+            }&background=0ea5e9&color=fff`,
+          })
+        } else {
+          setUser(null)
+        }
+      }
+    )
+
+    return () => listener.subscription.unsubscribe()
+  }, [])
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      avatar: `https://ui-avatars.com/api/?name=${email.split("@")[0]}&background=0ea5e9&color=fff`,
+      password,
     })
+
+    if (error) throw error
     setIsAuthModalOpen(false)
   }
 
-  const signUp = async (name: string, email: string, _password: string) => {
-    // Simulated sign up
-    setUser({
-      id: "1",
-      name,
+  const signUp = async (name: string, email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({
       email,
-      avatar: `https://ui-avatars.com/api/?name=${name}&background=0ea5e9&color=fff`,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        },
+      },
     })
+
+    if (error) throw error
     setIsAuthModalOpen(false)
   }
 
-  const signOut = () => {
+  const signOut = async () => {
+    await supabase.auth.signOut()
     setUser(null)
   }
 
@@ -75,8 +122,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export const useAuth = () => {
   const context = React.useContext(AuthContext)
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider")
   return context
 }

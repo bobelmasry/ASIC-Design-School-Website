@@ -4,11 +4,10 @@ import * as React from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/components/auth-context"
 import { forumPosts, forumCategories } from "@/lib/placeholder-data"
 import {
@@ -20,7 +19,6 @@ import {
   Clock,
   Pin,
   Filter,
-  TrendingUp,
   Flame,
 } from "lucide-react"
 
@@ -274,6 +272,7 @@ export default function ForumPage() {
           </div>
 
           {/* Load More */}
+          {/* Currently doesn't do anything */}
           {filteredPosts.length > 0 && (
             <div className="text-center mt-8">
               <Button variant="outline">Load More Discussions</Button>
@@ -284,3 +283,5 @@ export default function ForumPage() {
     </div>
   )
 }
+
+// Data should be loaded from a database instead of importing from a static file. This is just for demonstration purposes.
