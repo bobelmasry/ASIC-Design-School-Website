@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/auth-context"
 import { forumCategories } from "@/lib/placeholder-data"
 import {
   ArrowLeft,
   Send,
-  X,
   Plus,
-  Info,
 } from "lucide-react"
 import {
   Select,
@@ -24,10 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Alert,
-  AlertDescription,
-} from "@/components/ui/alert"
+import { supabase } from "@/lib/supabase"
 
 export default function NewPostPage() {
   const router = useRouter()
@@ -49,17 +43,6 @@ export default function NewPostPage() {
     }
   }, [isAuthenticated, openAuthModal])
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault()
-      const tag = tagInput.trim().toLowerCase()
-      if (tag && !formData.tags.includes(tag) && formData.tags.length < 5) {
-        setFormData((prev) => ({ ...prev, tags: [...prev.tags, tag] }))
-        setTagInput("")
-      }
-    }
-  }
-
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -69,15 +52,31 @@ export default function NewPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
     if (!formData.title.trim() || !formData.category || !formData.content.trim()) {
       return
     }
 
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const { data: userData } = await supabase.auth.getUser()
+
+    const { data, error } = await supabase.from("posts").insert({
+      title: formData.title,
+      content: formData.content,
+      category: formData.category,
+      user_id: userData?.user?.id,
+    }).select()
+
     setIsSubmitting(false)
-    router.push("/forum")
+
+    if (error || !data || data.length === 0) {
+      console.error(error)
+      alert("Failed to create post")
+      return
+    }
+
+    router.push(`/forum/${data[0].id}`)
   }
 
   const isValid = formData.title.trim() && formData.category && formData.content.trim()
@@ -97,7 +96,7 @@ export default function NewPostPage() {
   return (
     <div className="container px-4 py-8 max-w-3xl">
       {/* Back Button */}
-      <Button variant="ghost" className="mb-6" asChild>
+      <Button variant="ghost" className="mb-6 hover:text-white" asChild>
         <Link href="/forum">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Forum
@@ -112,7 +111,7 @@ export default function NewPostPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-2">
             {/* Title */}
             <div className="space-y-2">
               <label htmlFor="title" className="text-sm font-medium">
@@ -131,7 +130,7 @@ export default function NewPostPage() {
             </div>
 
             {/* Category */}
-            <div className="space-y-2">
+            <div className="space-y-8">
               <label htmlFor="category" className="text-sm font-medium">
                 Category <span className="text-destructive">*</span>
               </label>
@@ -162,65 +161,16 @@ export default function NewPostPage() {
               </label>
               <Textarea
                 id="content"
-                placeholder="Describe your question or topic in detail. The more context you provide, the better responses you'll receive."
+                placeholder="Describe your question or topic in detail."
                 value={formData.content}
                 onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
                 rows={10}
               />
-              <p className="text-xs text-muted-foreground">
-                Tip: Be specific and provide relevant context for better answers.
-              </p>
             </div>
-
-            {/* Tags */}
-            <div className="space-y-2">
-              <label htmlFor="tags" className="text-sm font-medium">
-                Tags (optional)
-              </label>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.tags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="gap-1">
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTag(tag)}
-                      className="ml-1 hover:text-destructive"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-                {formData.tags.length < 5 && (
-                  <div className="relative">
-                    <Input
-                      id="tags"
-                      placeholder="Add a tag..."
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={handleAddTag}
-                      className="h-6 w-32 text-xs"
-                    />
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Press Enter or comma to add a tag. Maximum 5 tags.
-              </p>
-            </div>
-
-            {/* Guidelines */}
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Community Guidelines:</strong> Be respectful, stay on topic, 
-                and avoid self-promotion. Search existing discussions before posting 
-                to avoid duplicates.
-              </AlertDescription>
-            </Alert>
 
             {/* Submit */}
             <div className="flex justify-end gap-4">
-              <Button type="button" variant="outline" asChild>
+              <Button className="dark:hover:text-gray-400" type="button" variant="outline" asChild>
                 <Link href="/forum">Cancel</Link>
               </Button>
               <Button type="submit" disabled={!isValid || isSubmitting}>

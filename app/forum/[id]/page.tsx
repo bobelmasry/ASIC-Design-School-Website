@@ -119,7 +119,7 @@ export default function ForumPostPage() {
   return (
     <div className="container px-4 py-8 max-w-4xl">
       {/* Back Button */}
-      <Button variant="ghost" className="mb-6" onClick={() => router.back()}>
+      <Button variant="ghost" className="mb-6 hover:text-white" onClick={() => router.back()}>
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back to Forum
       </Button>
@@ -167,17 +167,17 @@ export default function ForumPostPage() {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button className="hover:text-white" variant="ghost" size="icon">
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleShare}>
-                  <Share2 className="h-4 w-4 mr-2" />
+                  <Share2 className="h-4 w-4 mr-2 hover:text-white" />
                   Share
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Flag className="h-4 w-4 mr-2" />
+                  <Flag className="h-4 w-4 mr-2 hover:text-white" />
                   Report
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -189,16 +189,6 @@ export default function ForumPostPage() {
             <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
           </div>
 
-          {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              {post.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
           <Separator className="my-4" />
 
           {/* Post Actions */}
@@ -207,16 +197,16 @@ export default function ForumPostPage() {
               variant={likedPost ? "default" : "outline"}
               size="sm"
               onClick={handleLikePost}
-              className="gap-2"
+              className="gap-2 dark:hover:text-gray-400"
             >
               <ThumbsUp className="h-4 w-4" />
               {post.likes + (likedPost ? 1 : 0)}
             </Button>
-            <Button variant="outline" size="sm" className="gap-2">
+            <Button variant="outline" size="sm" className="gap-2 dark:hover:text-gray-400">
               <MessageSquare className="h-4 w-4" />
               {replies.length} Replies
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2 ml-auto">
+            <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2 ml-auto hover:text-white">
               <Share2 className="h-4 w-4" />
               Share
             </Button>

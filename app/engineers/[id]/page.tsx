@@ -108,7 +108,7 @@ export default function EngineerProfilePage() {
               {/* Social Links & Contact */}
               <div className="flex flex-wrap gap-3">
                 {engineer.githubUrl && (
-                  <Button className="hover:text-gray-400" variant="outline" size="sm" asChild>
+                  <Button className="dark:hover:text-gray-400" variant="outline" size="sm" asChild>
                     <a href={engineer.githubUrl} target="_blank" rel="noopener noreferrer">
                       <Github className="mr-2 h-4 w-4" />
                       GitHub
@@ -116,7 +116,7 @@ export default function EngineerProfilePage() {
                   </Button>
                 )}
                 {engineer.linkedinUrl && (
-                  <Button className="hover:text-gray-400" variant="outline" size="sm" asChild>
+                  <Button className="dark:hover:text-gray-400" variant="outline" size="sm" asChild>
                     <a href={engineer.linkedinUrl} target="_blank" rel="noopener noreferrer">
                       <Linkedin className="mr-2 h-4 w-4" />
                       LinkedIn

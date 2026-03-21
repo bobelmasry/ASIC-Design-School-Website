@@ -48,7 +48,6 @@ export type ForumPost = {
     avatar: string
   }
   category: string
-  tags: string[]
   createdAt: string
   replies: number
   views: number
@@ -268,7 +267,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Omar+Khalil&background=10b981&color=fff",
     },
     category: "Open Source",
-    tags: ["OpenLane", "timing", "RISC-V", "synthesis"],
     createdAt: "2026-03-14T10:30:00Z",
     replies: 8,
     views: 342,
@@ -286,7 +284,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Layla+Mansour&background=f59e0b&color=fff",
     },
     category: "Verification",
-    tags: ["UVM", "AXI", "verification", "coverage"],
     createdAt: "2026-03-13T15:45:00Z",
     replies: 5,
     views: 218,
@@ -304,7 +301,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Fatima+Al-Rashid&background=8b5cf6&color=fff",
     },
     category: "Analog",
-    tags: ["SKY130", "mixed-signal", "PDK", "analog"],
     createdAt: "2026-03-12T09:20:00Z",
     replies: 3,
     views: 156,
@@ -321,7 +317,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Youssef+Benali&background=ec4899&color=fff",
     },
     category: "Digital Design",
-    tags: ["Chisel", "SystemVerilog", "RISC-V", "HDL"],
     createdAt: "2026-03-11T14:00:00Z",
     replies: 12,
     views: 489,
@@ -339,7 +334,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Youssef+Benali&background=ec4899&color=fff",
     },
     category: "Jobs",
-    tags: ["jobs", "entry-level", "MENA", "career"],
     createdAt: "2026-03-10T11:30:00Z",
     replies: 7,
     views: 324,
@@ -356,7 +350,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Nadia+Zayed&background=6366f1&color=fff",
     },
     category: "Physical Design",
-    tags: ["power", "low-power", "sub-threshold", "IoT"],
     createdAt: "2026-03-09T16:15:00Z",
     replies: 4,
     views: 187,
@@ -373,7 +366,6 @@ export const forumPosts: ForumPost[] = [
       avatar: "https://ui-avatars.com/api/?name=Ahmed+Hassan&background=0ea5e9&color=fff",
     },
     category: "Open Source",
-    tags: ["introduction", "community", "welcome"],
     createdAt: "2026-03-01T09:00:00Z",
     replies: 45,
     views: 1250,

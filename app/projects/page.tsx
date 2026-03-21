@@ -141,7 +141,7 @@ export default function ProjectsPage() {
                   AUCOHL on GitHub
                 </a>
               </Button>
-              <Button className="hover:text-gray-400" variant="outline" asChild>
+              <Button className="dark:hover:text-gray-400" variant="outline" asChild>
                 <Link href="/forum?category=open-source">
                   Discuss Projects
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -218,7 +218,7 @@ export default function ProjectsPage() {
                   Find Collaborators
                 </Link>
               </Button>
-              <Button className="hover:text-gray-400" variant="outline" asChild>
+              <Button className="dark:hover:text-gray-400" variant="outline" asChild>
                 <Link href="/forum/new">
                   Share Your Project
                 </Link>
