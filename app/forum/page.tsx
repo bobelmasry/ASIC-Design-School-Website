@@ -47,9 +47,8 @@ export default function ForumPage() {
       posts = posts.filter(
         (post) =>
           post.title.toLowerCase().includes(query) ||
-          post.excerpt.toLowerCase().includes(query) ||
-          post.tags.some((tag) => tag.toLowerCase().includes(query))
-      )
+          post.excerpt.toLowerCase().includes(query)
+          )
     }
 
     // Sort posts
@@ -115,14 +114,14 @@ export default function ForumPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search discussions..."
-              className="pl-10"
+              className="pl-10 border-gray-300 dark:border-gray-800"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           {/* Categories */}
-          <Card>
+          <Card className="border-gray-300 dark:border-gray-800">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Filter className="h-4 w-4" />
@@ -170,7 +169,7 @@ export default function ForumPage() {
         <main className="lg:col-span-3">
 
           {/* Posts List */}
-          <div className="space-y-2 flex flex-col">
+          <div className="space-y-4 flex flex-col">
             {filteredPosts.length === 0 ? (
               <Card className="p-8 text-center">
                 <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -188,7 +187,7 @@ export default function ForumPage() {
             ) : (
               filteredPosts.map((post) => (
                 <Link key={post.id} href={`/forum/${post.id}`}>
-                  <Card className="hover:border-primary/50 transition-all hover:shadow-md">
+                  <Card className="hover:border-primary/50 transition-all hover:shadow-md border-gray-300 dark:border-gray-800">
                     <CardContent className="p-4">
                       <div className="flex gap-4">
                         {/* Author Avatar */}
@@ -201,12 +200,6 @@ export default function ForumPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2 mb-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              {post.isPinned && (
-                                <Pin className="h-4 w-4 text-primary shrink-0" />
-                              )}
-                              {post.isHot && (
-                                <Flame className="h-4 w-4 text-orange-500 shrink-0" />
-                              )}
                               <h3 className="font-semibold hover:text-primary transition-colors line-clamp-1">
                                 {post.title}
                               </h3>
@@ -255,14 +248,6 @@ export default function ForumPage() {
               ))
             )}
           </div>
-
-          {/* Load More */}
-          {/* Currently doesn't do anything */}
-          {filteredPosts.length > 0 && (
-            <div className="text-center mt-8">
-              <Button variant="outline">Load More Discussions</Button>
-            </div>
-          )}
         </main>
       </div>
     </div>

@@ -5,17 +5,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { 
   Github, 
-  Search, 
   Star, 
   Users, 
   ExternalLink,
@@ -26,7 +17,7 @@ import {
   Box,
   ArrowRight
 } from "lucide-react"
-import { openSourceProjectsList, projectCategories, type OpenSourceProject } from "@/lib/placeholder-data"
+import { openSourceProjectsList, type OpenSourceProject } from "@/lib/placeholder-data"
 
 const categoryIcons: Record<string, React.ElementType> = {
   flow: Layers,
@@ -48,7 +39,7 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
   const Icon = categoryIcons[project.category] || Cpu
   
   return (
-    <Card className="group hover:border-primary/50 transition-all hover:shadow-lg h-full flex flex-col">
+    <Card className="group hover:border-primary/50 transition-all hover:shadow-lg h-full flex flex-col border-gray-300 dark:border-gray-800">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className={`h-10 w-10 rounded-lg flex items-center justify-center border ${categoryColors[project.category]}`}>

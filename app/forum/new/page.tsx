@@ -103,7 +103,7 @@ export default function NewPostPage() {
         </Link>
       </Button>
 
-      <Card>
+      <Card className="border-gray-300 dark:border-gray-800">
         <CardHeader>
           <CardTitle>Start a New Discussion</CardTitle>
           <CardDescription>
@@ -123,6 +123,7 @@ export default function NewPostPage() {
                 value={formData.title}
                 onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                 maxLength={150}
+                className="border-gray-300 dark:border-gray-800"
               />
               <p className="text-xs text-muted-foreground text-right">
                 {formData.title.length}/150
@@ -138,7 +139,7 @@ export default function NewPostPage() {
                 value={formData.category}
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 dark:border-gray-800">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -165,12 +166,13 @@ export default function NewPostPage() {
                 value={formData.content}
                 onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
                 rows={10}
+                className="border-gray-300 dark:border-gray-800"
               />
             </div>
 
             {/* Submit */}
             <div className="flex justify-end gap-4">
-              <Button className="dark:hover:text-gray-400" type="button" variant="outline" asChild>
+              <Button className="dark:hover:text-gray-400 border-gray-300 dark:border-gray-800" type="button" variant="outline" asChild>
                 <Link href="/forum">Cancel</Link>
               </Button>
               <Button type="submit" disabled={!isValid || isSubmitting}>

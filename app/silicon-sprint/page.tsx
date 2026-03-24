@@ -217,7 +217,7 @@ export default function SpringSchoolPage() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {highlights.map((highlight) => (
-              <Card key={highlight.title} className="text-center">
+              <Card key={highlight.title} className="text-center border-gray-300 dark:border-gray-800">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <highlight.icon className="h-6 w-6 text-primary" />
@@ -250,7 +250,7 @@ export default function SpringSchoolPage() {
           {/* Main Program Days */}
           <div className="space-y-6 mb-12">
             {programSchedule.map((day) => (
-              <Card key={day.date} className="relative overflow-hidden">
+              <Card key={day.date} className="relative overflow-hidden border-gray-300 dark:border-gray-800">
                 <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-4">
@@ -401,7 +401,7 @@ export default function SpringSchoolPage() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+                className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 text-black dark:text-white"
                 asChild
               >
                 <Link href="/forum">

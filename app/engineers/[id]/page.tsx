@@ -74,7 +74,7 @@ export default function EngineerProfilePage() {
       </Link>
 
       {/* Profile Header */}
-      <Card className="mb-6">
+      <Card className="mb-6 border-gray-300 dark:border-gray-800">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-background shadow-lg">
@@ -134,7 +134,7 @@ export default function EngineerProfilePage() {
         <div className="md:col-span-2 space-y-6">
           {/* About */}
           {engineer.about && (
-            <Card>
+            <Card className="border-gray-300 dark:border-gray-800">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Briefcase className="h-5 w-5 text-primary" />
@@ -148,7 +148,7 @@ export default function EngineerProfilePage() {
           )}
 
           {/* Domains */}
-          <Card>
+          <Card className="border-gray-300 dark:border-gray-800">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Zap className="h-5 w-5 text-primary" />
@@ -167,7 +167,7 @@ export default function EngineerProfilePage() {
           </Card>
 
           {/* Tools & Languages */}
-          <Card>
+          <Card className="border-gray-300 dark:border-gray-800">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Code2 className="h-5 w-5 text-primary" />
@@ -201,7 +201,7 @@ export default function EngineerProfilePage() {
 
           {/* Open Source Contributions */}
           {engineer.openSourceContributions.length > 0 && (
-            <Card>
+            <Card className="border-gray-300 dark:border-gray-800">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Github className="h-5 w-5 text-primary" />
@@ -237,7 +237,7 @@ export default function EngineerProfilePage() {
         <div className="space-y-6">
 
           {/* Areas of Interest */}
-          <Card>
+          <Card className="border-gray-300 dark:border-gray-800">
             <CardHeader>
               <CardTitle className="text-lg">Areas of Interest</CardTitle>
             </CardHeader>

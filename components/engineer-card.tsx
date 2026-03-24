@@ -26,7 +26,7 @@ const experienceLabels: Record<string, string> = {
 
 export function EngineerCard({ engineer }: EngineerCardProps) {
   return (
-    <Card className="group hover:border-primary/50 transition-all hover:shadow-lg">
+    <Card className="group border-gray-400 dark:border-gray-600 hover:border-primary/50 transition-all hover:shadow-lg">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
