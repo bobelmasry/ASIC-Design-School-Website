@@ -149,6 +149,16 @@ export default function ForumPage() {
     return postsToFilter
   }, [posts, selectedCategory, searchQuery])
 
+  const categoryCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {}
+    posts.forEach((post) => {
+      const key = post.category?.toLowerCase()
+      if (!key) return
+      counts[key] = (counts[key] ?? 0) + 1
+    })
+    return counts
+  }, [posts])
+
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Just now"
     const date = new Date(dateString)
@@ -217,7 +227,15 @@ export default function ForumPage() {
                     : "hover:bg-muted"
                 }`}
               >
-                All Categories
+                <span className="flex items-center justify-between">
+                  <span>All Categories</span>
+                  <Badge
+                    variant={!selectedCategory ? "secondary" : "outline"}
+                    className="text-xs"
+                  >
+                    {posts.length}
+                  </Badge>
+                </span>
               </button>
               {forumCategories.map((category) => (
                 <button
@@ -237,7 +255,7 @@ export default function ForumPage() {
                     variant={selectedCategory === category.id ? "secondary" : "outline"}
                     className="text-xs"
                   >
-                    {category.count}
+                    {categoryCounts[category.slug.toLowerCase()] ?? 0}
                   </Badge>
                 </button>
               ))}
@@ -284,13 +302,13 @@ export default function ForumPage() {
                 </Card>
               ))
             ) : filteredPosts.length === 0 ? (
-              <Card className="p-8 text-center">
+              <Card className="p-8 text-center border-gray-300 dark:border-gray-800">
                 <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">No discussions found</h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Try adjusting your search or filters
                 </p>
-                <Button variant="outline" onClick={() => {
+                <Button variant="outline" className="dark:hover:text-white hover:text-black dark:hover:bg-gray-800" onClick={() => {
                   setSearchQuery("")
                   setSelectedCategory(null)
                 }}>
