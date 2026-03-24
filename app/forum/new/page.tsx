@@ -22,11 +22,20 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { supabase } from "@/lib/supabase"
+import {
+  uploadAttachments,
+  validateAttachmentSelection,
+  MAX_ATTACHMENT_COUNT,
+  MAX_ATTACHMENT_SIZE_MB,
+  type Attachment,
+} from "@/lib/attachments"
 
 export default function NewPostPage() {
   const router = useRouter()
   const { isAuthenticated, openAuthModal } = useAuth()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
+  const [uploadError, setUploadError] = React.useState<string | null>(null)
 
   const [formData, setFormData] = React.useState({
     title: "",
@@ -50,6 +59,21 @@ export default function NewPostPage() {
     }))
   }
 
+  const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return
+
+    const files = Array.from(event.target.files)
+    const validationError = validateAttachmentSelection(files)
+
+    if (validationError) {
+      setUploadError(validationError)
+      return
+    }
+
+    setUploadError(null)
+    setSelectedFiles(files)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -58,9 +82,23 @@ export default function NewPostPage() {
     }
 
     setIsSubmitting(true)
+    setUploadError(null)
 
     const { data: userData } = await supabase.auth.getUser()
     const fullName = userData?.user?.user_metadata?.full_name || userData?.user?.email || "Community Member"
+
+    let uploadedAttachments: Attachment[] = []
+
+    if (selectedFiles.length) {
+      try {
+        uploadedAttachments = await uploadAttachments(selectedFiles, userData?.user?.id)
+      } catch (error) {
+        console.error(error)
+        setUploadError("Failed to upload attachments. Please try again.")
+        setIsSubmitting(false)
+        return
+      }
+    }
 
     const { data, error } = await supabase
       .from("posts")
@@ -70,6 +108,7 @@ export default function NewPostPage() {
         category: formData.category,
         user_id: userData?.user?.id,
         user_full_name: fullName,
+        attachments: uploadedAttachments,
       })
       .select()
 
@@ -81,6 +120,7 @@ export default function NewPostPage() {
       return
     }
 
+    setSelectedFiles([])
     router.push(`/forum/${data[0].id}`)
   }
 
@@ -173,6 +213,30 @@ export default function NewPostPage() {
                 rows={10}
                 className="border-gray-300 dark:border-gray-800"
               />
+            </div>
+
+            {/* Attachments */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Attachments</label>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileSelection}
+                className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+              />
+              <p className="text-xs text-muted-foreground">
+                Up to {MAX_ATTACHMENT_COUNT} files, {MAX_ATTACHMENT_SIZE_MB}MB each (images, PDFs, text, ZIP).
+              </p>
+              {selectedFiles.length > 0 && (
+                <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                  {selectedFiles.map((file) => (
+                    <li key={file.name + file.size}>
+                      {file.name} ({(file.size / (1024 * 1024)).toFixed(1)}MB)
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
             </div>
 
             {/* Submit */}

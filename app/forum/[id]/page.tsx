@@ -12,6 +12,14 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth-context"
 import { supabase } from "@/lib/supabase"
 import {
+  uploadAttachments,
+  validateAttachmentSelection,
+  MAX_ATTACHMENT_COUNT,
+  MAX_ATTACHMENT_SIZE_MB,
+  type Attachment,
+} from "@/lib/attachments"
+import { AttachmentsGrid } from "@/components/attachments-grid"
+import {
   ArrowLeft,
   ThumbsUp,
   MessageSquare,
@@ -39,6 +47,7 @@ type PostReply = {
   likes?: number | null
   isAccepted?: boolean
   liked_user_ids?: string[] | null
+  attachments?: Attachment[] | null
 }
 
 type DatabasePost = {
@@ -53,8 +62,9 @@ type DatabasePost = {
   user_id?: string | null
   user_full_name?: string | null
   json_likes?: string[] | null
+  attachments?: Attachment[] | null
 }
- 
+
 const normalizePost = (data: DatabasePost | null): DatabasePost | null => {
   if (!data) return null
   const likedUsers = Array.isArray(data.json_likes) ? data.json_likes : []
@@ -73,6 +83,7 @@ const normalizeReplies = (rawReplies: PostReply[] | null | undefined): PostReply
       ...reply,
       liked_user_ids: likedUsers,
       likes: reply.likes ?? likedUsers.length,
+      attachments: reply.attachments || [],
     }
   })
 }
@@ -95,6 +106,8 @@ export default function ForumPostPage() {
   const [likeError, setLikeError] = React.useState<string | null>(null)
   const [replyLikeError, setReplyLikeError] = React.useState<string | null>(null)
   const [updatingReplyLikeId, setUpdatingReplyLikeId] = React.useState<string | null>(null)
+  const [replyFiles, setReplyFiles] = React.useState<File[]>([])
+  const [replyUploadError, setReplyUploadError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     let isMounted = true
@@ -271,6 +284,7 @@ export default function ForumPostPage() {
         ...reply,
         liked_user_ids: updatedLikedUsers,
         likes: updatedLikedUsers.length,
+        attachments: Array.isArray(reply.attachments) ? reply.attachments : [],
       }
     })
 
@@ -294,6 +308,21 @@ export default function ForumPostPage() {
     setUpdatingReplyLikeId(null)
   }
 
+  const handleReplyFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return
+
+    const files = Array.from(event.target.files)
+    const validationError = validateAttachmentSelection(files)
+
+    if (validationError) {
+      setReplyUploadError(validationError)
+      return
+    }
+
+    setReplyUploadError(null)
+    setReplyFiles(files)
+  }
+
   const handleSubmitReply = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isAuthenticated) {
@@ -303,11 +332,29 @@ export default function ForumPostPage() {
     if (!replyContent.trim() || !post) return
 
     setReplyError(null)
+    setReplyUploadError(null)
     setIsSubmittingReply(true)
 
     const pendingContent = replyContent.trim()
     const replyId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : cryptoIdFallback()
     const authorName = user?.name || "Community Member"
+    let attachments: Attachment[] = []
+
+    if (replyFiles.length) {
+     try {
+        attachments = await uploadAttachments(replyFiles, user?.id)
+      } catch (error) {
+        console.error(error)
+        setReplyUploadError(
+          error instanceof Error
+            ? error.message
+            : "Failed to upload attachments. Please try again.",
+        )
+        setIsSubmittingReply(false)
+        return
+      }
+    }
+
     const newReply: PostReply = {
       id: replyId,
       content: pendingContent,
@@ -319,6 +366,7 @@ export default function ForumPostPage() {
       created_at: new Date().toISOString(),
       likes: 0,
       liked_user_ids: [],
+      attachments,
     }
 
     const previousReplies = replies
@@ -362,6 +410,7 @@ export default function ForumPostPage() {
     }
 
     setPost(normalizePost(data))
+    setReplyFiles([])
     setReplies(normalizeReplies(data.replies as PostReply[] | null))
     setIsSubmittingReply(false)
   }
@@ -438,6 +487,7 @@ export default function ForumPostPage() {
           <div className="prose prose-neutral dark:prose-invert max-w-none mb-6">
              <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
           </div>
+          <AttachmentsGrid attachments={post.attachments} />
 
           <Separator className="my-4" />
 
@@ -521,6 +571,7 @@ export default function ForumPostPage() {
                       <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">
                         {reply.content}
                       </p>
+                      <AttachmentsGrid attachments={reply.attachments} />
                       <Button
                         variant={likedReplies.has(reply.id) ? "default" : "ghost"}
                         size="sm"
@@ -552,15 +603,37 @@ export default function ForumPostPage() {
                   <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-4">
-                  <Textarea
-                    placeholder="Share your thoughts or answer..."
-                    value={replyContent}
-                    onChange={(e) => setReplyContent(e.target.value)}
-                    rows={4}
-                  />
-                  {replyError && <p className="text-sm text-destructive">{replyError}</p>}
-                  {likeError && <p className="text-sm text-destructive">{likeError}</p>}
-                  <div className="flex justify-end">
+                   <Textarea
+                     placeholder="Share your thoughts or answer..."
+                     value={replyContent}
+                     onChange={(e) => setReplyContent(e.target.value)}
+                     rows={4}
+                   />
+                   <div>
+                     <label className="text-sm font-medium">Attachments</label>
+                      <input
+                        type="file"
+                        multiple
+                        onChange={handleReplyFileSelection}
+                        className="mt-1 block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Up to {MAX_ATTACHMENT_COUNT} files, {MAX_ATTACHMENT_SIZE_MB}MB each (images, PDFs, text, ZIP).
+                      </p>
+                      {replyFiles.length > 0 && (
+                        <ul className="text-xs text-muted-foreground list-disc pl-4 mt-2 space-y-1">
+                          {replyFiles.map((file) => (
+                            <li key={file.name + file.size}>
+                              {file.name} ({(file.size / (1024 * 1024)).toFixed(1)}MB)
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                   </div>
+                   {replyError && <p className="text-sm text-destructive">{replyError}</p>}
+                   {replyUploadError && <p className="text-sm text-destructive">{replyUploadError}</p>}
+                   {likeError && <p className="text-sm text-destructive">{likeError}</p>}
+                   <div className="flex justify-end">
                     <Button type="submit" disabled={!replyContent.trim() || isSubmittingReply}>
                       <Send className="h-4 w-4 mr-2" />
                       {isSubmittingReply ? "Posting..." : "Post Reply"}
