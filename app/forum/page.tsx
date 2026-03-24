@@ -51,7 +51,7 @@ type ForumPostWithAuthor = {
   }
 }
 
-export default function ForumPage() {
+function ForumPageContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
   const { openAuthModal, isAuthenticated } = useAuth()
@@ -381,4 +381,37 @@ export default function ForumPage() {
   )
 }
 
-// Data should be loaded from a database instead of importing from a static file. This is just for demonstration purposes.
+function ForumPageFallback() {
+  return (
+    <div className="container px-4 py-8">
+      <div className="space-y-4 flex flex-col">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <Card key={`forum-fallback-${index}`} className="border-gray-300 dark:border-gray-800">
+            <CardContent className="p-4 animate-pulse space-y-4">
+              <div className="flex gap-4">
+                <div className="h-10 w-10 rounded-full bg-muted shrink-0" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 bg-muted rounded w-2/3" />
+                  <div className="h-3 bg-muted rounded w-5/6" />
+                  <div className="flex gap-3">
+                    <div className="h-3 bg-muted rounded w-16" />
+                    <div className="h-3 bg-muted rounded w-12" />
+                    <div className="h-3 bg-muted rounded w-10" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function ForumPage() {
+  return (
+    <React.Suspense fallback={<ForumPageFallback />}>
+      <ForumPageContent />
+    </React.Suspense>
+  )
+}
