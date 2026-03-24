@@ -60,13 +60,18 @@ export default function NewPostPage() {
     setIsSubmitting(true)
 
     const { data: userData } = await supabase.auth.getUser()
+    const fullName = userData?.user?.user_metadata?.full_name || userData?.user?.email || "Community Member"
 
-    const { data, error } = await supabase.from("posts").insert({
-      title: formData.title,
-      content: formData.content,
-      category: formData.category,
-      user_id: userData?.user?.id,
-    }).select()
+    const { data, error } = await supabase
+      .from("posts")
+      .insert({
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
+        user_id: userData?.user?.id,
+        user_full_name: fullName,
+      })
+      .select()
 
     setIsSubmitting(false)
 

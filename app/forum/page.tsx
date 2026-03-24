@@ -9,68 +9,148 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/auth-context"
-import { forumPosts, forumCategories } from "@/lib/placeholder-data"
+import { forumCategories } from "@/lib/placeholder-data"
+import { supabase } from "@/lib/supabase"
 import {
   Search,
   Plus,
   MessageSquare,
-  Eye,
   ThumbsUp,
   Clock,
-  Pin,
   Filter,
-  Flame,
 } from "lucide-react"
 
-type SortOption = "recent" | "popular" | "trending"
+type DatabasePost = {
+  id: string | number
+  title: string | null
+  excerpt?: string | null
+  content?: string | null
+  category?: string | null
+  created_at?: string | null
+  replies?: number | null
+  replies_count?: number | null
+  views?: number | null
+  likes?: number | null
+  user_id?: string | null
+  user_full_name?: string | null
+  json_likes?: string[] | null
+}
+
+type ForumPostWithAuthor = {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  createdAt: string
+  replies: number
+  likes: number
+  author: {
+    id: string
+    name: string
+    avatar?: string
+  }
+}
 
 export default function ForumPage() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
   const { openAuthModal, isAuthenticated } = useAuth()
 
+  const [posts, setPosts] = React.useState<ForumPostWithAuthor[]>([])
+  const [isLoadingPosts, setIsLoadingPosts] = React.useState(true)
+  const [fetchError, setFetchError] = React.useState<string | null>(null)
   const [searchQuery, setSearchQuery] = React.useState("")
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(categoryParam)
-  const [sortBy, setSortBy] = React.useState<SortOption>("recent")
+
+  React.useEffect(() => {
+    if (!categoryParam) return
+    setSelectedCategory(categoryParam)
+  }, [categoryParam])
+
+  React.useEffect(() => {
+    let isMounted = true
+
+    const loadPosts = async () => {
+      setIsLoadingPosts(true)
+      const { data: postRows, error } = await supabase
+        .from("posts")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (!isMounted) return
+
+      if (error) {
+        setFetchError(error.message ?? "Failed to load discussions.")
+        setIsLoadingPosts(false)
+        return
+      }
+
+      const normalizedPosts = postRows ?? []
+
+      const mappedPosts: ForumPostWithAuthor[] = normalizedPosts.map((post) => {
+        const name = post.user_full_name || "Community Member"
+        const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0ea5e9&color=fff`
+
+        return {
+          id: String(post.id),
+          title: post.title ?? "Untitled discussion",
+          excerpt:
+            post.excerpt ??
+            (post.content ? `${post.content.slice(0, 160)}...` : ""),
+          category: post.category ?? "General",
+          createdAt: post.created_at ?? new Date().toISOString(),
+          replies: post.replies_count ?? post.replies ?? 0,
+          likes: post.likes ?? (Array.isArray(post.json_likes) ? post.json_likes.length : 0),
+          author: {
+            id: post.user_id ?? "unknown",
+            name,
+            avatar,
+          },
+        }
+      })
+
+      setPosts(mappedPosts)
+      setFetchError(null)
+      setIsLoadingPosts(false)
+    }
+
+    loadPosts()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const filteredPosts = React.useMemo(() => {
-    let posts = [...forumPosts]
+    let postsToFilter = [...posts]
 
     // Filter by category
     if (selectedCategory) {
-      posts = posts.filter((post) => post.category.toLowerCase() === selectedCategory.toLowerCase())
+      postsToFilter = postsToFilter.filter(
+        (post) => post.category.toLowerCase() === selectedCategory.toLowerCase(),
+      )
     }
 
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      posts = posts.filter(
+      postsToFilter = postsToFilter.filter(
         (post) =>
           post.title.toLowerCase().includes(query) ||
-          post.excerpt.toLowerCase().includes(query)
-          )
+          post.excerpt.toLowerCase().includes(query),
+      )
     }
 
-    // Sort posts
-    switch (sortBy) {
-      case "popular":
-        posts.sort((a, b) => b.likes - a.likes)
-        break
-      case "trending":
-        posts.sort((a, b) => b.views - a.views)
-        break
-      case "recent":
-      default:
-        posts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    }
+    // Sort posts by newest first (database does not expose popularity metadata)
+    postsToFilter.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
 
-    // Pinned posts always first
-    posts.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0))
+    return postsToFilter
+  }, [posts, selectedCategory, searchQuery])
 
-    return posts
-  }, [selectedCategory, searchQuery, sortBy])
-
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return "Just now"
     const date = new Date(dateString)
     const now = new Date()
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
@@ -170,7 +250,40 @@ export default function ForumPage() {
 
           {/* Posts List */}
           <div className="space-y-4 flex flex-col">
-            {filteredPosts.length === 0 ? (
+            {fetchError ? (
+              <Card className="p-8 text-center border-red-200 dark:border-red-900/40">
+                <MessageSquare className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                <h3 className="font-semibold mb-2">{fetchError}</h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Please refresh the page or try again later.
+                </p>
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Retry
+                </Button>
+              </Card>
+            ) : isLoadingPosts ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card
+                  key={`forum-loading-${index}`}
+                  className="border-gray-300 dark:border-gray-800"
+                >
+                  <CardContent className="p-4 animate-pulse space-y-4">
+                    <div className="flex gap-4">
+                      <div className="h-10 w-10 rounded-full bg-muted shrink-0" />
+                      <div className="flex-1 space-y-3">
+                        <div className="h-4 bg-muted rounded w-2/3" />
+                        <div className="h-3 bg-muted rounded w-5/6" />
+                        <div className="flex gap-3">
+                          <div className="h-3 bg-muted rounded w-16" />
+                          <div className="h-3 bg-muted rounded w-12" />
+                          <div className="h-3 bg-muted rounded w-10" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : filteredPosts.length === 0 ? (
               <Card className="p-8 text-center">
                 <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">No discussions found</h3>
@@ -231,14 +344,10 @@ export default function ForumPage() {
                               <MessageSquare className="h-3 w-3" />
                               {post.replies}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <Eye className="h-3 w-3" />
-                              {post.views}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <ThumbsUp className="h-3 w-3" />
-                              {post.likes}
-                            </span>
+                             <span className="flex items-center gap-1">
+                               <ThumbsUp className="h-3 w-3" />
+                               {post.likes}
+                             </span>
                           </div>
                         </div>
                       </div>

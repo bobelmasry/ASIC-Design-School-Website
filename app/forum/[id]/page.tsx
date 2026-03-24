@@ -10,20 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/components/auth-context"
-import { forumPosts, forumReplies } from "@/lib/placeholder-data"
+import { supabase } from "@/lib/supabase"
 import {
   ArrowLeft,
   ThumbsUp,
   MessageSquare,
-  Eye,
   Clock,
   Share2,
   Flag,
   MoreHorizontal,
   Send,
   CheckCircle2,
-  Pin,
-  Flame,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -31,6 +28,54 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+type PostReply = {
+  id: string
+  content: string
+  user_id?: string | null
+  user_full_name?: string | null
+  user_avatar?: string | null
+  created_at: string
+  likes?: number | null
+  isAccepted?: boolean
+  liked_user_ids?: string[] | null
+}
+
+type DatabasePost = {
+  id: string | number
+  title: string | null
+  content?: string | null
+  category?: string | null
+  created_at?: string | null
+  replies?: PostReply[] | null
+  replies_count?: number | null
+  likes?: number | null
+  user_id?: string | null
+  user_full_name?: string | null
+  json_likes?: string[] | null
+}
+ 
+const normalizePost = (data: DatabasePost | null): DatabasePost | null => {
+  if (!data) return null
+  const likedUsers = Array.isArray(data.json_likes) ? data.json_likes : []
+  return {
+    ...data,
+    json_likes: likedUsers,
+    likes: data.likes ?? likedUsers.length,
+  }
+}
+
+const normalizeReplies = (rawReplies: PostReply[] | null | undefined): PostReply[] => {
+  if (!Array.isArray(rawReplies)) return []
+  return rawReplies.map((reply) => {
+    const likedUsers = Array.isArray(reply.liked_user_ids) ? reply.liked_user_ids : []
+    return {
+      ...reply,
+      liked_user_ids: likedUsers,
+      likes: reply.likes ?? likedUsers.length,
+    }
+  })
+}
 
 export default function ForumPostPage() {
   const params = useParams()
@@ -40,15 +85,98 @@ export default function ForumPostPage() {
   const [likedPost, setLikedPost] = React.useState(false)
   const [likedReplies, setLikedReplies] = React.useState<Set<string>>(new Set())
 
-  const post = forumPosts.find((p) => p.id === params.id)
-  const replies = forumReplies.filter((r) => r.postId === params.id)
+  const [post, setPost] = React.useState<DatabasePost | null>(null)
+  const [isLoadingPost, setIsLoadingPost] = React.useState(true)
+  const [fetchError, setFetchError] = React.useState<string | null>(null)
+  const [replies, setReplies] = React.useState<PostReply[]>([])
+  const [isSubmittingReply, setIsSubmittingReply] = React.useState(false)
+  const [replyError, setReplyError] = React.useState<string | null>(null)
+  const [isUpdatingLike, setIsUpdatingLike] = React.useState(false)
+  const [likeError, setLikeError] = React.useState<string | null>(null)
+  const [replyLikeError, setReplyLikeError] = React.useState<string | null>(null)
+  const [updatingReplyLikeId, setUpdatingReplyLikeId] = React.useState<string | null>(null)
 
-  if (!post) {
+  React.useEffect(() => {
+    let isMounted = true
+
+    const loadPost = async () => {
+      setIsLoadingPost(true)
+      setReplies([])
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", params.id)
+        .single()
+
+      if (!isMounted) return
+
+      if (error) {
+        setFetchError(error.message ?? "Failed to load discussion.")
+        setIsLoadingPost(false)
+        return
+      }
+
+      const normalizedPost = normalizePost(data)
+      setPost(normalizedPost)
+      setReplies(normalizeReplies(data.replies as PostReply[] | null))
+      setFetchError(null)
+      setIsLoadingPost(false)
+    }
+
+    loadPost()
+
+    return () => {
+      isMounted = false
+    }
+  }, [params.id])
+
+  React.useEffect(() => {
+    if (!post || !user?.id) {
+      setLikedPost(false)
+      return
+    }
+
+    const likedUsers = Array.isArray(post.json_likes) ? post.json_likes : []
+    setLikedPost(likedUsers.includes(user.id))
+  }, [post, user?.id])
+
+  React.useEffect(() => {
+    if (!user?.id) {
+      setLikedReplies(new Set())
+      return
+    }
+
+    const likedIds = replies
+      .filter((reply) => Array.isArray(reply.liked_user_ids) && reply.liked_user_ids.includes(user.id))
+      .map((reply) => reply.id)
+
+    setLikedReplies(new Set(likedIds))
+  }, [replies, user?.id])
+
+  const postAuthorName = post?.user_full_name || "Community Member"
+  const postAuthorAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(postAuthorName)}&background=0ea5e9&color=fff`
+
+  if (isLoadingPost) {
+    return (
+      <div className="container px-4 py-16">
+        <div className="max-w-2xl mx-auto space-y-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={`post-skeleton-${index}`}
+              className="h-28 rounded-lg border border-gray-300 dark:border-gray-800 animate-pulse bg-muted/30"
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (fetchError || !post) {
     return (
       <div className="container px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold mb-4">Discussion Not Found</h1>
+        <h1 className="text-2xl font-bold mb-4">{fetchError ? "Unable to load discussion" : "Discussion Not Found"}</h1>
         <p className="text-muted-foreground mb-6">
-          The discussion you&apos;re looking for doesn&apos;t exist or has been removed.
+          {fetchError || "The discussion you're looking for doesn't exist or has been removed."}
         </p>
         <Button asChild>
           <Link href="/forum">Back to Forum</Link>
@@ -68,48 +196,188 @@ export default function ForumPostPage() {
     })
   }
 
-  const handleLikePost = () => {
+  const handleLikePost = async () => {
     if (!isAuthenticated) {
       openAuthModal()
       return
     }
-    setLikedPost(!likedPost)
+    if (!post || isUpdatingLike || !user?.id) return
+
+    setLikeError(null)
+    setIsUpdatingLike(true)
+
+    const previousLikedUsers = Array.isArray(post.json_likes) ? [...post.json_likes] : []
+    const hasLiked = previousLikedUsers.includes(user.id)
+    const nextLiked = !hasLiked
+    const updatedLikedUsers = nextLiked
+      ? [...previousLikedUsers, user.id]
+      : previousLikedUsers.filter((id) => id !== user.id)
+    const updatedLikes = updatedLikedUsers.length
+
+    setLikedPost(nextLiked)
+    setPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            likes: updatedLikes,
+            json_likes: updatedLikedUsers,
+          }
+        : prev
+    )
+
+    const { error } = await supabase
+      .from("posts")
+      .update({ likes: updatedLikes, json_likes: updatedLikedUsers })
+      .eq("id", post.id)
+
+    if (error) {
+      setLikeError(error.message ?? "Failed to update likes. Please try again.")
+      setLikedPost(hasLiked)
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              likes: previousLikedUsers.length,
+              json_likes: previousLikedUsers,
+            }
+          : prev
+      )
+      setIsUpdatingLike(false)
+      return
+    }
+
+    setIsUpdatingLike(false)
   }
 
-  const handleLikeReply = (replyId: string) => {
+  const handleLikeReply = async (replyId: string) => {
     if (!isAuthenticated) {
       openAuthModal()
       return
     }
-    setLikedReplies((prev) => {
-      const next = new Set(prev)
-      if (next.has(replyId)) {
-        next.delete(replyId)
-      } else {
-        next.add(replyId)
+    if (!post || !user?.id) return
+
+    setReplyLikeError(null)
+    setUpdatingReplyLikeId(replyId)
+
+    const previousReplies = replies
+    const nextReplies = replies.map((reply) => {
+      if (reply.id !== replyId) return reply
+      const likedUsers = Array.isArray(reply.liked_user_ids) ? [...reply.liked_user_ids] : []
+      const hasLiked = likedUsers.includes(user.id)
+      const updatedLikedUsers = hasLiked
+        ? likedUsers.filter((id) => id !== user.id)
+        : [...likedUsers, user.id]
+      return {
+        ...reply,
+        liked_user_ids: updatedLikedUsers,
+        likes: updatedLikedUsers.length,
       }
-      return next
     })
+
+    setReplies(nextReplies)
+
+    const { error, data } = await supabase
+      .from("posts")
+      .update({ replies: nextReplies })
+      .eq("id", post.id)
+      .select("replies")
+      .single()
+
+    if (error) {
+      setReplyLikeError(error.message ?? "Failed to update reply like. Please try again.")
+      setReplies(previousReplies)
+      setUpdatingReplyLikeId(null)
+      return
+    }
+
+    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setUpdatingReplyLikeId(null)
   }
 
-  const handleSubmitReply = (e: React.FormEvent) => {
+  const handleSubmitReply = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isAuthenticated) {
       openAuthModal()
       return
     }
-    if (!replyContent.trim()) return
-    // In a real app, this would submit to the backend
+    if (!replyContent.trim() || !post) return
+
+    setReplyError(null)
+    setIsSubmittingReply(true)
+
+    const pendingContent = replyContent.trim()
+    const replyId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : cryptoIdFallback()
+    const authorName = user?.name || "Community Member"
+    const newReply: PostReply = {
+      id: replyId,
+      content: pendingContent,
+      user_id: user?.id,
+      user_full_name: authorName,
+      user_avatar:
+        user?.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0ea5e9&color=fff`,
+      created_at: new Date().toISOString(),
+      likes: 0,
+      liked_user_ids: [],
+    }
+
+    const previousReplies = replies
+    const updatedReplies = [...replies, newReply]
+
+    setReplies(updatedReplies)
     setReplyContent("")
+    setPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            replies_count: updatedReplies.length,
+          }
+        : prev
+    )
+
+    const { error, data } = await supabase
+      .from("posts")
+      .update({
+        replies: updatedReplies,
+        replies_count: updatedReplies.length,
+      })
+      .eq("id", post.id)
+      .select("*")
+      .single()
+
+    if (error) {
+      setReplyError(error.message ?? "Failed to post reply. Please try again.")
+      setReplies(previousReplies)
+      setReplyContent(pendingContent)
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              replies_count: previousReplies.length,
+            }
+          : prev
+      )
+      setIsSubmittingReply(false)
+      return
+    }
+
+    setPost(normalizePost(data))
+    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setIsSubmittingReply(false)
   }
 
   const handleShare = async () => {
     try {
-      await navigator.share({
-        title: post.title,
-        text: post.excerpt,
+      const shareData: ShareData = {
+        title: post.title ?? "Discussion",
         url: window.location.href,
-      })
+      }
+
+      if (post.content) {
+        shareData.text = post.content
+      }
+
+      await navigator.share(shareData)
     } catch {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href)
@@ -130,38 +398,20 @@ export default function ForumPostPage() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap mb-2">
-                {post.isPinned && (
-                  <Badge variant="secondary" className="gap-1">
-                    <Pin className="h-3 w-3" />
-                    Pinned
-                  </Badge>
-                )}
-                {post.isHot && (
-                  <Badge variant="secondary" className="gap-1 bg-orange-500/10 text-orange-500 border-orange-500/20">
-                    <Flame className="h-3 w-3" />
-                    Hot
-                  </Badge>
-                )}
-                <Badge variant="outline">{post.category}</Badge>
+                {post.category && <Badge variant="outline">{post.category}</Badge>}
               </div>
               <h1 className="text-2xl font-bold mb-2">{post.title}</h1>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">
-                    <AvatarImage src={post.author.avatar} alt={post.author.name} />
-                    <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={postAuthorAvatar} alt={postAuthorName} />
+                    <AvatarFallback>{postAuthorName.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <Link href={`/engineers/${post.author.id}`} className="hover:text-primary">
-                    {post.author.name}
-                  </Link>
+                  <span>{postAuthorName}</span>
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  {formatDate(post.createdAt)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Eye className="h-4 w-4" />
-                  {post.views} views
+                  {post.created_at ? formatDate(post.created_at) : "Just now"}
                 </span>
               </div>
             </div>
@@ -186,7 +436,7 @@ export default function ForumPostPage() {
         </CardHeader>
         <CardContent>
           <div className="prose prose-neutral dark:prose-invert max-w-none mb-6">
-            <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
+             <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
           </div>
 
           <Separator className="my-4" />
@@ -198,9 +448,10 @@ export default function ForumPostPage() {
               size="sm"
               onClick={handleLikePost}
               className="gap-2 dark:hover:text-gray-400"
+              disabled={isUpdatingLike}
             >
               <ThumbsUp className="h-4 w-4" />
-              {post.likes + (likedPost ? 1 : 0)}
+              {post.likes ?? 0}
             </Button>
             <Button variant="outline" size="sm" className="gap-2 dark:hover:text-gray-400">
               <MessageSquare className="h-4 w-4" />
@@ -220,65 +471,72 @@ export default function ForumPostPage() {
           {replies.length} {replies.length === 1 ? "Reply" : "Replies"}
         </h2>
 
+        {replyLikeError && <p className="text-sm text-destructive mb-3">{replyLikeError}</p>}
         <div className="space-y-4">
-          {replies.map((reply) => (
-            <Card key={reply.id} className={reply.isAccepted ? "border-green-500/50" : ""}>
-              <CardContent className="p-4">
-                <div className="flex gap-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={reply.author.avatar} alt={reply.author.name} />
-                    <AvatarFallback>{reply.author.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/engineers/${reply.author.id}`}
-                          className="font-medium hover:text-primary"
-                        >
-                          {reply.author.name}
-                        </Link>
-                        {reply.isAccepted && (
-                          <Badge variant="secondary" className="gap-1 bg-green-500/10 text-green-600 border-green-500/20">
-                            <CheckCircle2 className="h-3 w-3" />
-                            Accepted
-                          </Badge>
-                        )}
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(reply.createdAt)}
-                        </span>
+          {replies.map((reply) => {
+            const replyAuthorName = reply.user_full_name || "Community Member"
+            const replyAvatar =
+              reply.user_avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(replyAuthorName)}&background=0ea5e9&color=fff`
+
+            return (
+              <Card key={reply.id} className={reply.isAccepted ? "border-green-500/50" : ""}>
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={replyAvatar} alt={replyAuthorName} />
+                      <AvatarFallback>{replyAuthorName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{replyAuthorName}</span>
+                          {reply.isAccepted && (
+                            <Badge
+                              variant="secondary"
+                              className="gap-1 bg-green-500/10 text-green-600 border-green-500/20"
+                            >
+                              <CheckCircle2 className="h-3 w-3" />
+                              Accepted
+                            </Badge>
+                          )}
+                   <span className="text-xs text-muted-foreground">
+                     {reply.created_at ? formatDate(reply.created_at) : "Moments ago"}
+                   </span>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>
+                              <Flag className="h-4 w-4 mr-2" />
+                              Report
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Flag className="h-4 w-4 mr-2" />
-                            Report
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">
+                        {reply.content}
+                      </p>
+                      <Button
+                        variant={likedReplies.has(reply.id) ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => handleLikeReply(reply.id)}
+                        className="gap-2 h-8"
+                        disabled={updatingReplyLikeId === reply.id}
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                        {reply.likes ?? 0}
+                      </Button>
                     </div>
-                    <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">
-                      {reply.content}
-                    </p>
-                    <Button
-                      variant={likedReplies.has(reply.id) ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => handleLikeReply(reply.id)}
-                      className="gap-2 h-8"
-                    >
-                      <ThumbsUp className="h-3 w-3" />
-                      {reply.likes + (likedReplies.has(reply.id) ? 1 : 0)}
-                    </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </div>
 
@@ -300,10 +558,12 @@ export default function ForumPostPage() {
                     onChange={(e) => setReplyContent(e.target.value)}
                     rows={4}
                   />
+                  {replyError && <p className="text-sm text-destructive">{replyError}</p>}
+                  {likeError && <p className="text-sm text-destructive">{likeError}</p>}
                   <div className="flex justify-end">
-                    <Button type="submit" disabled={!replyContent.trim()}>
+                    <Button type="submit" disabled={!replyContent.trim() || isSubmittingReply}>
                       <Send className="h-4 w-4 mr-2" />
-                      Post Reply
+                      {isSubmittingReply ? "Posting..." : "Post Reply"}
                     </Button>
                   </div>
                 </div>
@@ -322,3 +582,6 @@ export default function ForumPostPage() {
     </div>
   )
 }
+
+const cryptoIdFallback = () =>
+  Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
