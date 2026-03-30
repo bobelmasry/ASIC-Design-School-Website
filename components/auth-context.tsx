@@ -4,7 +4,6 @@ import * as React from "react"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
 import {
-  canAccessMembersPage,
   canModerateForum,
   resolveRoleFromMetadata,
   type AppRole,
@@ -122,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         role,
         isAuthenticated: !!user,
-        canAccessMembersPage: canAccessMembersPage(role),
+        canAccessMembersPage: !!user,
         canModerateForum: canModerateForum(role),
         signIn,
         signUp,

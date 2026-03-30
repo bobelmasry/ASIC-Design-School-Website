@@ -15,7 +15,7 @@ export default function EngineersPage() {
         <Lock className="h-10 w-10 text-primary mx-auto mb-4" />
         <h1 className="text-2xl font-bold mb-3">Members Directory Restricted</h1>
         <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-          This directory is currently available to employees and admins only.
+          Please sign in to continue.
         </p>
         <Button asChild>
           <Link href="/">Back to Home</Link>

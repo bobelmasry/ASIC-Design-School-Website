@@ -111,7 +111,12 @@ export default function HomePage() {
                 </Button>
               )}
               {canAccessMembersPage && (
-                <Button size="lg" variant="outline" asChild>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-primary/40 text-primary hover:bg-primary/10 dark:border-primary/50 dark:text-primary dark:hover:bg-primary/20"
+                  asChild
+                >
                   <Link href="/engineers">Browse Engineers</Link>
                 </Button>
               )}
@@ -186,7 +191,7 @@ export default function HomePage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 dark:border-primary/50 dark:text-primary dark:hover:bg-primary/20">
                   Apply Now
                 </Button>
               </div>
@@ -414,7 +419,12 @@ export default function HomePage() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
-              <Button size="lg" variant="outline" className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10" asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                asChild
+              >
                 <Link href="/forum">
                   Explore Forum
                 </Link>

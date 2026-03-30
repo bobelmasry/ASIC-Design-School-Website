@@ -48,7 +48,7 @@ export default function EngineerProfilePage() {
       <div className="container px-4 py-16 text-center">
         <h1 className="text-2xl font-bold mb-4">Access Restricted</h1>
         <p className="text-muted-foreground mb-6">
-          Member profiles are currently available to employees and admins only.
+          Please sign in to continue.
         </p>
         <Button asChild>
           <Link href="/">Back to Home</Link>
