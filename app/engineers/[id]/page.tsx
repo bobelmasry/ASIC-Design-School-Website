@@ -41,7 +41,21 @@ const experienceBadgeColors: Record<string, string> = {
 
 export default function EngineerProfilePage() {
   const params = useParams()
-  const { isAuthenticated, openAuthModal } = useAuth()
+  const { canAccessMembersPage } = useAuth()
+
+  if (!canAccessMembersPage) {
+    return (
+      <div className="container px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold mb-4">Access Restricted</h1>
+        <p className="text-muted-foreground mb-6">
+          Member profiles are currently available to employees and admins only.
+        </p>
+        <Button asChild>
+          <Link href="/">Back to Home</Link>
+        </Button>
+      </div>
+    )
+  }
   
   const engineer = engineers.find((e) => e.id === params.id)
 

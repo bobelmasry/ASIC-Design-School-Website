@@ -91,7 +91,7 @@ const normalizeReplies = (rawReplies: PostReply[] | null | undefined): PostReply
 export default function ForumPostPage() {
   const params = useParams()
   const router = useRouter()
-  const { openAuthModal, isAuthenticated, user } = useAuth()
+  const { openAuthModal, isAuthenticated, user, canModerateForum } = useAuth()
   const [replyContent, setReplyContent] = React.useState("")
   const [likedPost, setLikedPost] = React.useState(false)
   const [likedReplies, setLikedReplies] = React.useState<Set<string>>(new Set())
@@ -108,6 +108,8 @@ export default function ForumPostPage() {
   const [updatingReplyLikeId, setUpdatingReplyLikeId] = React.useState<string | null>(null)
   const [replyFiles, setReplyFiles] = React.useState<File[]>([])
   const [replyUploadError, setReplyUploadError] = React.useState<string | null>(null)
+  const [adminActionError, setAdminActionError] = React.useState<string | null>(null)
+  const [isAdminActionLoading, setIsAdminActionLoading] = React.useState(false)
 
   React.useEffect(() => {
     let isMounted = true
@@ -433,6 +435,87 @@ export default function ForumPostPage() {
     }
   }
 
+  const handleDeletePost = async () => {
+    if (!post || !canModerateForum || isAdminActionLoading) return
+
+    const confirmed = window.confirm("Delete this discussion and all its replies?")
+    if (!confirmed) return
+
+    setAdminActionError(null)
+    setIsAdminActionLoading(true)
+
+    const { error } = await supabase.from("posts").delete().eq("id", post.id)
+
+    if (error) {
+      setAdminActionError(error.message ?? "Failed to delete discussion.")
+      setIsAdminActionLoading(false)
+      return
+    }
+
+    router.push("/forum")
+  }
+
+  const handleDeleteReply = async (replyId: string) => {
+    if (!post || !canModerateForum || isAdminActionLoading) return
+
+    const confirmed = window.confirm("Delete this reply?")
+    if (!confirmed) return
+
+    setAdminActionError(null)
+    setIsAdminActionLoading(true)
+
+    const updatedReplies = replies.filter((reply) => reply.id !== replyId)
+    const { error, data } = await supabase
+      .from("posts")
+      .update({ replies: updatedReplies, replies_count: updatedReplies.length })
+      .eq("id", post.id)
+      .select("*")
+      .single()
+
+    if (error) {
+      setAdminActionError(error.message ?? "Failed to delete reply.")
+      setIsAdminActionLoading(false)
+      return
+    }
+
+    setPost(normalizePost(data))
+    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setIsAdminActionLoading(false)
+  }
+
+  const handleToggleAcceptedReply = async (replyId: string) => {
+    if (!post || !canModerateForum || isAdminActionLoading) return
+
+    setAdminActionError(null)
+    setIsAdminActionLoading(true)
+
+    const updatedReplies = replies.map((reply) =>
+      reply.id === replyId
+        ? {
+            ...reply,
+            isAccepted: !reply.isAccepted,
+          }
+        : reply,
+    )
+
+    const { error, data } = await supabase
+      .from("posts")
+      .update({ replies: updatedReplies })
+      .eq("id", post.id)
+      .select("*")
+      .single()
+
+    if (error) {
+      setAdminActionError(error.message ?? "Failed to update reply status.")
+      setIsAdminActionLoading(false)
+      return
+    }
+
+    setPost(normalizePost(data))
+    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setIsAdminActionLoading(false)
+  }
+
   return (
     <div className="container px-4 py-8 max-w-4xl">
       {/* Back Button */}
@@ -479,11 +562,21 @@ export default function ForumPostPage() {
                   <Flag className="h-4 w-4 mr-2 hover:text-white" />
                   Report
                 </DropdownMenuItem>
+                {canModerateForum && (
+                  <DropdownMenuItem
+                    onClick={handleDeletePost}
+                    disabled={isAdminActionLoading}
+                    className="text-destructive"
+                  >
+                    Delete Discussion
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
+          {adminActionError && <p className="text-sm text-destructive mb-3">{adminActionError}</p>}
           <div className="prose prose-neutral dark:prose-invert max-w-none mb-6">
              <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
           </div>
@@ -565,6 +658,23 @@ export default function ForumPostPage() {
                               <Flag className="h-4 w-4 mr-2" />
                               Report
                             </DropdownMenuItem>
+                            {canModerateForum && (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleToggleAcceptedReply(reply.id)}
+                                  disabled={isAdminActionLoading}
+                                >
+                                  {reply.isAccepted ? "Remove Accepted Mark" : "Mark as Accepted"}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteReply(reply.id)}
+                                  disabled={isAdminActionLoading}
+                                  className="text-destructive"
+                                >
+                                  Delete Reply
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>

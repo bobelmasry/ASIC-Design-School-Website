@@ -70,7 +70,10 @@ const openSourceProjects = [
 ]
 
 export default function HomePage() {
-  const { openAuthModal, isAuthenticated } = useAuth()
+  const { openAuthModal, isAuthenticated, canAccessMembersPage } = useAuth()
+  const visibleValueProps = canAccessMembersPage
+    ? valueProps
+    : valueProps.filter((prop) => prop.href !== "/engineers")
 
   return (
     <div className="flex flex-col">
@@ -107,11 +110,11 @@ export default function HomePage() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/engineers">
-                  Browse Engineers
-                </Link>
-              </Button>
+              {canAccessMembersPage && (
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/engineers">Browse Engineers</Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -317,7 +320,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {valueProps.map((prop) => (
+            {visibleValueProps.map((prop) => (
               <Card key={prop.title} className="group hover:border-primary/50 transition-all hover:shadow-lg">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">

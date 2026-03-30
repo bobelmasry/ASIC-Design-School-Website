@@ -1,18 +1,29 @@
 "use client"
 
 import * as React from "react"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase"
+import {
+  canAccessMembersPage,
+  canModerateForum,
+  resolveRoleFromMetadata,
+  type AppRole,
+} from "@/lib/rbac"
 
-type User = {
+type AppUser = {
   id: string
   name: string
   email: string
+  role: AppRole
   avatar?: string
 } | null
 
 type AuthContextType = {
-  user: User
+  user: AppUser
+  role: AppRole
   isAuthenticated: boolean
+  canAccessMembersPage: boolean
+  canModerateForum: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (name: string, email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -23,8 +34,24 @@ type AuthContextType = {
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
 
+const mapSessionUser = (sessionUser: SupabaseUser): Exclude<AppUser, null> => {
+  const fullName = sessionUser.user_metadata?.full_name || "User"
+  const role = resolveRoleFromMetadata({
+    appMetadata: sessionUser.app_metadata,
+    userMetadata: sessionUser.user_metadata,
+  })
+
+  return {
+    id: sessionUser.id,
+    name: fullName,
+    email: sessionUser.email!,
+    role,
+    avatar: `https://ui-avatars.com/api/?name=${fullName}&background=0ea5e9&color=fff`,
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<User>(null)
+  const [user, setUser] = React.useState<AppUser>(null)
   const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false)
 
   // Load session on startup
@@ -34,14 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const sessionUser = data.session?.user
       if (sessionUser) {
-        setUser({
-          id: sessionUser.id,
-          name: sessionUser.user_metadata?.full_name || "User",
-          email: sessionUser.email!,
-          avatar: `https://ui-avatars.com/api/?name=${
-            sessionUser.user_metadata?.full_name || "User"
-          }&background=0ea5e9&color=fff`,
-        })
+        setUser(mapSessionUser(sessionUser))
       }
     }
 
@@ -52,14 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const sessionUser = session?.user
 
         if (sessionUser) {
-          setUser({
-            id: sessionUser.id,
-            name: sessionUser.user_metadata?.full_name || "User",
-            email: sessionUser.email!,
-            avatar: `https://ui-avatars.com/api/?name=${
-              sessionUser.user_metadata?.full_name || "User"
-            }&background=0ea5e9&color=fff`,
-          })
+          setUser(mapSessionUser(sessionUser))
         } else {
           setUser(null)
         }
@@ -101,12 +114,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const openAuthModal = () => setIsAuthModalOpen(true)
   const closeAuthModal = () => setIsAuthModalOpen(false)
+  const role = user?.role ?? "member"
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        role,
         isAuthenticated: !!user,
+        canAccessMembersPage: canAccessMembersPage(role),
+        canModerateForum: canModerateForum(role),
         signIn,
         signUp,
         signOut,

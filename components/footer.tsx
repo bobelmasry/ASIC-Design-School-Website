@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
-import { Cpu, Github, Linkedin, ExternalLink } from "lucide-react"
+import { Cpu, ExternalLink } from "lucide-react"
+import { useAuth } from "@/components/auth-context"
 
 const openSourceProjects = [
   { name: "Caravel", url: "https://github.com/efabless/caravel" },
@@ -15,6 +18,11 @@ const communityLinks = [
 ]
 
 export function Footer() {
+  const { canAccessMembersPage } = useAuth()
+  const visibleCommunityLinks = canAccessMembersPage
+    ? communityLinks
+    : communityLinks.filter((link) => link.href !== "/engineers")
+
   return (
     <footer className="border-t bg-muted/30">
       <div className="container px-4 py-12 md:py-16">
@@ -31,7 +39,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Community</h3>
             <ul className="space-y-2">
-              {communityLinks.map((link) => (
+              {visibleCommunityLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
