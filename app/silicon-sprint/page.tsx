@@ -132,7 +132,7 @@ export default function SpringSchoolPage() {
                 Educational Program
               </Badge>
               <Badge variant="outline">Spring 2026</Badge>
-              <Badge variant="outline">Applications Open</Badge>
+              <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800">Coming Up Very Soon</Badge>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
               Silicon Sprint
@@ -146,11 +146,13 @@ export default function SpringSchoolPage() {
               The best projects will be fabricated on real silicon.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg">
-                Apply Now
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" asChild>
+                <Link href="/forum">
+                  Join the Community
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 dark:border-primary/60 dark:text-primary" asChild>
                 <Link href="#curriculum">
                   View Curriculum
                 </Link>
@@ -197,7 +199,7 @@ export default function SpringSchoolPage() {
               </div>
               <div>
                 <p className="font-medium">Limited Seats</p>
-                <p className="text-sm text-muted-foreground">Apply now</p>
+                <p className="text-sm text-muted-foreground">Spots Filling Up</p>
               </div>
             </div>
           </div>
@@ -388,15 +390,17 @@ export default function SpringSchoolPage() {
         <div className="container px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Design Your First Chip?
+              Get Ready to Design Your First Chip
             </h2>
-            <p className="text-primary-foreground/80 mb-8 text-lg">
-              Applications for Spring 2026 are now open. Limited to 30 students.
+            <p className="text-primary-foreground/70 mb-8 text-base">
+              Start preparing now by exploring the curriculum, asking questions in our community forum, and building your digital logic fundamentals.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary">
-                Apply Now
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" variant="secondary" asChild>
+                <Link href="#curriculum">
+                  Explore the Program
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
               <Button 
                 size="lg" 
@@ -405,7 +409,7 @@ export default function SpringSchoolPage() {
                 asChild
               >
                 <Link href="/forum">
-                  Ask Questions
+                  Connect on Forum
                 </Link>
               </Button>
             </div>

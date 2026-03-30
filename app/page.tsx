@@ -161,6 +161,16 @@ export default function HomePage() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
               A launchpad for open silicon talent across the Middle East & North Africa
             </h1>
+            <div className="mx-auto max-w-2xl rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-foreground/90">
+              <p className="inline-flex flex-wrap items-center justify-center gap-2">
+                <span className="font-semibold text-primary">New:</span>
+                <span>Silicon Sprint 2026 agenda is now live.</span>
+                <Link href="/silicon-sprint" className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                  Explore it
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </p>
+            </div>
             <p className="text-lg md:text-xl text-muted-foreground text-pretty">
               Build your network, refine your ASIC practice, and ship tape-outs together. We combine
               community, curriculum, and open-source tooling into one deliberate experience.
@@ -206,6 +216,14 @@ export default function HomePage() {
                 fabrication slots. Operate real open-source EDA flows with mentors who guided previous MPW
                 wins.
               </p>
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <Button asChild>
+                  <Link href="/silicon-sprint">
+                    View Full Agenda
+                    <BookOpen className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex gap-3">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
