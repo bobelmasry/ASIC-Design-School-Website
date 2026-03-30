@@ -17,7 +17,7 @@ type AppUser = {
   avatar?: string
 } | null
 
-type AuthProvider = "google" | "github"
+type AuthProvider = "google" | "github" | "linkedin_oidc"
 
 type AuthContextType = {
   user: AppUser
@@ -29,6 +29,7 @@ type AuthContextType = {
   signUp: (name: string, email: string, password: string) => Promise<void>
   signInWithGoogle: () => Promise<void>
   signInWithGithub: () => Promise<void>
+  signInWithLinkedIn: () => Promise<void>
   signOut: () => Promise<void>
   openAuthModal: () => void
   closeAuthModal: () => void
@@ -144,6 +145,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithProvider("github")
   }
 
+  const signInWithLinkedIn = async () => {
+    await signInWithProvider("linkedin_oidc")
+  }
+
   const openAuthModal = () => setIsAuthModalOpen(true)
   const closeAuthModal = () => setIsAuthModalOpen(false)
   const role = user?.role ?? "member"
@@ -160,6 +165,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         signInWithGoogle,
         signInWithGithub,
+        signInWithLinkedIn,
         signOut,
         openAuthModal,
         closeAuthModal,

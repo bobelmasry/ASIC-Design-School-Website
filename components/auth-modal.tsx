@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth-context"
-import { Cpu, Github } from "lucide-react"
+import { Cpu, Github, Linkedin } from "lucide-react"
 
 function GoogleIcon() {
   return (
@@ -39,6 +39,7 @@ export function AuthModal() {
     signUp,
     signInWithGoogle,
     signInWithGithub,
+    signInWithLinkedIn,
   } = useAuth()
   const [mode, setMode] = React.useState<"signin" | "signup">("signin")
   const [name, setName] = React.useState("")
@@ -69,14 +70,16 @@ export function AuthModal() {
     }
   }
 
-  const handleProviderSignIn = async (provider: "google" | "github") => {
+  const handleProviderSignIn = async (provider: "google" | "github" | "linkedin") => {
     setAuthError(null)
     setIsLoading(true)
     try {
       if (provider === "google") {
         await signInWithGoogle()
-      } else {
+      } else if (provider === "github") {
         await signInWithGithub()
+      } else {
+        await signInWithLinkedIn()
       }
     } catch (error) {
       setAuthError(getErrorMessage(error))
@@ -106,7 +109,7 @@ export function AuthModal() {
           <Button
             type="button"
             variant="outline"
-            className="w-full border-border/70 hover:bg-muted/60 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10 dark:hover:text-foreground"
+            className="w-full border-border/70 hover:bg-muted/60 dark:border-primary/30 dark:bg-primary/5 dark:hover:bg-primary/15 dark:hover:text-foreground"
             onClick={() => handleProviderSignIn("google")}
             disabled={isLoading}
           >
@@ -122,6 +125,16 @@ export function AuthModal() {
           >
             <Github className="h-4 w-4" />
             Continue with GitHub
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-border/70 hover:bg-muted/60 dark:border-primary/30 dark:bg-primary/5 dark:hover:bg-primary/15 dark:hover:text-foreground"
+            onClick={() => handleProviderSignIn("linkedin")}
+            disabled={isLoading}
+          >
+            <Linkedin className="h-4 w-4" />
+            Continue with LinkedIn
           </Button>
         </div>
 
