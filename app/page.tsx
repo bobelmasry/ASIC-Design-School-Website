@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -75,7 +76,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b bg-gradient-to-b from-muted/50 to-background">
+      <section className="relative overflow-hidden border-b bg-linear-to-b from-muted/50 to-background">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="container px-4 py-24 md:py-32 lg:py-40 relative">
           <div className="max-w-3xl mx-auto text-center">
@@ -118,7 +119,7 @@ export default function HomePage() {
       </section>
 
       {/* Silicon Sprint Announcement - Highlighted */}
-      <section className="border-b bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 relative overflow-hidden">
+      <section className="border-b bg-linear-to-r from-primary/10 via-primary/5 to-primary/10 relative overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="container px-4 py-12 md:py-16 relative">
           <div className="flex flex-col lg:flex-row gap-8 items-center">
@@ -279,9 +280,11 @@ export default function HomePage() {
               {engineers.slice(0, 4).map((engineer) => (
                 <Card key={engineer.id} className="p-4 hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-2">
-                    <img
+                    <Image
                       src={engineer.avatar}
                       alt={engineer.name}
+                      width={40}
+                      height={40}
                       className="h-10 w-10 rounded-full"
                     />
                     <div>

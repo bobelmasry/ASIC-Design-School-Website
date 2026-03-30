@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 import { useAuth } from "@/components/auth-context"
-import { Cpu, Moon, Sun, Menu, X, User, LogOut } from "lucide-react"
+import { Cpu, Moon, Sun, Menu, X, LogOut } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,21 +16,64 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const navLinks = [
-  { href: "/engineers", label: "Members" },
-  { href: "/projects", label: "Projects" },
-  { href: "/forum", label: "Forum" },
-  { href: "/silicon-sprint", label: "Silicon Sprint" },
+type NavLink = {
+  href: string
+  label: string
+  isVisible: (params: { isAuthenticated: boolean; hasPermission: (permissionKey: string) => boolean }) => boolean
+}
+
+const navLinks: NavLink[] = [
+  {
+    href: "/events",
+    label: "Events",
+    isVisible: () => true,
+  },
+  {
+    href: "/events/previous",
+    label: "Previous Events",
+    isVisible: () => true,
+  },
+  {
+    href: "/projects",
+    label: "Projects",
+    isVisible: () => true,
+  },
+  {
+    href: "/silicon-sprint",
+    label: "Silicon Sprint",
+    isVisible: () => true,
+  },
+  {
+    href: "/forum",
+    label: "Forum",
+    isVisible: ({ isAuthenticated }) => isAuthenticated,
+  },
+  {
+    href: "/engineers",
+    label: "Members",
+    isVisible: ({ isAuthenticated, hasPermission }) =>
+      isAuthenticated && hasPermission("engineers.read"),
+  },
+  {
+    href: "/admin",
+    label: "Admin",
+    isVisible: ({ isAuthenticated, hasPermission }) =>
+      isAuthenticated && (hasPermission("admin.access") || hasPermission("forum.moderate")),
+  },
 ]
 
 export function Navbar() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const { user, isAuthenticated, signOut, openAuthModal } = useAuth()
+  const { user, isAuthenticated, hasPermission, signOut, openAuthModal } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
+  const visibleLinks = navLinks.filter((link) =>
+    link.isVisible({ isAuthenticated, hasPermission }),
+  )
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
@@ -39,7 +82,7 @@ export function Navbar() {
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -116,7 +159,7 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <nav className="container flex flex-col gap-2 p-4">
-            {navLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

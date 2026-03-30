@@ -14,14 +14,11 @@ import {
   MapPin,
   Github,
   Linkedin,
-  Mail,
   ArrowLeft,
   Briefcase,
   Code2,
-  Cpu,
   ExternalLink,
   Zap,
-  Target,
   Globe,
 } from "lucide-react"
 
@@ -41,7 +38,28 @@ const experienceBadgeColors: Record<string, string> = {
 
 export default function EngineerProfilePage() {
   const params = useParams()
-  const { isAuthenticated, openAuthModal } = useAuth()
+  const { isAuthenticated, hasPermission, openAuthModal } = useAuth()
+
+  if (!isAuthenticated) {
+    return (
+      <div className="container px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
+        <p className="text-muted-foreground mb-6">Please sign in to access engineer profiles.</p>
+        <Button onClick={openAuthModal}>Sign In</Button>
+      </div>
+    )
+  }
+
+  if (!hasPermission("engineers.read")) {
+    return (
+      <div className="container px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold mb-4">Not authorized</h1>
+        <p className="text-muted-foreground mb-6">
+          Your account does not currently include permission to view engineer profiles.
+        </p>
+      </div>
+    )
+  }
   
   const engineer = engineers.find((e) => e.id === params.id)
 

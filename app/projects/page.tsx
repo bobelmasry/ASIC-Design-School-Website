@@ -92,8 +92,8 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
 }
 
 export default function ProjectsPage() {
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [selectedCategory, setSelectedCategory] = React.useState("all")
+  const [searchQuery] = React.useState("")
+  const [selectedCategory] = React.useState("all")
 
   const filteredProjects = React.useMemo(() => {
     return openSourceProjectsList.filter((project) => {
@@ -115,7 +115,7 @@ export default function ProjectsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <section className="border-b bg-gradient-to-b from-muted/50 to-background">
+      <section className="border-b bg-linear-to-b from-muted/50 to-background">
         <div className="container px-4 py-12 md:py-16">
           <div className="max-w-3xl">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-balance">

@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/auth-context"
 import { forumCategories } from "@/lib/placeholder-data"
-import { supabase } from "@/lib/supabase"
 import {
   Search,
   Plus,
@@ -20,27 +19,12 @@ import {
   Filter,
 } from "lucide-react"
 
-type DatabasePost = {
-  id: string | number
-  title: string | null
-  excerpt?: string | null
-  content?: string | null
-  category?: string | null
-  created_at?: string | null
-  replies?: number | null
-  replies_count?: number | null
-  views?: number | null
-  likes?: number | null
-  user_id?: string | null
-  user_full_name?: string | null
-  json_likes?: string[] | null
-}
-
 type ForumPostWithAuthor = {
   id: string
   title: string
   excerpt: string
   category: string
+  tags: string[]
   createdAt: string
   replies: number
   likes: number
@@ -51,41 +35,107 @@ type ForumPostWithAuthor = {
   }
 }
 
+type ThreadListApiItem = {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  tags: string[]
+  created_at: string
+  replies_count: number
+  likes: number
+  user_id: string
+  user_full_name: string
+}
+
+type TagApiItem = {
+  slug: string
+  name: string
+}
+
+const normalizeSlug = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
 function ForumPageContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
+  const tagParam = searchParams.get("tag")
+  const queryParam = searchParams.get("q")
   const { openAuthModal, isAuthenticated } = useAuth()
 
   const [posts, setPosts] = React.useState<ForumPostWithAuthor[]>([])
+  const [availableTags, setAvailableTags] = React.useState<TagApiItem[]>([])
   const [isLoadingPosts, setIsLoadingPosts] = React.useState(true)
   const [fetchError, setFetchError] = React.useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = React.useState("")
+  const [searchQuery, setSearchQuery] = React.useState(queryParam ?? "")
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(categoryParam)
+  const [selectedTag, setSelectedTag] = React.useState<string | null>(tagParam)
 
   React.useEffect(() => {
-    if (!categoryParam) return
     setSelectedCategory(categoryParam)
   }, [categoryParam])
+
+  React.useEffect(() => {
+    setSelectedTag(tagParam)
+  }, [tagParam])
+
+  React.useEffect(() => {
+    setSearchQuery(queryParam ?? "")
+  }, [queryParam])
+
+  React.useEffect(() => {
+    let isMounted = true
+
+    const loadTags = async () => {
+      const response = await fetch('/api/forum/tags')
+      const result = await response.json()
+
+      if (!isMounted) return
+
+      if (!response.ok) {
+        setAvailableTags([])
+        return
+      }
+
+      setAvailableTags(Array.isArray(result?.tags) ? (result.tags as TagApiItem[]) : [])
+    }
+
+    loadTags()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   React.useEffect(() => {
     let isMounted = true
 
     const loadPosts = async () => {
       setIsLoadingPosts(true)
-      const { data: postRows, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("created_at", { ascending: false })
+      const params = new URLSearchParams()
+      if (selectedCategory) params.set('category', selectedCategory)
+      if (selectedTag) params.set('tag', selectedTag)
+      if (searchQuery.trim()) params.set('q', searchQuery.trim())
+
+      const suffix = params.toString() ? `?${params.toString()}` : ''
+      const response = await fetch(`/api/forum/threads${suffix}`)
+      const result = await response.json()
 
       if (!isMounted) return
 
-      if (error) {
-        setFetchError(error.message ?? "Failed to load discussions.")
+      if (!response.ok) {
+        setFetchError(result?.error ?? "Failed to load discussions.")
         setIsLoadingPosts(false)
         return
       }
 
-      const normalizedPosts = postRows ?? []
+      const normalizedPosts = Array.isArray(result?.threads)
+        ? (result.threads as ThreadListApiItem[])
+        : []
 
       const mappedPosts: ForumPostWithAuthor[] = normalizedPosts.map((post) => {
         const name = post.user_full_name || "Community Member"
@@ -94,13 +144,12 @@ function ForumPageContent() {
         return {
           id: String(post.id),
           title: post.title ?? "Untitled discussion",
-          excerpt:
-            post.excerpt ??
-            (post.content ? `${post.content.slice(0, 160)}...` : ""),
+          excerpt: post.excerpt ?? "",
           category: post.category ?? "General",
+          tags: Array.isArray(post.tags) ? post.tags : [],
           createdAt: post.created_at ?? new Date().toISOString(),
-          replies: post.replies_count ?? post.replies ?? 0,
-          likes: post.likes ?? (Array.isArray(post.json_likes) ? post.json_likes.length : 0),
+          replies: Number(post.replies_count ?? 0),
+          likes: Number(post.likes ?? 0),
           author: {
             id: post.user_id ?? "unknown",
             name,
@@ -119,35 +168,18 @@ function ForumPageContent() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [searchQuery, selectedCategory, selectedTag])
 
   const filteredPosts = React.useMemo(() => {
-    let postsToFilter = [...posts]
+    const postsToFilter = [...posts]
 
-    // Filter by category
-    if (selectedCategory) {
-      postsToFilter = postsToFilter.filter(
-        (post) => post.category.toLowerCase() === selectedCategory.toLowerCase(),
-      )
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      postsToFilter = postsToFilter.filter(
-        (post) =>
-          post.title.toLowerCase().includes(query) ||
-          post.excerpt.toLowerCase().includes(query),
-      )
-    }
-
-    // Sort posts by newest first (database does not expose popularity metadata)
+    // Keep newest-first ordering client-side as a final guard.
     postsToFilter.sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )
 
     return postsToFilter
-  }, [posts, selectedCategory, searchQuery])
+  }, [posts])
 
   const categoryCounts = React.useMemo(() => {
     const counts: Record<string, number> = {}
@@ -240,9 +272,9 @@ function ForumPageContent() {
               {forumCategories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => setSelectedCategory(category.slug)}
                   className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center justify-between ${
-                    selectedCategory === category.id
+                    selectedCategory === category.slug
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-muted"
                   }`}
@@ -252,13 +284,47 @@ function ForumPageContent() {
                     {category.name}
                   </span>
                   <Badge
-                    variant={selectedCategory === category.id ? "secondary" : "outline"}
+                    variant={selectedCategory === category.slug ? "secondary" : "outline"}
                     className="text-xs"
                   >
                     {categoryCounts[category.slug.toLowerCase()] ?? 0}
                   </Badge>
                 </button>
               ))}
+            </CardContent>
+          </Card>
+
+          <Card className='border-gray-300 dark:border-gray-800'>
+            <CardHeader className='pb-3'>
+              <CardTitle className='text-sm'>Tags</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className='flex flex-wrap gap-2'>
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                    !selectedTag ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                  }`}
+                >
+                  All tags
+                </button>
+                {availableTags.map((tag) => {
+                  const normalizedSlug = normalizeSlug(tag.slug || tag.name)
+                  const isSelected = selectedTag === normalizedSlug
+
+                  return (
+                    <button
+                      key={tag.slug}
+                      onClick={() => setSelectedTag(normalizedSlug)}
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                        isSelected ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  )
+                })}
+              </div>
             </CardContent>
           </Card>
         </aside>
@@ -343,6 +409,16 @@ function ForumPageContent() {
                           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                             {post.excerpt}
                           </p>
+
+                          {post.tags.length > 0 ? (
+                            <div className='mb-3 flex flex-wrap gap-2'>
+                              {post.tags.map((tag) => (
+                                <Badge key={`${post.id}-${tag}`} variant='secondary' className='text-xs'>
+                                  #{tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : null}
 
                           <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">

@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScopeType {
+  GLOBAL
+  EVENT
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  IN_REVIEW
+  ACCEPTED
+  REJECTED
+  WAITLISTED
+}
+
+enum ForumPostType {
+  REPLY
+  MODERATOR_NOTE
+}
+
+enum ModerationTargetType {
+  THREAD
+  POST
+  USER
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  authUserId  String   @unique @map("auth_user_id")
+  email       String   @unique
+  displayName String?  @map("display_name")
+  avatarUrl   String?  @map("avatar_url")
+  emailVerified Boolean @default(false) @map("email_verified")
+  isActive    Boolean  @default(true) @map("is_active")
+  roleVersion Int      @default(1) @map("role_version")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  roleAssignments       RoleAssignment[]
+  submittedApplications Application[]      @relation("ApplicationsSubmitted")
+  reviewedApplications  Application[]      @relation("ApplicationsReviewed")
+  forumThreads          ForumThread[]
+  forumPosts            ForumPost[]
+  forumVotes            ForumVote[]
+  moderationActions     ModerationAction[]
+  auditLogs             AuditLog[]
+
+  @@map("user_profiles")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  startsAt    DateTime? @map("starts_at")
+  endsAt      DateTime? @map("ends_at")
+  isPublished Boolean   @default(false) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  roleAssignments   RoleAssignment[]
+  applications      Application[]
+  forumThreads      ForumThread[]
+  learningMaterials LearningMaterial[]
+  auditLogs         AuditLog[]
+
+  @@map("events")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String?
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  permissions     RolePermission[]
+  roleAssignments RoleAssignment[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  resource    String
+  action      String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model RoleAssignment {
+  id            String    @id @default(cuid())
+  userProfileId String    @map("user_profile_id")
+  roleId        String    @map("role_id")
+  eventId       String?   @map("event_id")
+  scopeType     ScopeType @default(GLOBAL) @map("scope_type")
+  grantedById   String?   @map("granted_by_id")
+  revokedAt     DateTime? @map("revoked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  userProfile UserProfile @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  role        Role        @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  event       Event?      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([userProfileId, eventId])
+  @@index([roleId, eventId])
+  @@map("role_assignments")
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  eventId       String            @map("event_id")
+  submittedById String?           @map("submitted_by_id")
+  fullName      String            @map("full_name")
+  email         String
+  notes         String?
+  status        ApplicationStatus @default(SUBMITTED)
+  reviewedById  String?           @map("reviewed_by_id")
+  reviewedAt    DateTime?         @map("reviewed_at")
+  decisionNotes String?           @map("decision_notes")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  event       Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  submittedBy UserProfile? @relation("ApplicationsSubmitted", fields: [submittedById], references: [id])
+  reviewedBy  UserProfile? @relation("ApplicationsReviewed", fields: [reviewedById], references: [id])
+
+  @@index([eventId, status])
+  @@map("applications")
+}
+
+model ForumCategory {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  threads ForumThread[]
+
+  @@map("forum_categories")
+}
+
+model ForumTag {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  threadTags ForumThreadTag[]
+
+  @@map("forum_tags")
+}
+
+model ForumThread {
+  id         String   @id @default(cuid())
+  eventId    String?  @map("event_id")
+  categoryId String   @map("category_id")
+  authorId   String   @map("author_id")
+  title      String
+  content    String
+  isPinned   Boolean  @default(false) @map("is_pinned")
+  isLocked   Boolean  @default(false) @map("is_locked")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  event             Event?             @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  category          ForumCategory      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  author            UserProfile        @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  posts             ForumPost[]
+  votes             ForumVote[]
+  threadTags        ForumThreadTag[]
+  moderationActions ModerationAction[]
+
+  @@index([eventId, categoryId])
+  @@index([authorId, createdAt])
+  @@map("forum_threads")
+}
+
+model ForumPost {
+  id           String        @id @default(cuid())
+  threadId     String        @map("thread_id")
+  parentPostId String?       @map("parent_post_id")
+  authorId     String        @map("author_id")
+  type         ForumPostType @default(REPLY)
+  content      String
+  isAccepted   Boolean       @default(false) @map("is_accepted")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  thread            ForumThread        @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  parent            ForumPost?         @relation("ForumPostToForumPost", fields: [parentPostId], references: [id], onDelete: SetNull)
+  children          ForumPost[]        @relation("ForumPostToForumPost")
+  author            UserProfile        @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  votes             ForumVote[]
+  moderationActions ModerationAction[]
+
+  @@index([threadId, createdAt])
+  @@index([authorId, createdAt])
+  @@map("forum_posts")
+}
+
+model ForumVote {
+  id            String   @id @default(cuid())
+  userProfileId String   @map("user_profile_id")
+  threadId      String?  @map("thread_id")
+  postId        String?  @map("post_id")
+  value         Int
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  userProfile UserProfile  @relation(fields: [userProfileId], references: [id], onDelete: Cascade)
+  thread      ForumThread? @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  post        ForumPost?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userProfileId, threadId])
+  @@unique([userProfileId, postId])
+  @@index([threadId])
+  @@index([postId])
+  @@map("forum_votes")
+}
+
+model ForumThreadTag {
+  threadId String @map("thread_id")
+  tagId    String @map("tag_id")
+
+  thread ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  tag    ForumTag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([threadId, tagId])
+  @@map("forum_thread_tags")
+}
+
+model LearningMaterial {
+  id           String   @id @default(cuid())
+  eventId      String?  @map("event_id")
+  title        String
+  description  String?
+  materialType String   @map("material_type")
+  storagePath  String?  @map("storage_path")
+  externalUrl  String?  @map("external_url")
+  isPublished  Boolean  @default(false) @map("is_published")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  event Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([eventId, isPublished])
+  @@map("learning_materials")
+}
+
+model ModerationAction {
+  id         String               @id @default(cuid())
+  actorId    String               @map("actor_id")
+  threadId   String?              @map("thread_id")
+  postId     String?              @map("post_id")
+  targetType ModerationTargetType @map("target_type")
+  reason     String?
+  action     String
+  createdAt  DateTime             @default(now()) @map("created_at")
+
+  actor  UserProfile  @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  thread ForumThread? @relation(fields: [threadId], references: [id], onDelete: SetNull)
+  post   ForumPost?   @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@index([threadId])
+  @@index([postId])
+  @@map("moderation_actions")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?  @map("actor_id")
+  eventId   String?  @map("event_id")
+  action    String
+  target    String
+  targetId  String?  @map("target_id")
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  actor UserProfile? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  event Event?       @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@index([action, createdAt])
+  @@index([target, targetId])
+  @@map("audit_logs")
+}

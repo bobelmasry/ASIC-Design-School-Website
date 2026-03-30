@@ -13,14 +13,15 @@
 - Component system: shadcn-inspired wrappers in `components/ui`, Radix primitives, shared `cn` helper in `lib/utils.ts`.
 - Fonts: Geist + Geist Mono through `next/font`, theme toggling handled by `components/theme-provider`.
 - Data: Supabase JS client in `lib/supabase.ts`, placeholder arrays in `lib/placeholder-data.ts` for mock UI.
+- Database ORM: Prisma is the canonical app data layer; use Supabase as PostgreSQL infrastructure to avoid vendor lock-in.
 - Analytics: `@vercel/analytics` wired in `app/layout.tsx`.
 - Images: `next.config.mjs` sets `images.unoptimized = true`; treat `<img>` usage accordingly.
 - Cursor / Copilot rules: no `.cursor/rules`, `.cursorrules`, or `.github/copilot-instructions.md` files exist; this document is the source of truth.
 
 ## Environment & Toolchain
 - Node: use >=18.18 (Next 16 requirement) with 20.x LTS preferred.
-- Package manager: repo ships `package-lock.json`; default to `npm` unless the user instructs otherwise.
-- Env vars: `.env*` ignored; populate `.env.local` with Supabase creds (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+- Package manager: use `pnpm` only. The lockfile source of truth is `pnpm-lock.yaml`.
+- Env vars: `.env*` ignored; populate `.env.local` with Supabase creds (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) and Prisma connection strings (`DATABASE_URL`, optional `SHADOW_DATABASE_URL`).
 - Analytics/env toggles rely on `NEXT_PUBLIC_*`; never hardcode secrets.
 - Tailwind 4 is configured via `postcss.config.mjs` (plugin `@tailwindcss/postcss` only).
 - Build tolerates TS errors because `next.config.mjs` enables `typescript.ignoreBuildErrors`; run `npx tsc --noEmit` before merging sensitive work.
@@ -30,21 +31,26 @@
 - Global theme relies on `ThemeProvider` plus CSS custom properties; respect these when introducing new surfaces.
 
 ## Commands & Automation
-- Install deps: `npm install`.
-- Dev server: `npm run dev` (Next on http://localhost:3000, watches env changes).
-- Prod build: `npm run build` (invokes `next build`; run `npx tsc --noEmit` beforehand for strict typing).
-- Preview server: `npm run start` (serves `.next` output, good for smoke testing before deploy).
-- Lint everything: `npm run lint` (Next-managed ESLint with core web vitals rules).
-- Lint a file: `npx eslint path/to/file.tsx` (inherit Next config automatically).
+- Install deps: `pnpm install`.
+- Dev server: `pnpm dev` (Next on http://localhost:3000, watches env changes).
+- Prod build: `pnpm build` (invokes `next build`; run `pnpm exec tsc --noEmit` beforehand for strict typing).
+- Preview server: `pnpm start` (serves `.next` output, good for smoke testing before deploy).
+- Lint everything: `pnpm lint` (Next-managed ESLint with core web vitals rules).
+- Lint a file: `pnpm exec eslint path/to/file.tsx` (inherit Next config automatically).
 - Format: no Prettier config committed; mirror existing style (single quotes, dangling commas avoided, width ~100).
-- Type-check only: `npx tsc --noEmit` (recommended because Next build may skip errors).
+- Type-check only: `pnpm exec tsc --noEmit` (recommended because Next build may skip errors).
+- Prisma client: `pnpm prisma:generate`.
+- Prisma local migration: `pnpm prisma:migrate`.
+- Prisma deploy migration: `pnpm prisma:deploy`.
+- Prisma Studio: `pnpm prisma:studio`.
 - Analyze bundle: `next build --profile` when optimizing performance; summarize results in PR, do not commit artifacts.
-- Dependency bumps: run `npm install package@version` then `npm run lint` and update docs here if commands change.
+- Dependency bumps: run `pnpm add package@version` then `pnpm lint` and update docs here if commands change.
 
 ## Testing Status & Guidance
 - There is no configured test runner (no Jest/Vitest/Playwright configs, zero `*.test.*` files found).
 - When asked to "run a test", state clearly that tests are absent and recommend adding Vitest/Playwright as next steps.
 - For manual QA, run `npm run dev`, exercise affected routes, and document steps in PR descriptions.
+- For manual QA, run `pnpm dev`, exercise affected routes, and document steps in PR descriptions.
 - Keep components pure and deterministic to ease future test harness adoption.
 - If you must prototype tests, add tooling under `devDependencies` and record the new scripts plus usage in this file.
 - Until automated tests exist, rely on lint + type checks + manual verification for acceptance.
@@ -52,7 +58,7 @@
 ## Workflow Checklist For Agents
 - Pull latest changes (`git pull`) before editing; branch per feature.
 - Inspect `git status` to avoid overriding user modifications; never reset unrelated files.
-- Run `npm run lint` before handing work back; call out if it fails and why.
+- Run `pnpm lint` before handing work back; call out if it fails and why.
 - For structural edits (routing, providers), touch `app/layout.tsx` carefully since it wires analytics and theming.
 - Keep server components default; add `'use client'` only when hooks/state are required.
 - Document new env vars in README/AGENTS; never commit `.env*` files.

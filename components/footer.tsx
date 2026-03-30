@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Cpu, Github, Linkedin, ExternalLink } from "lucide-react"
+import { Cpu, ExternalLink } from "lucide-react"
 
 const openSourceProjects = [
   { name: "Caravel", url: "https://github.com/efabless/caravel" },
@@ -8,6 +8,8 @@ const openSourceProjects = [
 ]
 
 const communityLinks = [
+  { name: "Events", href: "/events" },
+  { name: "Previous Events", href: "/events/previous" },
   { name: "Engineers", href: "/engineers" },
   { name: "Projects", href: "/projects" },
   { name: "Forum", href: "/forum" },

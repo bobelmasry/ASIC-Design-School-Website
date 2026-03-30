@@ -122,7 +122,7 @@ export default function SpringSchoolPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative border-b bg-gradient-to-b from-primary/5 via-primary/10 to-background overflow-hidden">
+      <section className="relative border-b bg-linear-to-b from-primary/5 via-primary/10 to-background overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="container px-4 py-16 md:py-24 relative">
           <div className="max-w-3xl">
@@ -251,7 +251,7 @@ export default function SpringSchoolPage() {
           <div className="space-y-6 mb-12">
             {programSchedule.map((day) => (
               <Card key={day.date} className="relative overflow-hidden border-gray-300 dark:border-gray-800">
-                <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
+                <div className="absolute top-0 right-0 h-24 w-24 bg-linear-to-bl from-primary/10 to-transparent" />
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -302,7 +302,7 @@ export default function SpringSchoolPage() {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {clinicDays.map((clinic) => (
-              <Card key={clinic.date} className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <Card key={clinic.date} className="bg-linear-to-br from-primary/5 to-primary/10 border-primary/20">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
@@ -351,7 +351,7 @@ export default function SpringSchoolPage() {
             </div>
             <Card className="bg-card/80 backdrop-blur">
               <CardHeader>
-                <CardTitle>Tools You'll Use</CardTitle>
+                <CardTitle>Tools You&apos;ll Use</CardTitle>
                 <CardDescription>
                   Industry-standard open-source EDA tools
                 </CardDescription>
@@ -401,7 +401,7 @@ export default function SpringSchoolPage() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 text-black dark:text-white"
+                className="border-primary-foreground/20 text-black hover:bg-primary-foreground/10 dark:text-white"
                 asChild
               >
                 <Link href="/forum">

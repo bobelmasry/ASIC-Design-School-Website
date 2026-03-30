@@ -36,6 +36,7 @@ export default function NewPostPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
   const [uploadError, setUploadError] = React.useState<string | null>(null)
+  const [tagsInput, setTagsInput] = React.useState('')
 
   const [formData, setFormData] = React.useState({
     title: "",
@@ -43,7 +44,21 @@ export default function NewPostPage() {
     content: "",
     tags: [] as string[],
   })
-  const [tagInput, setTagInput] = React.useState("")
+
+  const parseTags = React.useCallback((value: string) => {
+    const normalized = value
+      .split(',')
+      .map((tag) =>
+        tag
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, ''),
+      )
+      .filter(Boolean)
+
+    return Array.from(new Set(normalized))
+  }, [])
 
   // Redirect if not authenticated
   React.useEffect(() => {
@@ -51,13 +66,6 @@ export default function NewPostPage() {
       openAuthModal()
     }
   }, [isAuthenticated, openAuthModal])
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }))
-  }
 
   const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return
@@ -84,14 +92,22 @@ export default function NewPostPage() {
     setIsSubmitting(true)
     setUploadError(null)
 
-    const { data: userData } = await supabase.auth.getUser()
-    const fullName = userData?.user?.user_metadata?.full_name || userData?.user?.email || "Community Member"
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session?.access_token || !session.user) {
+      setUploadError("Your session expired. Please sign in again.")
+      setIsSubmitting(false)
+      openAuthModal()
+      return
+    }
 
     let uploadedAttachments: Attachment[] = []
 
     if (selectedFiles.length) {
       try {
-        uploadedAttachments = await uploadAttachments(selectedFiles, userData?.user?.id)
+        uploadedAttachments = await uploadAttachments(selectedFiles, session.user.id)
       } catch (error) {
         console.error(error)
         setUploadError("Failed to upload attachments. Please try again.")
@@ -100,28 +116,32 @@ export default function NewPostPage() {
       }
     }
 
-    const { data, error } = await supabase
-      .from("posts")
-      .insert({
+    const response = await fetch("/api/forum/threads", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
         title: formData.title,
         content: formData.content,
         category: formData.category,
-        user_id: userData?.user?.id,
-        user_full_name: fullName,
+        tags: formData.tags,
         attachments: uploadedAttachments,
-      })
-      .select()
+      }),
+    })
+
+    const result = await response.json()
 
     setIsSubmitting(false)
 
-    if (error || !data || data.length === 0) {
-      console.error(error)
-      alert("Failed to create post")
+    if (!response.ok || !result?.id) {
+      setUploadError(result?.error || "Failed to create discussion")
       return
     }
 
     setSelectedFiles([])
-    router.push(`/forum/${data[0].id}`)
+    router.push(`/forum/${result.id}`)
   }
 
   const isValid = formData.title.trim() && formData.category && formData.content.trim()
@@ -213,6 +233,35 @@ export default function NewPostPage() {
                 rows={10}
                 className="border-gray-300 dark:border-gray-800"
               />
+            </div>
+
+            <div className='space-y-2'>
+              <label htmlFor='tags' className='text-sm font-medium'>
+                Tags
+              </label>
+              <Input
+                id='tags'
+                placeholder='Comma-separated tags (e.g. verilog, synthesis, timing)'
+                value={tagsInput}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setTagsInput(value)
+                  setFormData((prev) => ({ ...prev, tags: parseTags(value) }))
+                }}
+                className='border-gray-300 dark:border-gray-800'
+              />
+              {formData.tags.length > 0 ? (
+                <div className='flex flex-wrap gap-2'>
+                  {formData.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className='inline-flex rounded-full border px-2 py-1 text-xs text-muted-foreground'
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             {/* Attachments */}

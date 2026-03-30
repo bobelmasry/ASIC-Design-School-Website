@@ -46,6 +46,16 @@ type PostReply = {
   created_at: string
   likes?: number | null
   isAccepted?: boolean
+  isHidden?: boolean
+  moderationReason?: string | null
+  moderatedBy?: string | null
+  moderatedAt?: string | null
+  moderationHistory?: Array<{
+    action: string
+    reason: string | null
+    moderatedBy: string
+    moderatedAt: string
+  }> | null
   liked_user_ids?: string[] | null
   attachments?: Attachment[] | null
 }
@@ -75,17 +85,49 @@ const normalizePost = (data: DatabasePost | null): DatabasePost | null => {
   }
 }
 
-const normalizeReplies = (rawReplies: PostReply[] | null | undefined): PostReply[] => {
+const normalizeReplies = (
+  rawReplies: PostReply[] | null | undefined,
+  includeHidden = false,
+): PostReply[] => {
   if (!Array.isArray(rawReplies)) return []
-  return rawReplies.map((reply) => {
+  const normalized = rawReplies.map((reply) => {
     const likedUsers = Array.isArray(reply.liked_user_ids) ? reply.liked_user_ids : []
+    const moderationHistory = Array.isArray(reply.moderationHistory)
+      ? reply.moderationHistory
+          .filter(
+            (
+              entry,
+            ): entry is {
+              action: string
+              reason: string | null
+              moderatedBy: string
+              moderatedAt: string
+            } =>
+              Boolean(entry) &&
+              typeof entry === 'object' &&
+              typeof entry.action === 'string' &&
+              typeof entry.moderatedBy === 'string' &&
+              typeof entry.moderatedAt === 'string',
+          )
+          .map((entry) => ({
+            action: entry.action,
+            reason: typeof entry.reason === 'string' ? entry.reason : null,
+            moderatedBy: entry.moderatedBy,
+            moderatedAt: entry.moderatedAt,
+          }))
+      : []
+
     return {
       ...reply,
       liked_user_ids: likedUsers,
       likes: reply.likes ?? likedUsers.length,
       attachments: reply.attachments || [],
+      moderationHistory,
     }
   })
+
+  if (includeHidden) return normalized
+  return normalized.filter((reply) => !reply.isHidden)
 }
 
 export default function ForumPostPage() {
@@ -105,7 +147,10 @@ export default function ForumPostPage() {
   const [isUpdatingLike, setIsUpdatingLike] = React.useState(false)
   const [likeError, setLikeError] = React.useState<string | null>(null)
   const [replyLikeError, setReplyLikeError] = React.useState<string | null>(null)
+  const [moderationError, setModerationError] = React.useState<string | null>(null)
   const [updatingReplyLikeId, setUpdatingReplyLikeId] = React.useState<string | null>(null)
+  const [isModeratingReplyId, setIsModeratingReplyId] = React.useState<string | null>(null)
+  const [canModerate, setCanModerate] = React.useState(false)
   const [replyFiles, setReplyFiles] = React.useState<File[]>([])
   const [replyUploadError, setReplyUploadError] = React.useState<string | null>(null)
 
@@ -115,23 +160,20 @@ export default function ForumPostPage() {
     const loadPost = async () => {
       setIsLoadingPost(true)
       setReplies([])
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("id", params.id)
-        .single()
+      const response = await fetch(`/api/forum/threads/${params.id}`)
+      const result = await response.json()
 
       if (!isMounted) return
 
-      if (error) {
-        setFetchError(error.message ?? "Failed to load discussion.")
+      if (!response.ok || !result?.thread) {
+        setFetchError(result?.error ?? "Failed to load discussion.")
         setIsLoadingPost(false)
         return
       }
 
-      const normalizedPost = normalizePost(data)
+      const normalizedPost = normalizePost(result.thread as DatabasePost)
       setPost(normalizedPost)
-      setReplies(normalizeReplies(data.replies as PostReply[] | null))
+      setReplies(normalizeReplies(result.thread.replies as PostReply[] | null, canModerate))
       setFetchError(null)
       setIsLoadingPost(false)
     }
@@ -141,7 +183,43 @@ export default function ForumPostPage() {
     return () => {
       isMounted = false
     }
-  }, [params.id])
+  }, [params.id, canModerate])
+
+  React.useEffect(() => {
+    let isMounted = true
+
+    const checkModeratorAccess = async () => {
+      if (!isAuthenticated) {
+        setCanModerate(false)
+        return
+      }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+
+      if (!session?.access_token) {
+        if (isMounted) setCanModerate(false)
+        return
+      }
+
+      const response = await fetch('/api/admin/rbac/roles', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      })
+
+      if (isMounted) {
+        setCanModerate(response.ok)
+      }
+    }
+
+    checkModeratorAccess()
+
+    return () => {
+      isMounted = false
+    }
+  }, [isAuthenticated, user?.id])
 
   React.useEffect(() => {
     if (!post || !user?.id) {
@@ -238,13 +316,38 @@ export default function ForumPostPage() {
         : prev
     )
 
-    const { error } = await supabase
-      .from("posts")
-      .update({ likes: updatedLikes, json_likes: updatedLikedUsers })
-      .eq("id", post.id)
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (error) {
-      setLikeError(error.message ?? "Failed to update likes. Please try again.")
+    if (!session?.access_token) {
+      setLikeError("Your session expired. Please sign in again.")
+      setLikedPost(hasLiked)
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              likes: previousLikedUsers.length,
+              json_likes: previousLikedUsers,
+            }
+          : prev
+      )
+      setIsUpdatingLike(false)
+      openAuthModal()
+      return
+    }
+
+    const response = await fetch(`/api/forum/threads/${post.id}/likes`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      setLikeError(result?.error ?? "Failed to update likes. Please try again.")
       setLikedPost(hasLiked)
       setPost((prev) =>
         prev
@@ -258,6 +361,17 @@ export default function ForumPostPage() {
       setIsUpdatingLike(false)
       return
     }
+
+    setLikedPost(Boolean(result?.liked))
+    setPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            likes: Number(result?.likes ?? 0),
+            json_likes: Array.isArray(result?.likedUserIds) ? result.likedUserIds : [],
+          }
+        : prev
+    )
 
     setIsUpdatingLike(false)
   }
@@ -290,21 +404,45 @@ export default function ForumPostPage() {
 
     setReplies(nextReplies)
 
-    const { error, data } = await supabase
-      .from("posts")
-      .update({ replies: nextReplies })
-      .eq("id", post.id)
-      .select("replies")
-      .single()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
-    if (error) {
-      setReplyLikeError(error.message ?? "Failed to update reply like. Please try again.")
+    if (!session?.access_token) {
+      setReplyLikeError("Your session expired. Please sign in again.")
+      setReplies(previousReplies)
+      setUpdatingReplyLikeId(null)
+      openAuthModal()
+      return
+    }
+
+    const response = await fetch(`/api/forum/threads/${post.id}/replies/${replyId}/likes`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      setReplyLikeError(result?.error ?? "Failed to update reply like. Please try again.")
       setReplies(previousReplies)
       setUpdatingReplyLikeId(null)
       return
     }
 
-    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setReplies((prev) =>
+      prev.map((reply) => {
+        if (reply.id !== replyId) return reply
+
+        return {
+          ...reply,
+          liked_user_ids: Array.isArray(result?.likedUserIds) ? result.likedUserIds : [],
+          likes: Number(result?.likes ?? 0),
+        }
+      })
+    )
     setUpdatingReplyLikeId(null)
   }
 
@@ -336,13 +474,22 @@ export default function ForumPostPage() {
     setIsSubmittingReply(true)
 
     const pendingContent = replyContent.trim()
-    const replyId = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : cryptoIdFallback()
-    const authorName = user?.name || "Community Member"
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session?.access_token || !session.user) {
+      setReplyError("Your session expired. Please sign in again.")
+      setIsSubmittingReply(false)
+      openAuthModal()
+      return
+    }
+
     let attachments: Attachment[] = []
 
     if (replyFiles.length) {
      try {
-        attachments = await uploadAttachments(replyFiles, user?.id)
+        attachments = await uploadAttachments(replyFiles, session.user.id)
       } catch (error) {
         console.error(error)
         setReplyUploadError(
@@ -355,64 +502,88 @@ export default function ForumPostPage() {
       }
     }
 
-    const newReply: PostReply = {
-      id: replyId,
-      content: pendingContent,
-      user_id: user?.id,
-      user_full_name: authorName,
-      user_avatar:
-        user?.avatar ||
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0ea5e9&color=fff`,
-      created_at: new Date().toISOString(),
-      likes: 0,
-      liked_user_ids: [],
-      attachments,
-    }
+    const response = await fetch(`/api/forum/threads/${post.id}/replies`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        content: pendingContent,
+        attachments,
+      }),
+    })
 
-    const previousReplies = replies
-    const updatedReplies = [...replies, newReply]
+    const result = await response.json()
 
-    setReplies(updatedReplies)
-    setReplyContent("")
-    setPost((prev) =>
-      prev
-        ? {
-            ...prev,
-            replies_count: updatedReplies.length,
-          }
-        : prev
-    )
-
-    const { error, data } = await supabase
-      .from("posts")
-      .update({
-        replies: updatedReplies,
-        replies_count: updatedReplies.length,
-      })
-      .eq("id", post.id)
-      .select("*")
-      .single()
-
-    if (error) {
-      setReplyError(error.message ?? "Failed to post reply. Please try again.")
-      setReplies(previousReplies)
+    if (!response.ok || !result?.reply) {
+      setReplyError(result?.error ?? "Failed to post reply. Please try again.")
       setReplyContent(pendingContent)
-      setPost((prev) =>
-        prev
-          ? {
-              ...prev,
-              replies_count: previousReplies.length,
-            }
-          : prev
-      )
       setIsSubmittingReply(false)
       return
     }
 
-    setPost(normalizePost(data))
+    setReplyContent("")
     setReplyFiles([])
-    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setReplies((prev) => normalizeReplies([...prev, result.reply as PostReply], canModerate))
+    setPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            replies_count: Number(result.repliesCount ?? (prev.replies_count ?? 0) + 1),
+          }
+        : prev
+    )
     setIsSubmittingReply(false)
+  }
+
+  const handleModerationAction = async (
+    replyId: string,
+    action: 'remove-reply' | 'restore-reply' | 'mark-accepted',
+  ) => {
+    if (!post || !isAuthenticated) {
+      openAuthModal()
+      return
+    }
+
+    setModerationError(null)
+    setIsModeratingReplyId(replyId)
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session?.access_token) {
+      setModerationError('Your session expired. Please sign in again.')
+      setIsModeratingReplyId(null)
+      openAuthModal()
+      return
+    }
+
+    const payload =
+      action === 'remove-reply'
+        ? { action, replyId, reason: 'Removed via moderator tools' }
+        : { action, replyId }
+
+    const response = await fetch(`/api/forum/threads/${post.id}/moderation`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(payload),
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      setModerationError(result?.error ?? 'Failed to apply moderation action.')
+      setIsModeratingReplyId(null)
+      return
+    }
+
+    setReplies(normalizeReplies(result?.replies as PostReply[] | null, canModerate))
+    setIsModeratingReplyId(null)
   }
 
   const handleShare = async () => {
@@ -522,6 +693,7 @@ export default function ForumPostPage() {
         </h2>
 
         {replyLikeError && <p className="text-sm text-destructive mb-3">{replyLikeError}</p>}
+        {moderationError && <p className="text-sm text-destructive mb-3">{moderationError}</p>}
         <div className="space-y-4">
           {replies.map((reply) => {
             const replyAuthorName = reply.user_full_name || "Community Member"
@@ -561,6 +733,30 @@ export default function ForumPostPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            {canModerate && !reply.isHidden && (
+                              <DropdownMenuItem
+                                onClick={() => handleModerationAction(reply.id, 'remove-reply')}
+                                disabled={isModeratingReplyId === reply.id}
+                              >
+                                Hide Reply
+                              </DropdownMenuItem>
+                            )}
+                            {canModerate && reply.isHidden && (
+                              <DropdownMenuItem
+                                onClick={() => handleModerationAction(reply.id, 'restore-reply')}
+                                disabled={isModeratingReplyId === reply.id}
+                              >
+                                Restore Reply
+                              </DropdownMenuItem>
+                            )}
+                            {canModerate && (
+                              <DropdownMenuItem
+                                onClick={() => handleModerationAction(reply.id, 'mark-accepted')}
+                                disabled={isModeratingReplyId === reply.id}
+                              >
+                                Mark Accepted
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem>
                               <Flag className="h-4 w-4 mr-2" />
                               Report
@@ -568,20 +764,44 @@ export default function ForumPostPage() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">
-                        {reply.content}
-                      </p>
+                      {reply.isHidden ? (
+                        <p className="text-sm leading-relaxed mb-3 text-muted-foreground">
+                          This reply is hidden from community view.
+                        </p>
+                      ) : (
+                        <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">{reply.content}</p>
+                      )}
+                      {canModerate && reply.isHidden && reply.moderationReason && (
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Moderation note: {reply.moderationReason}
+                        </p>
+                      )}
+                      {canModerate && Array.isArray(reply.moderationHistory) && reply.moderationHistory.length > 0 && (
+                        <div className="mb-3 rounded-md border border-border/60 bg-muted/30 p-2">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">Moderation history</p>
+                          <ul className="space-y-1">
+                            {reply.moderationHistory.slice(0, 3).map((entry, index) => (
+                              <li key={`${reply.id}-moderation-${index}`} className="text-xs text-muted-foreground">
+                                {entry.action} by {entry.moderatedBy} on {formatDate(entry.moderatedAt)}
+                                {entry.reason ? ` (${entry.reason})` : ''}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <AttachmentsGrid attachments={reply.attachments} />
-                      <Button
-                        variant={likedReplies.has(reply.id) ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => handleLikeReply(reply.id)}
-                        className="gap-2 h-8"
-                        disabled={updatingReplyLikeId === reply.id}
-                      >
-                        <ThumbsUp className="h-3 w-3" />
-                        {reply.likes ?? 0}
-                      </Button>
+                      {!reply.isHidden && (
+                        <Button
+                          variant={likedReplies.has(reply.id) ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => handleLikeReply(reply.id)}
+                          className="gap-2 h-8"
+                          disabled={updatingReplyLikeId === reply.id}
+                        >
+                          <ThumbsUp className="h-3 w-3" />
+                          {reply.likes ?? 0}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
@@ -656,5 +876,3 @@ export default function ForumPostPage() {
   )
 }
 
-const cryptoIdFallback = () =>
-  Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
