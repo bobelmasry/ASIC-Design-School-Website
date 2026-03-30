@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/components/auth-context"
-import { Cpu, Github, Linkedin } from "lucide-react"
+import { AlertCircle, Cpu, Github, Linkedin } from "lucide-react"
 
 function GoogleIcon() {
   return (
@@ -46,16 +46,56 @@ export function AuthModal() {
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
-  const [authError, setAuthError] = React.useState<string | null>(null)
+  const [authError, setAuthError] = React.useState<{
+    title: string
+    description: string
+  } | null>(null)
 
-  const getErrorMessage = (error: unknown) => {
-    if (error instanceof Error && error.message) return error.message
-    return "Authentication failed. Please try again."
+  const clearAuthError = () => setAuthError(null)
+
+  const getFriendlyAuthError = (error: unknown) => {
+    const rawMessage =
+      error instanceof Error && error.message
+        ? error.message.toLowerCase()
+        : ""
+
+    if (rawMessage.includes("invalid login credentials") || rawMessage.includes("invalid_credentials")) {
+      return {
+        title: "Email or password is incorrect",
+        description: "Please double-check your credentials and try again.",
+      }
+    }
+
+    if (rawMessage.includes("email not confirmed")) {
+      return {
+        title: "Please verify your email first",
+        description: "Check your inbox and click the confirmation link before signing in.",
+      }
+    }
+
+    if (rawMessage.includes("user already registered")) {
+      return {
+        title: "This email is already in use",
+        description: "Try signing in instead, or use a different email address.",
+      }
+    }
+
+    if (rawMessage.includes("too many requests") || rawMessage.includes("rate limit")) {
+      return {
+        title: "Too many attempts",
+        description: "Please wait a moment and try again.",
+      }
+    }
+
+    return {
+      title: "We couldn't complete your sign-in",
+      description: "Please try again. If this keeps happening, use another sign-in method.",
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setAuthError(null)
+    clearAuthError()
     setIsLoading(true)
     try {
       if (mode === "signin") {
@@ -64,14 +104,14 @@ export function AuthModal() {
         await signUp(name, email, password)
       }
     } catch (error) {
-      setAuthError(getErrorMessage(error))
+      setAuthError(getFriendlyAuthError(error))
     } finally {
       setIsLoading(false)
     }
   }
 
   const handleProviderSignIn = async (provider: "google" | "github" | "linkedin") => {
-    setAuthError(null)
+    clearAuthError()
     setIsLoading(true)
     try {
       if (provider === "google") {
@@ -82,7 +122,7 @@ export function AuthModal() {
         await signInWithLinkedIn()
       }
     } catch (error) {
-      setAuthError(getErrorMessage(error))
+      setAuthError(getFriendlyAuthError(error))
       setIsLoading(false)
     }
   }
@@ -138,6 +178,18 @@ export function AuthModal() {
           </Button>
         </div>
 
+        {authError && (
+          <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-destructive">{authError.title}</p>
+                <p className="text-xs text-destructive/90 mt-0.5">{authError.description}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="relative py-1">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -155,7 +207,10 @@ export function AuthModal() {
                 id="name"
                 placeholder="Enter your name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  clearAuthError()
+                  setName(e.target.value)
+                }}
                 required
               />
             </div>
@@ -168,7 +223,10 @@ export function AuthModal() {
               type="email"
               placeholder="Enter your email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                clearAuthError()
+                setEmail(e.target.value)
+              }}
               required
             />
           </div>
@@ -180,7 +238,10 @@ export function AuthModal() {
               type="password"
               placeholder="Enter your password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                clearAuthError()
+                setPassword(e.target.value)
+              }}
               required
             />
           </div>
@@ -188,7 +249,6 @@ export function AuthModal() {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Loading..." : mode === "signin" ? "Sign In" : "Sign Up"}
           </Button>
-          {authError && <p className="text-sm text-destructive">{authError}</p>}
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
@@ -198,7 +258,10 @@ export function AuthModal() {
               <button
                 type="button"
                 className="text-primary hover:underline"
-                onClick={() => setMode("signup")}
+                onClick={() => {
+                  clearAuthError()
+                  setMode("signup")
+                }}
               >
                 Sign up
               </button>
@@ -209,7 +272,10 @@ export function AuthModal() {
               <button
                 type="button"
                 className="text-primary hover:underline"
-                onClick={() => setMode("signin")}
+                onClick={() => {
+                  clearAuthError()
+                  setMode("signin")
+                }}
               >
                 Sign in
               </button>
