@@ -17,6 +17,8 @@ type AppUser = {
   avatar?: string
 } | null
 
+type AuthProvider = "google" | "github"
+
 type AuthContextType = {
   user: AppUser
   role: AppRole
@@ -25,6 +27,8 @@ type AuthContextType = {
   canModerateForum: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (name: string, email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
+  signInWithGithub: () => Promise<void>
   signOut: () => Promise<void>
   openAuthModal: () => void
   closeAuthModal: () => void
@@ -33,8 +37,17 @@ type AuthContextType = {
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
 
+const getAuthRedirectTo = () => {
+  if (typeof window === "undefined") return undefined
+  return window.location.href
+}
+
 const mapSessionUser = (sessionUser: SupabaseUser): Exclude<AppUser, null> => {
-  const fullName = sessionUser.user_metadata?.full_name || "User"
+  const fullName =
+    sessionUser.user_metadata?.full_name ||
+    sessionUser.user_metadata?.name ||
+    sessionUser.email?.split("@")[0] ||
+    "User"
   const role = resolveRoleFromMetadata({
     appMetadata: sessionUser.app_metadata,
     userMetadata: sessionUser.user_metadata,
@@ -111,6 +124,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
+  const signInWithProvider = async (provider: AuthProvider) => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: getAuthRedirectTo(),
+      },
+    })
+
+    if (error) throw error
+    setIsAuthModalOpen(false)
+  }
+
+  const signInWithGoogle = async () => {
+    await signInWithProvider("google")
+  }
+
+  const signInWithGithub = async () => {
+    await signInWithProvider("github")
+  }
+
   const openAuthModal = () => setIsAuthModalOpen(true)
   const closeAuthModal = () => setIsAuthModalOpen(false)
   const role = user?.role ?? "member"
@@ -125,6 +158,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         canModerateForum: canModerateForum(role),
         signIn,
         signUp,
+        signInWithGoogle,
+        signInWithGithub,
         signOut,
         openAuthModal,
         closeAuthModal,
