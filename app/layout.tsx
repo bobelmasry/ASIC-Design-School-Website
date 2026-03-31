@@ -14,22 +14,13 @@ const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono
 export const metadata: Metadata = {
   title: "Open Source ASIC Hub | Democratizing Chip Design",
   description: 'Open Source ASIC Hub - Democratizing chip design. The ASIC Design Community for MENA Engineers. Connect with fellow engineers, share knowledge, and build the future of silicon together.',
-  generator: 'v0.app',
   keywords: ['ASIC', 'design', 'engineering', 'MENA', 'silicon', 'open source', 'hardware', 'chip design', 'democratizing'],
   authors: [{ name: 'Open Source ASIC Hub' }],
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: '/favicon.ico',
         media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
       },
     ],
     apple: '/apple-icon.png',

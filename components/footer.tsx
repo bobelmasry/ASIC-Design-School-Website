@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Cpu, ExternalLink } from "lucide-react"
 import { useAuth } from "@/components/auth-context"
 
@@ -29,8 +30,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <Cpu className="h-6 w-6 text-primary" />
+            <Link href="/" className="flex items-center gap-4 mb-4">
+              <Image src="/icon.jpeg" alt="Open Source ASIC Hub" width={40} height={40} className="h-32 w-32 text-primary" />
               <span className="font-semibold text-lg">Open Source ASIC Hub</span>
             </Link>
           </div>
