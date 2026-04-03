@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Github, Twitter, Mail } from "lucide-react"
 
 const openSourceProjects = [
   { name: "Caravel", url: "https://github.com/efabless/caravel" },
@@ -23,14 +23,14 @@ export function Footer() {
       <div className="container px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-4 mb-4">
-              <Image src="/large_logo.png" alt="Open Source ASIC Hub" width={40} height={40} className="h-48 w-48 text-primary" />
+          <div className="md:col-span-1 flex justify-center md:justify-start">
+            <Link href="/" className="flex flex-col md:flex-row items-center gap-4 mb-4">
+              <Image src="/large_logo.png" alt="Open Source ASIC Hub" width={60} height={60} className="h-48 w-40 md:h-48 md:w-48 text-primary" />
             </Link>
           </div>
 
           {/* Community */}
-          <div>
+          <div className="text-center">
             <h3 className="font-semibold mb-4">Community</h3>
             <ul className="space-y-2">
               {communityLinks.map((link) => (
@@ -47,7 +47,7 @@ export function Footer() {
           </div>
 
           {/* Open Source */}
-          <div>
+          <div className="text-center">
             <h3 className="font-semibold mb-4">Open Source Projects</h3>
             <ul className="space-y-2">
               {openSourceProjects.map((project) => (
@@ -67,7 +67,7 @@ export function Footer() {
           </div>
 
           {/* Resources */}
-          <div>
+          <div className="text-center">
             <h3 className="font-semibold mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
