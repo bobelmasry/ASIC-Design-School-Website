@@ -58,7 +58,6 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
 }
 
 export default function ProjectsPage() {
-  const { canAccessMembersPage } = useAuth()
   const [searchQuery, setSearchQuery] = React.useState("")
   const [selectedCategory, setSelectedCategory] = React.useState("all")
 
@@ -143,15 +142,9 @@ export default function ProjectsPage() {
               adding features, or improving documentation, every contribution matters.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              {canAccessMembersPage ? (
-                <Button asChild>
-                  <Link href="/engineers">Find Collaborators</Link>
-                </Button>
-              ) : (
                 <Button asChild>
                   <Link href="/forum">Find Collaborators</Link>
                 </Button>
-              )}
               <Button className="dark:hover:text-gray-400" variant="outline" asChild>
                 <Link href="/forum/new">
                   Share Your Project

@@ -18,7 +18,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Image from "next/image"
 
 const navLinks = [
-  { href: "/engineers", label: "Members" },
   { href: "/projects", label: "Projects" },
   { href: "/forum", label: "Forum" },
   { href: "/silicon-sprint", label: "Silicon Sprint" },
@@ -30,11 +29,6 @@ export function Navbar() {
   const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
-  const visibleNavLinks = React.useMemo(
-    () => navLinks.filter((link) => (link.href === "/engineers" ? canAccessMembersPage : true)),
-    [canAccessMembersPage],
-  )
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between px-4">
@@ -45,7 +39,7 @@ export function Navbar() {
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
-            {visibleNavLinks.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -122,7 +116,7 @@ export function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t bg-background">
           <nav className="container flex flex-col gap-2 p-4">
-            {visibleNavLinks.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

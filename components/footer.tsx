@@ -2,8 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Cpu, ExternalLink } from "lucide-react"
-import { useAuth } from "@/components/auth-context"
+import { ExternalLink } from "lucide-react"
 
 const openSourceProjects = [
   { name: "Caravel", url: "https://github.com/efabless/caravel" },
@@ -12,17 +11,12 @@ const openSourceProjects = [
 ]
 
 const communityLinks = [
-  { name: "Engineers", href: "/engineers" },
   { name: "Projects", href: "/projects" },
   { name: "Forum", href: "/forum" },
   { name: "Silicon Sprint", href: "/silicon-sprint" },
 ]
 
 export function Footer() {
-  const { canAccessMembersPage } = useAuth()
-  const visibleCommunityLinks = canAccessMembersPage
-    ? communityLinks
-    : communityLinks.filter((link) => link.href !== "/engineers")
 
   return (
     <footer className="border-t bg-muted/30">
@@ -39,7 +33,7 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-4">Community</h3>
             <ul className="space-y-2">
-              {visibleCommunityLinks.map((link) => (
+              {communityLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}

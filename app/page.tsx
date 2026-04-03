@@ -6,99 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/auth-context"
 import {
-  Users,
-  MessageSquare,
-  Briefcase,
   ArrowRight,
-  Cpu,
   Github,
   Sparkles,
-  GraduationCap,
-  Calendar,
-  MapPin,
-  Compass,
-  Activity,
-  Rocket,
   BookOpen,
-  Shield,
-  ChevronRight,
   Zap,
   Globe,
   Code2
 } from "lucide-react"
-import { engineers, forumPosts } from "@/lib/placeholder-data"
-
-const valueProps = [
-  {
-    icon: MessageSquare,
-    title: "Forum intelligence",
-    description: "Daily, high-signal conversations with senior reviewers and async mentorship.",
-    href: "/forum",
-  },
-  {
-    icon: Users,
-    title: "Engineer directory",
-    description: "Search talent by domain, process node, and availability. Built for real collaboration.",
-    href: "/engineers",
-  },
-  {
-    icon: Briefcase,
-    title: "Opportunities board",
-    description: "Curated roles, fellowships, and sponsored shuttles with transparent expectations.",
-    href: "/forum?category=jobs",
-  },
-]
-
-const journey = [
-  {
-    icon: Compass,
-    title: "Claim your profile",
-    description: "Showcase experience levels, preferred nodes, and what you want to build next.",
-  },
-  {
-    icon: Activity,
-    title: "Ship inside cohorts",
-    description: "Join structured studios for verification, physical design, and tape-out prep.",
-  },
-  {
-    icon: Rocket,
-    title: "Launch to silicon",
-    description: "Pair with mentors, access tooling credits, and submit polished MPW projects.",
-  },
-]
-
-const tracks = [
-  {
-    name: "Foundations Studio",
-    summary: "Four-week boot sequence covering HDL fundamentals, simulation labs, and Git-powered reviews.",
-    highlights: [
-      "HDL clinics with senior mentors",
-      "Tooling setup office hours",
-      "Peer accountability pods",
-    ],
-    accent: "from-primary/25 via-primary/5 to-background",
-  },
-  {
-    name: "Verification Guild",
-    summary: "UVM, cocotb, and coverage-driven techniques applied to community IP blocks.",
-    highlights: [
-      "Live waveform tear-downs",
-      "Reusable agent templates",
-      "Access to real bug backlogs",
-    ],
-    accent: "from-foreground/10 via-background to-background",
-  },
-  {
-    name: "Tape-out Studio",
-    summary: "Floorplanning to sign-off on SKY130 + GF180 with OpenLane and OpenROAD mentors.",
-    highlights: [
-      "GDS reviews with industry leads",
-      "Dedicated timing clinics",
-      "Bring-up simulations + labs",
-    ],
-    accent: "from-primary/20 via-background to-background",
-  },
-]
+import { engineers } from "@/lib/placeholder-data"
 
 const openSourceProjects = [
   {
@@ -121,29 +37,8 @@ const openSourceProjects = [
   },
 ]
 
-const fieldNotes = [
-  {
-    title: "Pop-up debug circles",
-    body: "Small groups hop on calls to triage LVS mismatches, waveform mysteries, or bring-up quirks. Screens are shared, fixes are documented, and recordings land in the archive.",
-    tag: "ritual",
-  },
-  {
-    title: "Archive walks",
-    body: "Every other Friday we revisit a historical open-source tape-out, annotate the GDS, and explain why each routing choice mattered for yield.",
-    tag: "study",
-  },
-  {
-    title: "Office hour swaps",
-    body: "Analog engineers trade time with verification leads, so both sides learn enough of the other craft to collaborate faster on mixed-signal efforts.",
-    tag: "exchange",
-  },
-]
-
 export default function HomePage() {
-  const { openAuthModal, isAuthenticated, canAccessMembersPage } = useAuth()
-  const visibleValueProps = canAccessMembersPage
-    ? valueProps
-    : valueProps.filter((prop) => prop.href !== "/engineers")
+  const { openAuthModal, isAuthenticated } = useAuth()
 
     
 
@@ -273,9 +168,6 @@ export default function HomePage() {
                         </Badge>
                       ))}
                     </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground border-t pt-4">
-                    Cohorts receive dedicated lab time, on-call mentors, and fabrication sponsorship for standout projects.
                   </div>
                 </CardContent>
               </Card>

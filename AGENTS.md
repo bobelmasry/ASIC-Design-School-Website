@@ -119,7 +119,6 @@
 
 ## Accessibility & UX
 - Always set `aria` attributes for interactive components when not provided by shadcn defaults.
-- Provide alt text for images (see `components/engineer-card.tsx`).
 - Buttons/links: ensure icon-only buttons include `sr-only` labels where needed.
 - Maintain keyboard navigation support; Radix primitives help, so use them instead of DIY popovers/menus.
 - Respect reduced-motion preferences when adding animations.
