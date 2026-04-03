@@ -142,36 +142,6 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="lg:w-96 w-full">
-              <Card className="bg-card/80 backdrop-blur border-primary/20">
-                <CardHeader>
-                  <CardTitle>Program Highlights</CardTitle>
-                  <CardDescription>What participants tackle across eight intensive weeks.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <p className="text-sm font-semibold">Topics covered</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {["Digital Logic", "SystemVerilog", "Simulation", "Synthesis", "OpenLane", "Tape-out"].map((topic) => (
-                        <Badge key={topic} variant="secondary" className="text-xs">
-                          {topic}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold">Post-fabrication</p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {["Bring-up", "Testing", "Characterization", "Debugging"].map((topic) => (
-                        <Badge key={topic} variant="outline" className="text-xs">
-                          {topic}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </section>
@@ -180,28 +150,9 @@ export default function HomePage() {
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
           <div className="grid lg:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
             <div>
-              <Badge variant="outline" className="mb-4">Faces of the Hub</Badge>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
-                Experts, students, and builders growing together
+                Members of the ASIC Design Community
               </h2>
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                Each profile captures domains, tooling mastery, languages, and what members are looking for—so
-                collaborations start faster.
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">
-                  <Zap className="h-3 w-3 mr-1" />
-                  Open source first
-                </Badge>
-                <Badge variant="secondary">
-                  <Globe className="h-3 w-3 mr-1" />
-                  Pan-MENA
-                </Badge>
-                <Badge variant="secondary">
-                  <Code2 className="h-3 w-3 mr-1" />
-                  Practical knowledge
-                </Badge>
-              </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {engineers.slice(0, 4).map((engineer) => (
