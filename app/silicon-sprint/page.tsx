@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Calendar,
   MapPin,
@@ -72,7 +73,7 @@ const clinicDays = [
       { time: "10:00 - 12:30", topic: "Fix errors and timing violations detected" },
       { time: "12:30 - 13:00", topic: "Lunch Break" },
       { time: "13:00 - 15:00", topic: "Fix errors and timing violations detected" },
-      { time: "15:30 - 16:00", topic: "Lunch Break" },
+      { time: "15:00 - 16:00", topic: "Coffee Break" },
     ],
   },
   {
@@ -170,74 +171,118 @@ export default function SpringSchoolPage() {
           </div>
           
           {/* Main Program Days */}
-          <div className="space-y-6 mb-40">
-            {programSchedule.map((day) => (
-              <Card key={day.date} className="relative overflow-hidden border-gray-300 dark:border-gray-800">
-                <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge className="text-lg">{day.date}</Badge>
-                        <Badge className="text-lg" variant="secondary">{day.day}</Badge>
+          <Tabs defaultValue="day1" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="day1">Day 1 - April 6</TabsTrigger>
+              <TabsTrigger value="day2">Day 2 - April 7</TabsTrigger>
+              <TabsTrigger value="day3">Day 3 - April 8</TabsTrigger>
+            </TabsList>
+            {programSchedule.map((day, index) => (
+              <TabsContent key={day.date} value={`day${index + 1}`}>
+                <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
+                  <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="text-lg">{day.date}</Badge>
+                          <Badge className="text-lg" variant="secondary">{day.day}</Badge>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {day.sessions.map((session, idx) => (
-                      <div 
-                        key={idx} 
-                        className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
-                      >
-                        <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                          {session.time}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-md font-medium">{session.topic}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid lg:grid-cols-2 gap-3">
+                      {(() => {
+                        const mid = Math.ceil(day.sessions.length / 2)
+                        const firstColumn = day.sessions.slice(0, mid)
+                        const secondColumn = day.sessions.slice(mid)
+                        return (
+                          <>
+                            <div className="space-y-3">
+                              {firstColumn.map((session, idx) => (
+                                <div 
+                                  key={idx} 
+                                  className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                                >
+                                  <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                    {session.time}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-lg font-medium">{session.topic}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="space-y-3">
+                              {secondColumn.map((session, idx) => (
+                                <div 
+                                  key={idx + mid} 
+                                  className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                                >
+                                  <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                    {session.time}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-lg font-medium">{session.topic}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )
+                      })()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             ))}
-          </div>
+          </Tabs>
 
           {/* Clinic Days */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 mt-16">
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Clinic Days</h3>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {clinicDays.map((clinic) => (
-              <Card key={clinic.date} className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Badge className="bg-primary text-primary-foreground">{clinic.date}</Badge>
-                  </div>
-                  <CardTitle>{clinic.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-3">
-                    {clinic.sessions.map((session, idx) => (
-                      <div 
-                        key={idx} 
-                        className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
-                      >
-                        <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                          {session.time}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-md font-medium">{session.topic}</p>
+          <Tabs defaultValue="clinic1" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="clinic1">Clinic Day 1 - April 11</TabsTrigger>
+              <TabsTrigger value="clinic2">Clinic Day 2 - April 18</TabsTrigger>
+            </TabsList>
+            {clinicDays.map((clinic, index) => (
+              <TabsContent key={clinic.date} value={`clinic${index + 1}`}>
+                <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
+                  <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="text-lg">{clinic.date}</Badge>
+                          <Badge className="text-lg" variant="secondary">{clinic.title}</Badge>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {clinic.sessions.map((session, idx) => (
+                        <div 
+                          key={idx} 
+                          className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                        >
+                          <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                            {session.time}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-lg font-medium">{session.topic}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             ))}
-          </div>
+          </Tabs>
         </div>
       </section>
     </div>
