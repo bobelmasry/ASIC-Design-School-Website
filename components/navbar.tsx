@@ -4,9 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { useTheme } from "@/components/theme-provider"
 import { useAuth } from "@/components/auth-context"
-import { Cpu, Moon, Sun, Menu, X, LogOut } from "lucide-react"
+import { Cpu, Menu, X, LogOut } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +24,6 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
   const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
@@ -59,15 +57,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-          >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </Button>
 
           {isAuthenticated ? (
             <DropdownMenu>

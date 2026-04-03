@@ -248,14 +248,13 @@ function ForumPageContent() {
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    <category.icon className="h-4 w-4" />
                     {category.name}
                   </span>
                   <Badge
                     variant={selectedCategory === category.id ? "secondary" : "outline"}
                     className="text-xs"
                   >
-                    {categoryCounts[category.slug.toLowerCase()] ?? 0}
+                    {categoryCounts[category.id.toLowerCase()] ?? 0}
                   </Badge>
                 </button>
               ))}

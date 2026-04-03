@@ -36,6 +36,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 type PostReply = {
   id: string
@@ -109,7 +114,10 @@ export default function ForumPostPage() {
   const [replyFiles, setReplyFiles] = React.useState<File[]>([])
   const [replyUploadError, setReplyUploadError] = React.useState<string | null>(null)
   const [adminActionError, setAdminActionError] = React.useState<string | null>(null)
+  const [isDeletingOwn, setIsDeletingOwn] = React.useState(false)
+  const [isDeletingOwnReply, setIsDeletingOwnReply] = React.useState<string | null>(null)
   const [isAdminActionLoading, setIsAdminActionLoading] = React.useState(false)
+  const [showCopiedPopover, setShowCopiedPopover] = React.useState(false)
 
   React.useEffect(() => {
     let isMounted = true
@@ -418,21 +426,69 @@ export default function ForumPostPage() {
   }
 
   const handleShare = async () => {
+    const url = window.location.href
     try {
-      const shareData: ShareData = {
-        title: post.title ?? "Discussion",
-        url: window.location.href,
-      }
-
-      if (post.content) {
-        shareData.text = post.content
-      }
-
-      await navigator.share(shareData)
+      await navigator.clipboard.writeText(url)
     } catch {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href)
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea")
+      textArea.value = url
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
     }
+    setShowCopiedPopover(true)
+    setTimeout(() => setShowCopiedPopover(false), 2000)
+  }
+
+  const handleDeleteOwnPost = async () => {
+    if (!post || !user?.id || user.id !== post.user_id || isDeletingOwn) return
+
+    const confirmed = window.confirm("Delete this discussion and all its replies?")
+    if (!confirmed) return
+
+    setIsDeletingOwn(true)
+
+    const { error } = await supabase.from("posts").delete().eq("id", post.id)
+
+    if (error) {
+      alert("Failed to delete discussion.")
+      setIsDeletingOwn(false)
+      return
+    }
+
+    router.push("/forum")
+  }
+
+  const handleDeleteOwnReply = async (replyId: string) => {
+    if (!post || !user?.id || isDeletingOwnReply === replyId) return
+
+    const reply = replies.find(r => r.id === replyId)
+    if (!reply || reply.user_id !== user.id) return
+
+    const confirmed = window.confirm("Delete this reply?")
+    if (!confirmed) return
+
+    setIsDeletingOwnReply(replyId)
+
+    const updatedReplies = replies.filter((r) => r.id !== replyId)
+    const { error, data } = await supabase
+      .from("posts")
+      .update({ replies: updatedReplies, replies_count: updatedReplies.length })
+      .eq("id", post.id)
+      .select("*")
+      .single()
+
+    if (error) {
+      alert("Failed to delete reply.")
+      setIsDeletingOwnReply(null)
+      return
+    }
+
+    setPost(normalizePost(data))
+    setReplies(normalizeReplies(data.replies as PostReply[] | null))
+    setIsDeletingOwnReply(null)
   }
 
   const handleDeletePost = async () => {
@@ -553,25 +609,30 @@ export default function ForumPostPage() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleShare}>
-                  <Share2 className="h-4 w-4 mr-2 hover:text-white" />
-                  Share
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Flag className="h-4 w-4 mr-2 hover:text-white" />
-                  Report
-                </DropdownMenuItem>
-                {canModerateForum && (
-                  <DropdownMenuItem
-                    onClick={handleDeletePost}
-                    disabled={isAdminActionLoading}
-                    className="text-destructive"
-                  >
-                    Delete Discussion
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
+               <DropdownMenuContent align="end">
+                 <DropdownMenuItem onClick={handleShare}>
+                   <Share2 className="h-4 w-4 mr-2 hover:text-white" />
+                   Share
+                 </DropdownMenuItem>
+                 {canModerateForum && (
+                   <DropdownMenuItem
+                     onClick={handleDeletePost}
+                     disabled={isAdminActionLoading}
+                     className="text-destructive"
+                   >
+                     Delete Discussion
+                   </DropdownMenuItem>
+                 )}
+                 {user?.id === post.user_id && !canModerateForum && (
+                   <DropdownMenuItem
+                     onClick={handleDeleteOwnPost}
+                     disabled={isDeletingOwn}
+                     className="text-destructive"
+                   >
+                     Delete Discussion
+                   </DropdownMenuItem>
+                 )}
+               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </CardHeader>
@@ -600,10 +661,17 @@ export default function ForumPostPage() {
               <MessageSquare className="h-4 w-4" />
               {replies.length} Replies
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2 ml-auto hover:text-white">
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
+            <Popover open={showCopiedPopover} onOpenChange={setShowCopiedPopover}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={handleShare} className="gap-2 ml-auto hover:text-white">
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent side="top" className="w-auto p-2">
+                <p className="text-sm">Link copied to clipboard!</p>
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>
@@ -653,29 +721,34 @@ export default function ForumPostPage() {
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
-                              <Flag className="h-4 w-4 mr-2" />
-                              Report
-                            </DropdownMenuItem>
-                            {canModerateForum && (
-                              <>
-                                <DropdownMenuItem
-                                  onClick={() => handleToggleAcceptedReply(reply.id)}
-                                  disabled={isAdminActionLoading}
-                                >
-                                  {reply.isAccepted ? "Remove Accepted Mark" : "Mark as Accepted"}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteReply(reply.id)}
-                                  disabled={isAdminActionLoading}
-                                  className="text-destructive"
-                                >
-                                  Delete Reply
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
+                           <DropdownMenuContent align="end">
+                             {canModerateForum && (
+                               <>
+                                 <DropdownMenuItem
+                                   onClick={() => handleToggleAcceptedReply(reply.id)}
+                                   disabled={isAdminActionLoading}
+                                 >
+                                   {reply.isAccepted ? "Remove Accepted Mark" : "Mark as Accepted"}
+                                 </DropdownMenuItem>
+                                 <DropdownMenuItem
+                                   onClick={() => handleDeleteReply(reply.id)}
+                                   disabled={isAdminActionLoading}
+                                   className="text-destructive"
+                                 >
+                                   Delete Reply
+                                 </DropdownMenuItem>
+                               </>
+                             )}
+                             {user?.id === reply.user_id && !canModerateForum && (
+                               <DropdownMenuItem
+                                 onClick={() => handleDeleteOwnReply(reply.id)}
+                                 disabled={isDeletingOwnReply === reply.id}
+                                 className="text-destructive"
+                               >
+                                 Delete Reply
+                               </DropdownMenuItem>
+                             )}
+                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
                       <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">

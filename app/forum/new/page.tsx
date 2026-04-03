@@ -191,7 +191,6 @@ export default function NewPostPage() {
                   {forumCategories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       <span className="flex items-center gap-2">
-                        <category.icon className="h-4 w-4" />
                         {category.name}
                       </span>
                     </SelectItem>

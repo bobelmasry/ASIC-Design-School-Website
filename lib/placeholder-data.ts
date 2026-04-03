@@ -1,4 +1,4 @@
-import { MessageSquare, Cpu, Zap, Layout, CircuitBoard, GitBranch, Briefcase } from "lucide-react"
+import { MessageSquare, Cpu, Zap, Layout, CircuitBoard, GitBranch, Briefcase, FileText } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 export type Engineer = {
@@ -16,7 +16,6 @@ export type Engineer = {
 export type ForumCategory = {
   id: string
   name: string
-  slug: string
   description: string
   color: string
   icon: LucideIcon
@@ -96,7 +95,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "digital-design",
     name: "Digital Design",
-    slug: "digital-design",
     description: "RTL design, synthesis, timing analysis, and digital architecture",
     color: "bg-blue-500",
     icon: Cpu,
@@ -104,7 +102,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "analog",
     name: "Analog/Mixed-Signal",
-    slug: "analog-mixed-signal",
     description: "Analog circuit design, ADCs, DACs, and mixed-signal integration",
     color: "bg-purple-500",
     icon: Zap,
@@ -112,7 +109,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "verification",
     name: "Verification",
-    slug: "verification",
     description: "UVM, formal verification, simulation, and testbench development",
     color: "bg-green-500",
     icon: MessageSquare,
@@ -120,7 +116,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "physical-design",
     name: "Physical Design",
-    slug: "physical-design",
     description: "Floorplanning, placement, routing, and timing closure",
     color: "bg-orange-500",
     icon: Layout,
@@ -128,7 +123,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "fpga",
     name: "FPGA",
-    slug: "fpga",
     description: "FPGA development, prototyping, and vendor-specific tools",
     color: "bg-cyan-500",
     icon: CircuitBoard,
@@ -136,7 +130,6 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "open-source",
     name: "Open Source",
-    slug: "open-source",
     description: "OpenLane, Caravel, DFFRAM, and other open-source silicon projects",
     color: "bg-teal-500",
     icon: GitBranch,
@@ -144,10 +137,16 @@ export const forumCategories: ForumCategory[] = [
   {
     id: "jobs",
     name: "Jobs",
-    slug: "jobs",
     description: "Job postings, career advice, and professional opportunities",
     color: "bg-rose-500",
     icon: Briefcase,
+  },
+  {
+    id: "miscellaneous",
+    name: "Miscellaneous",
+    description: "General discussions, off-topic chats, and miscellaneous topics",
+    color: "bg-gray-500",
+    icon: FileText,
   },
 ]
 
