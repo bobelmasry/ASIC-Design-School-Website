@@ -42,15 +42,10 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
               {project.stars.toLocaleString()}
             </span>
           </div>
-          <a
-            href={project.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-primary hover:underline font-medium"
-          >
+          <p className="flex items-center gap-1 hover:text-blue-600 hover:underline transition-colors">
             <Github className="h-4 w-4" />
             View
-          </a>
+          </p>
         </div>
       </CardContent>
     </Card>
