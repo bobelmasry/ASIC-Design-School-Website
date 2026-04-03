@@ -37,10 +37,10 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-28 items-center justify-between px-4">
+      <div className="container flex h-20 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <Image src="/icon.jpeg" alt="Open Source ASIC Hub" width={40} height={40} className="h-24 w-24 text-primary" />
+            <Image src="/small_logo.png" alt="Open Source ASIC Hub" width={40} height={40} className="h-18 w-24 text-primary" />
             <span className="font-semibold text-lg hidden sm:inline">Open Source ASIC Hub</span>
           </Link>
           
