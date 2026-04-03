@@ -95,23 +95,16 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row gap-10 items-center">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-5">
-                <Badge className="bg-primary text-primary-foreground">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Featured Program
-                </Badge>
-                <Badge variant="outline">Spring 2026</Badge>
+                <Badge className="bg-primary" variant="outline">Spring 2026</Badge>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">Silicon Sprint at AUC</h2>
               <p className="text-muted-foreground mb-8 leading-relaxed">
-                A hands-on residency at The American University in Cairo combining lectures, labs, and
-                fabrication slots. Operate real open-source EDA flows with mentors who guided previous MPW
-                wins.
+                A comprehensive training program at The American University in Cairo for ASIC design using Open-source technologies.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 mb-8">
                 <Button asChild>
                   <Link href="/silicon-sprint">
-                    View Full Agenda
-                    <BookOpen className="ml-2 h-4 w-4" />
+                    View Program
                   </Link>
                 </Button>
               </div>
@@ -137,7 +130,7 @@ export default function HomePage() {
                 <div className="flex gap-3">
                   <div>
                     <p className="font-semibold">Cairo, Egypt</p>
-                    <p className="text-sm text-muted-foreground">In-person with hybrid support</p>
+                    <p className="text-sm text-muted-foreground">In-person</p>
                   </div>
                 </div>
               </div>

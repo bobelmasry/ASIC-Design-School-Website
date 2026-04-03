@@ -182,14 +182,13 @@ export default function SpringSchoolPage() {
           {/* Main Program Days */}
           <Tabs defaultValue="day1" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="day1">Day 1 - April 6</TabsTrigger>
-              <TabsTrigger value="day2">Day 2 - April 7</TabsTrigger>
-              <TabsTrigger value="day3">Day 3 - April 8</TabsTrigger>
+              <TabsTrigger value="day1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 1 - April 6</TabsTrigger>
+              <TabsTrigger value="day2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 2 - April 7</TabsTrigger>
+              <TabsTrigger value="day3" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 3 - April 8</TabsTrigger>
             </TabsList>
             {programSchedule.map((day, index) => (
               <TabsContent key={day.date} value={`day${index + 1}`}>
                 <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
-                  <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
                   <CardContent>
                     <div className="grid lg:grid-cols-2 gap-3">
                       {(() => {
@@ -244,13 +243,12 @@ export default function SpringSchoolPage() {
           </div>
           <Tabs defaultValue="clinic1" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="clinic1">Clinic Day 1 - April 11</TabsTrigger>
-              <TabsTrigger value="clinic2">Clinic Day 2 - April 18</TabsTrigger>
+              <TabsTrigger value="clinic1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Clinic Day 1 - April 11</TabsTrigger>
+              <TabsTrigger value="clinic2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Clinic Day 2 - April 18</TabsTrigger>
             </TabsList>
             {clinicDays.map((clinic, index) => (
               <TabsContent key={clinic.date} value={`clinic${index + 1}`}>
                 <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
-                  <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
                   <CardContent>
                     <div className="space-y-3">
                       {clinic.sessions.map((session, idx) => (

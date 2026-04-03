@@ -29,13 +29,19 @@ export function Navbar() {
   const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
             <Image src="/small_logo.png" alt="Open Source ASIC Hub" width={40} height={40} className="h-18 w-24 text-primary" />
-            <span className="font-semibold text-lg hidden sm:inline">Open Source ASIC Hub</span>
+            <div className="hidden sm:flex flex-col">
+              <span className="font-semibold text-lg">Open Source ASIC Hub</span>
+            </div>
+            <div className="flex flex-col sm:hidden">
+              <span className="font-semibold text-base">Open Source ASIC Hub</span>
+            </div>
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
