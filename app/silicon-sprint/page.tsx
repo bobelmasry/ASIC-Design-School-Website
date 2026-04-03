@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
@@ -24,9 +24,9 @@ const programSchedule = [
       { time: "11:30 - 12:00", topic: "Coffee Break" },
       { time: "12:00 - 13:00", topic: "Open-Source Chip Design, Librelane (Mohamed Gaber)" },
       { time: "13:00 - 14:00", topic: "Lunch Break" },
-      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem)" },
+      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem Hesham)" },
       { time: "15:00 - 15:30", topic: "Break" },
-      { time: "15:30 - 16:30", topic: "Running the flow - from synthesis to power network (Basem)" },
+      { time: "15:30 - 16:30", topic: "Running the flow - from synthesis to power network (Basem Hesham)" },
     ],
     icon: BookOpen,
   },
@@ -40,11 +40,11 @@ const programSchedule = [
       { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdulmoniem)"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdulrahman)" },
-      { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem)" },
+      { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
       { time: "14:15 - 15:00", topic: "Lunch Break" },
-      { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem)" },
+      { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
       { time: "16:00 - 16:30", topic: "Coffee Break" },
-      { time: "16:30 - 17:30", topic: "Practical Session: Cocotb (Radwa)" },
+      { time: "16:30 - 17:30", topic: "(Salma)" },
     ],
   },
   {
@@ -52,13 +52,13 @@ const programSchedule = [
     day: "Day 3",
     title: "",
     sessions: [
-      { time: "10:00 - 10:45", topic: "Hardware Security (Dr. Dina Mahmoud)" },
-      { time: "10:45 - 11:30", topic: "DFT and Difetto (Mohamed Gaber)" },
-      { time: "11:30 - 12:15", topic: "Multi-Project Chip Integration (Mohamed Hosni)" },
+      { time: "10:00 - 10:45", topic: "DFT and Difetto (Mohamed Gaber)" },
+      { time: "10:45 - 11:30", topic: "Multi-Project Chip Integration (Mohamed Hosni)" },
+      { time: "11:30 - 12:15", topic: "Practical Session: Cocotb (Radwa)" },
       { time: "12:15 - 12:45", topic: "Coffee Break" },
-      { time: "12:45 - 13:45", topic: "Practical Session: Final Signoff (Basem)" },
+      { time: "12:45 - 13:45", topic: "Practical Session: Final Signoff (Basem Hesham)" },
       { time: "13:45 - 14:45", topic: "Lunch Break" },
-      { time: "14:45 - 15:45", topic: "Practical: Macro-First Hardening (Basem)" },
+      { time: "14:45 - 15:45", topic: "Practical: Macro-First Hardening (Basem Hesham)" },
       { time: "15:45 - 16:15", topic: "Break" },
       { time: "16:15 - 17:00", topic: "Keynote Session (Mohamed Kassem)" },
     ],
@@ -73,7 +73,7 @@ const clinicDays = [
       { time: "10:00 - 12:30", topic: "Fix errors and timing violations detected" },
       { time: "12:30 - 13:00", topic: "Lunch Break" },
       { time: "13:00 - 15:00", topic: "Fix errors and timing violations detected" },
-      { time: "15:00 - 16:00", topic: "Coffee Break" },
+      { time: "15:00 - 15:30", topic: "Coffee Break" },
     ],
   },
   {
@@ -87,13 +87,22 @@ const clinicDays = [
   },
 ]
 
-const requirements = [
-  "Basic digital logic knowledge (Boolean algebra, gates, flip-flops)",
-  "Programming experience (preferably Python or C)",
-  "Familiarity with Linux command line",
-  "Strong motivation to learn ASIC design",
-  "Laptop capable of running Linux VM or Docker",
-]
+function renderTopic(topic: string) {
+  const match = topic.match(/^(.*)\(([^)]+)\)$/)
+  if (match) {
+    const [_, prefix, name] = match
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+    return (
+      <>
+        {prefix.trim()}{' '}
+        (<Link href={`/silicon-sprint/speakers/${slug}`} className="text-primary hover:underline">
+          {name}
+        </Link>)
+      </>
+    )
+  }
+  return topic
+}
 
 export default function SpringSchoolPage() {
   return (
@@ -181,16 +190,6 @@ export default function SpringSchoolPage() {
               <TabsContent key={day.date} value={`day${index + 1}`}>
                 <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
                   <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="text-lg">{day.date}</Badge>
-                          <Badge className="text-lg" variant="secondary">{day.day}</Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
                   <CardContent>
                     <div className="grid lg:grid-cols-2 gap-3">
                       {(() => {
@@ -209,7 +208,7 @@ export default function SpringSchoolPage() {
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-lg font-medium">{session.topic}</p>
+                                    <p className="text-lg font-medium">{renderTopic(session.topic)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -224,7 +223,7 @@ export default function SpringSchoolPage() {
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-lg font-medium">{session.topic}</p>
+                                    <p className="text-lg font-medium">{renderTopic(session.topic)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -252,16 +251,6 @@ export default function SpringSchoolPage() {
               <TabsContent key={clinic.date} value={`clinic${index + 1}`}>
                 <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
                   <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge className="text-lg">{clinic.date}</Badge>
-                          <Badge className="text-lg" variant="secondary">{clinic.title}</Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
                       {clinic.sessions.map((session, idx) => (
