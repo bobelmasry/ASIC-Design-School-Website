@@ -154,10 +154,6 @@ export default function HomePage() {
         <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="max-w-4xl mx-auto text-center space-y-8">
-            <Badge variant="secondary" className="inline-flex items-center gap-2">
-              <Sparkles className="h-3 w-3" />
-              ASIC Design School · MENA
-            </Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
               A launchpad for open silicon talent across the Middle East & North Africa
             </h1>
@@ -226,36 +222,24 @@ export default function HomePage() {
               </div>
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <GraduationCap className="h-5 w-5 text-primary" />
-                  </div>
                   <div>
                     <p className="font-semibold">Comprehensive curriculum</p>
                     <p className="text-sm text-muted-foreground">HDL, simulation, synthesis, prototyping</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Cpu className="h-5 w-5 text-primary" />
-                  </div>
                   <div>
                     <p className="font-semibold">Real fabrication</p>
                     <p className="text-sm text-muted-foreground">Top teams tape out on SKY130</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-primary" />
-                  </div>
                   <div>
                     <p className="font-semibold">Bring-up sessions</p>
                     <p className="text-sm text-muted-foreground">Debug silicon alongside mentors</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-primary" />
-                  </div>
                   <div>
                     <p className="font-semibold">Cairo, Egypt</p>
                     <p className="text-sm text-muted-foreground">In-person with hybrid support</p>
@@ -353,16 +337,12 @@ export default function HomePage() {
 
       <section className="border-b bg-background">
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
+          <div className="text-center max-w-2xl mx-auto mb-20 space-y-3">
             <Badge variant="outline" className="mb-2">
               <Github className="h-3 w-3 mr-1" />
               Open Source Stack
             </Badge>
             <h2 className="text-3xl md:text-4xl font-bold text-balance">Tools we contribute to and teach</h2>
-            <p className="text-muted-foreground">
-              We ship tutorials, office hours, and fixes upstream—so members gain confidence with the exact
-              flows used in production.
-            </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {openSourceProjects.map((project) => (

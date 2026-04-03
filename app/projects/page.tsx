@@ -9,47 +9,16 @@ import { useAuth } from "@/components/auth-context"
 import { 
   Github, 
   Star, 
-  Users, 
   ExternalLink,
-  Cpu,
-  Layers,
-  CircuitBoard,
-  Wrench,
-  Box,
   ArrowRight
 } from "lucide-react"
 import { openSourceProjectsList, type OpenSourceProject } from "@/lib/placeholder-data"
 
-const categoryIcons: Record<string, React.ElementType> = {
-  flow: Layers,
-  ip: Cpu,
-  pdk: CircuitBoard,
-  tool: Wrench,
-  soc: Box,
-}
-
-const categoryColors: Record<string, string> = {
-  flow: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  ip: "bg-green-500/10 text-green-500 border-green-500/20",
-  pdk: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  tool: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-  soc: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20",
-}
-
 function ProjectCard({ project }: { project: OpenSourceProject }) {
-  const Icon = categoryIcons[project.category] || Cpu
   
   return (
     <Card className="group hover:border-primary/50 transition-all hover:shadow-lg h-full flex flex-col border-gray-300 dark:border-gray-800">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className={`h-10 w-10 rounded-lg flex items-center justify-center border ${categoryColors[project.category]}`}>
-            <Icon className="h-5 w-5" />
-          </div>
-          {project.featured && (
-            <Badge className="bg-primary/10 text-primary border-primary/20">Featured</Badge>
-          )}
-        </div>
         <CardTitle className="flex items-center gap-2 text-lg">
           {project.name}
           <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -71,10 +40,6 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
             <span className="flex items-center gap-1">
               <Star className="h-4 w-4" />
               {project.stars.toLocaleString()}
-            </span>
-            <span className="flex items-center gap-1">
-              <Users className="h-4 w-4" />
-              {project.contributors}
             </span>
           </div>
           <a
@@ -120,13 +85,9 @@ export default function ProjectsPage() {
       <section className="border-b bg-gradient-to-b from-muted/50 to-background">
         <div className="container px-4 py-12 md:py-16">
           <div className="max-w-3xl">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-balance">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 text-balance">
               Open Source Projects
             </h1>
-            <p className="text-lg text-muted-foreground mb-6 text-pretty">
-              Explore the open-source tools, PDKs, IP cores, and design flows that are 
-              democratizing chip design. These projects power the modern open silicon movement.
-            </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button asChild>
                 <a href="https://github.com/AUCOHL" target="_blank" rel="noopener noreferrer">
@@ -152,34 +113,10 @@ export default function ProjectsPage() {
               {featuredProjects.length > 0 && (
                 <div className="mb-12">
                   <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <Star className="h-5 w-5 text-primary" />
                     Featured Projects
                   </h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {featuredProjects.map((project) => (
-                      <a
-                        key={project.id}
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block"
-                      >
-                        <ProjectCard project={project} />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* All Other Projects */}
-              {otherProjects.length > 0 && (
-                <div>
-                  <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <Github className="h-5 w-5" />
-                    {featuredProjects.length > 0 ? "More Projects" : "All Projects"}
-                  </h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {otherProjects.map((project) => (
                       <a
                         key={project.id}
                         href={project.url}

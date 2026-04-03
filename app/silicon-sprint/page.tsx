@@ -5,20 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
-  GraduationCap,
   Calendar,
   MapPin,
   Clock,
-  Users,
-  Cpu,
-  Code,
-  Layers,
-  Wrench,
-  CheckCircle2,
-  ArrowRight,
   BookOpen,
-  Microscope,
-  Zap
 } from "lucide-react"
 
 const programSchedule = [
@@ -55,7 +45,6 @@ const programSchedule = [
       { time: "16:00 - 16:30", topic: "Coffee Break" },
       { time: "16:30 - 17:30", topic: "Practical Session: Cocotb (Radwa)" },
     ],
-    icon: Code,
   },
   {
     date: "April 8",
@@ -72,7 +61,6 @@ const programSchedule = [
       { time: "15:45 - 16:15", topic: "Break" },
       { time: "16:15 - 17:00", topic: "Keynote Session (Mohamed Kassem)" },
     ],
-    icon: Layers,
   },
 ]
 
@@ -86,7 +74,6 @@ const clinicDays = [
       { time: "13:00 - 15:00", topic: "Fix errors and timing violations detected" },
       { time: "15:30 - 16:00", topic: "Lunch Break" },
     ],
-    icon: Microscope,
   },
   {
     date: "April 18",
@@ -96,7 +83,6 @@ const clinicDays = [
       { time: "12:30 - 13:00", topic: "Lunch Break" },
       { time: "13:00 - 15:00", topic: "Shuttle Readiness: Finalizing designs for the free OpenMPW shuttle" },
     ],
-    icon: Wrench,
   },
 ]
 
@@ -117,12 +103,7 @@ export default function SpringSchoolPage() {
         <div className="container px-4 py-16 md:py-24 relative">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 mb-6">
-              <Badge className="bg-primary text-primary-foreground">
-                <GraduationCap className="h-3 w-3 mr-1" />
-                Educational Program
-              </Badge>
-              <Badge variant="outline">Spring 2026</Badge>
-              <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800">Coming Up Very Soon</Badge>
+              <Badge variant="outline">Spring School</Badge>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
               Silicon Sprint
@@ -131,14 +112,13 @@ export default function SpringSchoolPage() {
               Digital ASIC Design with Open-Source EDA Tools
             </p>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl">
-              A comprehensive training program at The American University in Cairo, 
-              teaching digital ASIC design from HDL to GDS using open-source tools. 
-              The best projects will be fabricated on real silicon.
+              A comprehensive training program at The American University in Cairo
+              for ASIC design using Open-source technologies.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 dark:border-primary/60 dark:text-primary" asChild>
                 <Link href="#curriculum">
-                  View Curriculum
+                  View Program
                 </Link>
               </Button>
             </div>
@@ -147,9 +127,9 @@ export default function SpringSchoolPage() {
       </section>
 
       {/* Quick Info */}
-      <section className="border-b">
+      <section className="border-b mb-32">
         <div className="container px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Calendar className="h-5 w-5 text-primary" />
@@ -157,15 +137,6 @@ export default function SpringSchoolPage() {
               <div>
                 <p className="font-medium">April 6-8, 2026</p>
                 <p className="text-sm text-muted-foreground">3-Day Intensive</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MapPin className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">AUC Cairo</p>
-                <p className="text-sm text-muted-foreground">In-person</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -179,13 +150,14 @@ export default function SpringSchoolPage() {
             </div>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-primary" />
+                <MapPin className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium">Limited Seats</p>
-                <p className="text-sm text-muted-foreground">Spots Filling Up</p>
+                <p className="font-medium">AUC Cairo</p>
+                <p className="text-sm text-muted-foreground">In-person</p>
               </div>
             </div>
+
           </div>
         </div>
       </section>
@@ -194,30 +166,21 @@ export default function SpringSchoolPage() {
       <section id="curriculum" className="border-b scroll-mt-20">
         <div className="container px-4 py-16">
           <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">3-Day Intensive Program</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Program Schedule</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              An intensive 3-day program covering the complete ASIC design flow, 
-              followed by 2 clinic days for silicon bring-up and characterization.
-            </p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">The Program Schedule</h2>
           </div>
           
           {/* Main Program Days */}
-          <div className="space-y-6 mb-12">
+          <div className="space-y-6 mb-40">
             {programSchedule.map((day) => (
               <Card key={day.date} className="relative overflow-hidden border-gray-300 dark:border-gray-800">
                 <div className="absolute top-0 right-0 h-24 w-24 bg-gradient-to-bl from-primary/10 to-transparent" />
                 <CardHeader className="pb-4">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <day.icon className="h-6 w-6 text-primary" />
-                    </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge>{day.date}</Badge>
-                        <Badge variant="secondary">{day.day}</Badge>
+                        <Badge className="text-lg">{day.date}</Badge>
+                        <Badge className="text-lg" variant="secondary">{day.day}</Badge>
                       </div>
-                      <CardTitle className="text-xl">{day.title}</CardTitle>
                     </div>
                   </div>
                 </CardHeader>
@@ -228,11 +191,11 @@ export default function SpringSchoolPage() {
                         key={idx} 
                         className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
                       >
-                        <div className="text-xs font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                        <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                           {session.time}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{session.topic}</p>
+                          <p className="text-md font-medium">{session.topic}</p>
                         </div>
                       </div>
                     ))}
@@ -244,20 +207,13 @@ export default function SpringSchoolPage() {
 
           {/* Clinic Days */}
           <div className="text-center mb-8">
-            <Badge variant="outline" className="mb-4">Post-Fabrication</Badge>
             <h3 className="text-2xl md:text-3xl font-bold mb-4">Clinic Days</h3>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Two dedicated sessions for silicon bring-up and characterization after fabrication.
-            </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {clinicDays.map((clinic) => (
               <Card key={clinic.date} className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
                 <CardHeader>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <clinic.icon className="h-5 w-5 text-primary" />
-                    </div>
                     <Badge className="bg-primary text-primary-foreground">{clinic.date}</Badge>
                   </div>
                   <CardTitle>{clinic.title}</CardTitle>
@@ -269,11 +225,11 @@ export default function SpringSchoolPage() {
                         key={idx} 
                         className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
                       >
-                        <div className="text-xs font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                        <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                           {session.time}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium">{session.topic}</p>
+                          <p className="text-md font-medium">{session.topic}</p>
                         </div>
                       </div>
                     ))}
@@ -281,58 +237,6 @@ export default function SpringSchoolPage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Requirements */}
-      <section className="border-b bg-muted/30">
-        <div className="container px-4 py-16">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge variant="outline" className="mb-4">Prerequisites</Badge>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Requirements</h2>
-              <p className="text-muted-foreground mb-6">
-                This program is designed for students and early-career engineers 
-                who want to learn ASIC design. Prior tapeout experience is not required.
-              </p>
-              <ul className="space-y-3">
-                {requirements.map((req) => (
-                  <li key={req} className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <Card className="bg-card/80 backdrop-blur">
-              <CardHeader>
-                <CardTitle>Tools You'll Use</CardTitle>
-                <CardDescription>
-                  Industry-standard open-source EDA tools
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "OpenLane",
-                    "Yosys",
-                    "Verilator",
-                    "Magic",
-                    "Netgen",
-                    "KLayout",
-                    "OpenROAD",
-                    "SKY130 PDK",
-                    "Cocotb",
-                    "GTKWave",
-                  ].map((tool) => (
-                    <Badge key={tool} variant="secondary">
-                      {tool}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
