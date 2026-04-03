@@ -126,29 +126,6 @@ export default function ProjectsPage() {
               )}
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="border-t bg-muted/30">
-        <div className="container px-4 py-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-4">Want to Contribute?</h2>
-            <p className="text-muted-foreground mb-6">
-              Join the open-source silicon movement. Whether you&apos;re fixing bugs, 
-              adding features, or improving documentation, every contribution matters.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button asChild>
-                  <Link href="/forum">Find Collaborators</Link>
-                </Button>
-              <Button className="dark:hover:text-gray-400" variant="outline" asChild>
-                <Link href="/forum/new">
-                  Share Your Project
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
