@@ -149,8 +149,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithProvider("linkedin_oidc")
   }
 
-  const openAuthModal = () => setIsAuthModalOpen(true)
-  const closeAuthModal = () => setIsAuthModalOpen(false)
+  const openAuthModal = React.useCallback(() => setIsAuthModalOpen(true), [])
+  const closeAuthModal = React.useCallback(() => setIsAuthModalOpen(false), [])
   const role = user?.role ?? "member"
 
   return (
