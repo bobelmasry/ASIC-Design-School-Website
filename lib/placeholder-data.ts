@@ -24,13 +24,9 @@ export type ForumCategory = {
 export type OpenSourceProject = {
   id: string
   name: string
-  description: string
-  longDescription: string
   url: string
-  category: "flow" | "ip" | "pdk" | "tool" | "soc"
   stars: number
-  tags: string[]
-  featured?: boolean
+  description?: string
 }
 
 export const engineers: Engineer[] = [
@@ -152,130 +148,54 @@ export const forumCategories: ForumCategory[] = [
 
 export const openSourceProjectsList: OpenSourceProject[] = [
   {
-    id: "caravel",
-    name: "Caravel",
-    description: "A template SoC for Google-funded shuttle runs through Efabless",
-    longDescription: "Caravel is a template SoC designed for use with the Google-sponsored shuttle program through Efabless. It provides a standardized wrapper with GPIO, SPI, UART, and power management, allowing designers to focus on their custom logic in a user project area.",
-    url: "https://github.com/efabless/caravel",
-    category: "soc",
-    stars: 388,
-    tags: ["SoC", "Efabless", "SKY130", "RISC-V"],
-    featured: true,
+    id: "librelane",
+    name: "LibreLane",
+    url: "https://github.com/librelane/librelane",
+    description: "ASIC implementation flow infrastructure, successor to OpenLane",
+    stars: 352,
   },
   {
-    id: "openlane",
-    name: "OpenLane",
-    description: "Automated RTL-to-GDSII flow for digital design",
-    longDescription: "OpenLane is an automated RTL-to-GDSII flow built around open-source tools including OpenROAD, Yosys, Magic, Netgen, and more. It supports both SKY130 and GF180MCU PDKs and is actively maintained by Efabless.",
-    url: "https://github.com/The-OpenROAD-Project/OpenLane",
-    category: "flow",
-    stars: 1738,
-    tags: ["RTL-to-GDSII", "Synthesis", "P&R", "OpenROAD"],
-    featured: true,
-  },
-  {
-    id: "dffram",
-    name: "DFFRAM",
-    description: "Standard cell-based RAM compiler",
-    longDescription: "DFFRAM is an open-source standard cell-based RAM compiler that generates synthesizable RAM designs using only flip-flops and standard cells. It supports multiple configurations and is optimized for SKY130 PDK.",
-    url: "https://github.com/AUCOHL/DFFRAM",
-    category: "ip",
-    stars: 164,
-    tags: ["RAM", "Memory", "SKY130", "Standard Cells"],
-    featured: true,
+    id: "caravel_user_project",
+    name: "Caravel User Project",
+    description: "User project designed for integration into the Caravel chip user space.",
+    url: "https://github.com/chipfoundry/caravel_user_project",
+    stars: 16,
   },
   {
     id: "openroad",
     name: "OpenROAD",
-    description: "Complete RTL-to-GDSII flow with cutting-edge algorithms",
-    longDescription: "OpenROAD is an integrated chip physical design tool that provides a fully autonomous, 24-hour RTL-to-GDSII flow. It includes state-of-the-art algorithms for floorplanning, placement, CTS, routing, and finishing.",
+    description: "OpenROAD's unified application implementing an RTL-to-GDS Flow.",
     url: "https://github.com/The-OpenROAD-Project/OpenROAD",
-    category: "flow",
     stars: 2547,
-    tags: ["Physical Design", "P&R", "Floorplanning", "CTS"],
-    featured: true,
   },
   {
-    id: "yosys",
-    name: "Yosys",
-    description: "Open synthesis suite for Verilog RTL synthesis",
-    longDescription: "Yosys is a framework for Verilog RTL synthesis. It currently has extensive Verilog-2005 support and provides a basic set of synthesis algorithms for various application domains.",
-    url: "https://github.com/YosysHQ/yosys",
-    category: "tool",
-    stars: 4383,
-    tags: ["Synthesis", "Verilog", "FPGA", "ASIC"],
+    id: "greyhound-ifp",
+    name: "Greyhound IFP",
+    description: "Greyhound on IHP SG13G2 0.13 μm BiCMOS process",
+    url: "https://github.com/mole99/greyhound-ihp",
+    stars: 87,
+  },
+  {
+    id: "dffram",
+    name: "DFFRAM",
+    description: "Standard Cell Library based Memory Compiler using FF/Latch cells",
+    url: "https://github.com/AUCOHL/DFFRAM",
+    stars: 164,
+  },
+  {
+    id: "difetto",
+    name: "Difetto",
+    url: "https://github.com/donn/difetto",
+    description: "About [WIP] Open-source DFT flow",
+    stars: 26,
   },
   {
     id: "sky130-pdk",
     name: "SKY130 PDK",
-    description: "SkyWater Technology 130nm open-source PDK",
-    longDescription: "The SkyWater Open Source PDK is a collaboration between Google and SkyWater Technology Foundry to provide a fully open source Process Design Kit for the SKY130 130nm process node.",
     url: "https://github.com/google/skywater-pdk",
-    category: "pdk",
+    description: "Open source process design kit for usage with SkyWater Technology Foundry's 130nm node.",
     stars: 3472,
-    tags: ["PDK", "130nm", "SkyWater", "Google"],
-    featured: true,
-  },
-  {
-    id: "gf180mcu-pdk",
-    name: "GF180MCU PDK",
-    description: "GlobalFoundries 180nm open-source PDK",
-    longDescription: "The GF180MCU open-source PDK provides design kit files for the GlobalFoundries 180nm MCU process. It includes standard cells, I/O libraries, and IP blocks for analog and digital design.",
-    url: "https://github.com/google/gf180mcu-pdk",
-    category: "pdk",
-    stars: 476,
-    tags: ["PDK", "180nm", "GlobalFoundries", "MCU"],
-  },
-  {
-    id: "verilator",
-    name: "Verilator",
-    description: "Fast Verilog/SystemVerilog simulator",
-    longDescription: "Verilator is the fastest free Verilog HDL simulator. It compiles synthesizable Verilog into multithreaded C++ or SystemC code for execution. It's commonly used for large-scale simulation and verification.",
-    url: "https://github.com/verilator/verilator",
-    category: "tool",
-    stars: 3500,
-    tags: ["Simulation", "Verilog", "SystemVerilog", "C++"],
-  },
-  {
-    id: "magic",
-    name: "Magic VLSI",
-    description: "VLSI layout tool for DRC, extraction, and GDS",
-    longDescription: "Magic is a venerable VLSI layout tool, written in the 1980s at Berkeley. It has been extensively updated and is now used for DRC checking, parasitic extraction, and GDS generation in modern open-source flows.",
-    url: "https://github.com/RTimothyEdwards/magic",
-    category: "tool",
-    stars: 630,
-    tags: ["Layout", "DRC", "Extraction", "GDS"],
-  },
-  {
-    id: "cocotb",
-    name: "cocotb",
-    description: "Coroutine-based cosimulation testbench for HDL",
-    longDescription: "cocotb is a coroutine-based cosimulation testbench environment for verifying VHDL and Verilog RTL using Python. It provides a powerful and productive way to write testbenches.",
-    url: "https://github.com/cocotb/cocotb",
-    category: "tool",
-    stars: 2312,
-    tags: ["Verification", "Python", "Testbench", "Simulation"],
-  },
-  {
-    id: "picorv32",
-    name: "PicoRV32",
-    description: "Size-optimized RISC-V CPU core",
-    longDescription: "PicoRV32 is a CPU core that implements the RISC-V RV32IMC instruction set. It is designed to be small and efficient, making it ideal for FPGA and ASIC implementations where area is constrained.",
-    url: "https://github.com/YosysHQ/picorv32",
-    category: "ip",
-    stars: 4075,
-    tags: ["RISC-V", "CPU", "RV32IMC", "Compact"],
-  },
-  {
-    id: "vexriscv",
-    name: "VexRiscv",
-    description: "SpinalHDL-based RISC-V CPU core",
-    longDescription: "VexRiscv is a RISC-V implementation written in SpinalHDL. It's highly configurable and supports various ISA extensions. The core can be tuned from a small embedded processor to a high-performance Linux-capable system.",
-    url: "https://github.com/SpinalHDL/VexRiscv",
-    category: "ip",
-    stars: 3093,
-    tags: ["RISC-V", "SpinalHDL", "CPU", "Configurable"],
-  },
+  }
 ]
 
 export const domains = [

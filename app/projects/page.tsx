@@ -5,7 +5,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/components/auth-context"
 import { 
   Github, 
   Star, 
@@ -28,13 +27,6 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        <div className="flex flex-wrap gap-1 mb-4">
-          {project.tags.slice(0, 4).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
         <div className="mt-auto flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
@@ -53,25 +45,7 @@ function ProjectCard({ project }: { project: OpenSourceProject }) {
 }
 
 export default function ProjectsPage() {
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [selectedCategory, setSelectedCategory] = React.useState("all")
 
-  const filteredProjects = React.useMemo(() => {
-    return openSourceProjectsList.filter((project) => {
-      const matchesSearch =
-        searchQuery === "" ||
-        project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      
-      const matchesCategory = selectedCategory === "all" || project.category === selectedCategory
-      
-      return matchesSearch && matchesCategory
-    })
-  }, [searchQuery, selectedCategory])
-
-  const featuredProjects = filteredProjects.filter((p) => p.featured)
-  const otherProjects = filteredProjects.filter((p) => !p.featured)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -104,13 +78,13 @@ export default function ProjectsPage() {
       <section className="flex-1">
         <div className="container px-4 py-8">
               {/* Featured Projects */}
-              {featuredProjects.length > 0 && (
+              {openSourceProjectsList.length > 0 && (
                 <div className="mb-12">
                   <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
                     Featured Projects
                   </h2>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {featuredProjects.map((project) => (
+                    {openSourceProjectsList.map((project) => (
                       <a
                         key={project.id}
                         href={project.url}

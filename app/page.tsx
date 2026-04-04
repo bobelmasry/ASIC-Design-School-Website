@@ -2,40 +2,14 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/components/auth-context"
 import {
   ArrowRight,
   Github,
-  Sparkles,
-  BookOpen,
-  Zap,
-  Globe,
-  Code2
 } from "lucide-react"
 import { engineers } from "@/lib/placeholder-data"
-
-const openSourceProjects = [
-  {
-    name: "Caravel",
-    description: "Template SoC ready for shuttle-eligible designs.",
-    url: "https://github.com/efabless/caravel",
-    tags: ["SoC", "SKY130", "Wrapper"],
-  },
-  {
-    name: "OpenLane",
-    description: "Automated RTL-to-GDSII flow powering our tape-out studio.",
-    url: "https://github.com/The-OpenROAD-Project/OpenLane",
-    tags: ["Flow", "OpenROAD", "Automation"],
-  },
-  {
-    name: "DFFRAM",
-    description: "Standard cell RAM compiler used inside multiple cohort projects.",
-    url: "https://github.com/AUCOHL/DFFRAM",
-    tags: ["Memory", "Compiler", "SKY130"],
-  },
-]
 
 export default function HomePage() {
   const { openAuthModal, isAuthenticated } = useAuth()
@@ -167,48 +141,6 @@ export default function HomePage() {
                 </Card>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b bg-background">
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="text-center max-w-2xl mx-auto mb-20 space-y-3">
-            <Badge variant="outline" className="mb-2">
-              <Github className="h-3 w-3 mr-1" />
-              Open Source Stack
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-balance">Tools we contribute to and teach</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {openSourceProjects.map((project) => (
-              <a
-                key={project.name}
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-              >
-                <Card className="h-full border-border/60 hover:border-primary/50 transition-all">
-                  <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-2">
-                      <Github className="h-5 w-5" />
-                      {project.name}
-                    </CardTitle>
-                    <CardDescription>{project.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </a>
-            ))}
           </div>
         </div>
       </section>
