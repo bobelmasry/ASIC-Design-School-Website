@@ -25,7 +25,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1 flex justify-center md:justify-start">
             <Link href="/" className="flex flex-col md:flex-row items-center gap-4 mb-4">
-              <Image src="/large_logo.png" alt="Open Source ASIC Hub" width={60} height={60} className="h-18 w-24 md:h-32 md:w-36 text-primary" />
+              <Image src="/large_logo1.png" alt="Open Source ASIC Hub" width={60} height={60} className="h-18 w-24 md:h-32 md:w-36 text-primary" />
             </Link>
           </div>
 
