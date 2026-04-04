@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import {
   ArrowLeft,
   Send,
   Plus,
+  X,
 } from "lucide-react"
 import {
   Select,
@@ -30,33 +31,84 @@ import {
   type Attachment,
 } from "@/lib/attachments"
 
-export default function NewPostPage() {
+type DatabasePost = {
+  id: string | number
+  title: string | null
+  content?: string | null
+  category?: string | null
+  created_at?: string | null
+  edited_at?: string | null
+  replies?: any[] | null
+  replies_count?: number | null
+  likes?: number | null
+  user_id?: string | null
+  user_full_name?: string | null
+  json_likes?: string[] | null
+  attachments?: Attachment[] | null
+}
+
+export default function EditPostPage() {
+  const params = useParams()
   const router = useRouter()
-  const { isAuthenticated, openAuthModal } = useAuth()
+  const { isAuthenticated, openAuthModal, user } = useAuth()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
   const [uploadError, setUploadError] = React.useState<string | null>(null)
+  const [post, setPost] = React.useState<DatabasePost | null>(null)
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
 
   const [formData, setFormData] = React.useState({
     title: "",
     category: "",
     content: "",
-    tags: [] as string[],
   })
-  const [tagInput, setTagInput] = React.useState("")
 
-  // Redirect if not authenticated
+  const [existingAttachments, setExistingAttachments] = React.useState<Attachment[]>([])
+  const [attachmentsToRemove, setAttachmentsToRemove] = React.useState<Set<string>>(new Set())
+
   React.useEffect(() => {
-    if (!isAuthenticated) {
-      openAuthModal()
-    }
-  }, [isAuthenticated, openAuthModal])
+    const loadPost = async () => {
+      if (!params.id) return
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }))
+      setIsLoading(true)
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("id", params.id)
+        .single()
+
+      if (error || !data) {
+        setError("Post not found or you don't have permission to edit it.")
+        setIsLoading(false)
+        return
+      }
+
+      // Check if user is the author
+      if (data.user_id !== user?.id) {
+        setError("You can only edit your own posts.")
+        setIsLoading(false)
+        return
+      }
+
+      setPost(data)
+      setFormData({
+        title: data.title || "",
+        category: data.category || "",
+        content: data.content || "",
+      })
+      setExistingAttachments(data.attachments || [])
+      setError(null)
+      setIsLoading(false)
+    }
+
+    if (isAuthenticated && user) {
+      loadPost()
+    }
+  }, [params.id, isAuthenticated, user])
+
+  const handleRemoveExistingAttachment = (attachmentId: string) => {
+    setAttachmentsToRemove(prev => new Set([...prev, attachmentId]))
   }
 
   const handleFileSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,21 +129,19 @@ export default function NewPostPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.title.trim() || !formData.category || !formData.content.trim()) {
+    if (!post || !formData.title.trim() || !formData.category || !formData.content.trim()) {
       return
     }
 
     setIsSubmitting(true)
     setUploadError(null)
 
-    const { data: userData } = await supabase.auth.getUser()
-    const fullName = userData?.user?.user_metadata?.full_name || userData?.user?.email || "Community Member"
-
     let uploadedAttachments: Attachment[] = []
+    let finalAttachments = existingAttachments.filter(att => !attachmentsToRemove.has(att.id))
 
     if (selectedFiles.length) {
       try {
-        uploadedAttachments = await uploadAttachments(selectedFiles, userData?.user?.id)
+        uploadedAttachments = await uploadAttachments(selectedFiles, user?.id)
       } catch (error) {
         console.error(error)
         setUploadError("Failed to upload attachments. Please try again.")
@@ -100,29 +150,29 @@ export default function NewPostPage() {
       }
     }
 
-    const { data, error } = await supabase
+    finalAttachments = [...finalAttachments, ...uploadedAttachments]
+
+    const { error } = await supabase
       .from("posts")
-      .insert({
+      .update({
         title: formData.title,
         content: formData.content,
         category: formData.category,
-        user_id: userData?.user?.id,
-        user_full_name: fullName,
-        attachments: uploadedAttachments,
-        isHidden: false,
+        attachments: finalAttachments,
+        edited_at: new Date().toISOString(),
       })
-      .select()
+      .eq("id", post.id)
 
     setIsSubmitting(false)
 
-    if (error || !data || data.length === 0) {
+    if (error) {
       console.error(error)
-      alert("Failed to create post")
+      alert("Failed to update post")
       return
     }
 
     setSelectedFiles([])
-    router.push(`/forum/${data[0].id}`)
+    router.push(`/forum/${post.id}`)
   }
 
   const isValid = formData.title.trim() && formData.category && formData.content.trim()
@@ -132,9 +182,32 @@ export default function NewPostPage() {
       <div className="container px-4 py-16 text-center">
         <h1 className="text-2xl font-bold mb-4">Sign In Required</h1>
         <p className="text-muted-foreground mb-6">
-          You need to be signed in to create a new discussion.
+          You need to be signed in to edit posts.
         </p>
         <Button onClick={openAuthModal}>Sign In</Button>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="container px-4 py-16 text-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+        <p className="mt-4 text-muted-foreground">Loading post...</p>
+      </div>
+    )
+  }
+
+  if (error || !post) {
+    return (
+      <div className="container px-4 py-16 text-center">
+        <h1 className="text-2xl font-bold mb-4">Unable to Edit</h1>
+        <p className="text-muted-foreground mb-6">
+          {error || "Post not found."}
+        </p>
+        <Button asChild>
+          <Link href="/forum">Back to Forum</Link>
+        </Button>
       </div>
     )
   }
@@ -143,17 +216,17 @@ export default function NewPostPage() {
     <div className="container px-4 py-8 max-w-3xl">
       {/* Back Button */}
       <Button variant="ghost" className="mb-6 hover:text-white" asChild>
-        <Link href="/forum">
+        <Link href={`/forum/${post.id}`}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Forum
+          Back to Post
         </Link>
       </Button>
 
       <Card className="border-gray-300 dark:border-gray-800">
         <CardHeader>
-          <CardTitle>Start a New Discussion</CardTitle>
+          <CardTitle>Edit Discussion</CardTitle>
           <CardDescription>
-            Share your question, idea, or topic with the community
+            Make changes to your discussion
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -215,9 +288,34 @@ export default function NewPostPage() {
               />
             </div>
 
-            {/* Attachments */}
+            {/* Existing Attachments */}
+            {existingAttachments.length > 0 && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Current Attachments</label>
+                <ul className="space-y-2">
+                  {existingAttachments
+                    .filter(att => !attachmentsToRemove.has(att.id))
+                    .map((attachment) => (
+                      <li key={attachment.id} className="flex items-center justify-between p-2 border rounded">
+                        <span className="text-sm">{attachment.name}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveExistingAttachment(attachment.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
+
+            {/* New Attachments */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Attachments</label>
+              <label className="text-sm font-medium">Add New Attachments</label>
               <input
                 type="file"
                 multiple
@@ -242,7 +340,7 @@ export default function NewPostPage() {
             {/* Submit */}
             <div className="flex justify-end gap-4">
               <Button className="dark:hover:text-gray-400 border-gray-300 dark:border-gray-800" type="button" variant="outline" asChild>
-                <Link href="/forum">Cancel</Link>
+                <Link href={`/forum/${post.id}`}>Cancel</Link>
               </Button>
               <Button type="submit" disabled={!isValid || isSubmitting}>
                 {isSubmitting ? (
@@ -250,12 +348,12 @@ export default function NewPostPage() {
                     <span className="animate-spin mr-2">
                       <Plus className="h-4 w-4" />
                     </span>
-                    Posting...
+                    Updating...
                   </>
                 ) : (
                   <>
                     <Send className="h-4 w-4 mr-2" />
-                    Post Discussion
+                    Update Discussion
                   </>
                 )}
               </Button>

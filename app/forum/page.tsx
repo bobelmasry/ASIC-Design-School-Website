@@ -34,6 +34,7 @@ type DatabasePost = {
   user_id?: string | null
   user_full_name?: string | null
   json_likes?: string[] | null
+  isHidden?: boolean | null
 }
 
 type ForumPostWithAuthor = {
@@ -54,7 +55,7 @@ type ForumPostWithAuthor = {
 function ForumPageContent() {
   const searchParams = useSearchParams()
   const categoryParam = searchParams.get("category")
-  const { openAuthModal, isAuthenticated } = useAuth()
+  const { openAuthModal, isAuthenticated, canModerateForum } = useAuth()
 
   const [posts, setPosts] = React.useState<ForumPostWithAuthor[]>([])
   const [isLoadingPosts, setIsLoadingPosts] = React.useState(true)
@@ -72,10 +73,17 @@ function ForumPageContent() {
 
     const loadPosts = async () => {
       setIsLoadingPosts(true)
-      const { data: postRows, error } = await supabase
+      let query = supabase
         .from("posts")
         .select("*")
         .order("created_at", { ascending: false })
+
+      // Filter out hidden posts for regular users
+      if (!canModerateForum) {
+        query = query.eq("isHidden", false)
+      }
+
+      const { data: postRows, error } = await query
 
       if (!isMounted) return
 
@@ -163,9 +171,11 @@ function ForumPageContent() {
     if (!dateString) return "Just now"
     const date = new Date(dateString)
     const now = new Date()
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
 
-    if (diffInHours < 1) return "Just now"
+    if (diffInMinutes < 5) return "Just now"
+    if (diffInHours < 1) return `${diffInMinutes}m ago`
     if (diffInHours < 24) return `${diffInHours}h ago`
     if (diffInHours < 48) return "Yesterday"
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })

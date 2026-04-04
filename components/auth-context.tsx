@@ -31,6 +31,7 @@ type AuthContextType = {
   signInWithGithub: () => Promise<void>
   signInWithLinkedIn: () => Promise<void>
   signOut: () => Promise<void>
+  forceRefreshSession: () => Promise<void>
   openAuthModal: () => void
   closeAuthModal: () => void
   isAuthModalOpen: boolean
@@ -125,6 +126,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
+  const forceRefreshSession = async () => {
+    const { data, error } = await supabase.auth.refreshSession()
+    if (error) {
+      console.error('Failed to refresh session:', error)
+    } else {
+      console.log('Session refreshed:', data.user?.app_metadata)
+    }
+  }
+
   const signInWithProvider = async (provider: AuthProvider) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
@@ -167,6 +177,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signInWithGithub,
         signInWithLinkedIn,
         signOut,
+        forceRefreshSession,
         openAuthModal,
         closeAuthModal,
         isAuthModalOpen,

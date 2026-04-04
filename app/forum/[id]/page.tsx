@@ -29,6 +29,7 @@ import {
   MoreHorizontal,
   Send,
   CheckCircle2,
+  Edit,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -61,6 +62,8 @@ type DatabasePost = {
   content?: string | null
   category?: string | null
   created_at?: string | null
+  edited_at?: string | null
+  isHidden?: boolean | null
   replies?: PostReply[] | null
   replies_count?: number | null
   likes?: number | null
@@ -140,6 +143,14 @@ export default function ForumPostPage() {
       }
 
       const normalizedPost = normalizePost(data)
+      
+      // Check if post is hidden and user is not admin
+      if (normalizedPost?.isHidden && !canModerateForum) {
+        setFetchError("This post is not available.")
+        setIsLoadingPost(false)
+        return
+      }
+      
       setPost(normalizedPost)
       setReplies(normalizeReplies(data.replies as PostReply[] | null))
       setFetchError(null)
@@ -575,9 +586,11 @@ export default function ForumPostPage() {
   return (
     <div className="container px-4 py-8 max-w-4xl">
       {/* Back Button */}
-      <Button variant="ghost" className="mb-6 hover:text-white" onClick={() => router.back()}>
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Forum
+      <Button variant="ghost" className="mb-6 hover:text-white" asChild>
+        <Link href="/forum">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Forum
+        </Link>
       </Button>
 
       {/* Main Post */}
@@ -600,6 +613,11 @@ export default function ForumPostPage() {
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   {post.created_at ? formatDate(post.created_at) : "Just now"}
+                  {post.edited_at && (
+                    <span className="text-xs text-muted-foreground ml-2">
+                      (edited {formatDate(post.edited_at)})
+                    </span>
+                  )}
                 </span>
               </div>
             </div>
@@ -609,30 +627,38 @@ export default function ForumPostPage() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-               <DropdownMenuContent align="end">
-                 <DropdownMenuItem onClick={handleShare}>
-                   <Share2 className="h-4 w-4 mr-2 hover:text-white" />
-                   Share
-                 </DropdownMenuItem>
-                 {canModerateForum && (
-                   <DropdownMenuItem
-                     onClick={handleDeletePost}
-                     disabled={isAdminActionLoading}
-                     className="text-destructive"
-                   >
-                     Delete Discussion
-                   </DropdownMenuItem>
-                 )}
-                 {user?.id === post.user_id && !canModerateForum && (
-                   <DropdownMenuItem
-                     onClick={handleDeleteOwnPost}
-                     disabled={isDeletingOwn}
-                     className="text-destructive"
-                   >
-                     Delete Discussion
-                   </DropdownMenuItem>
-                 )}
-               </DropdownMenuContent>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleShare}>
+                    <Share2 className="h-4 w-4 mr-2 hover:text-white" />
+                    Share
+                  </DropdownMenuItem>
+                  {user?.id === post.user_id && (
+                    <DropdownMenuItem asChild>
+                      <Link href={`/forum/${post.id}/edit`}>
+                        <Edit className="h-4 w-4 mr-2 hover:text-white" />
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {canModerateForum && (
+                    <DropdownMenuItem
+                      onClick={handleDeletePost}
+                      disabled={isAdminActionLoading}
+                      className="text-destructive"
+                    >
+                      Delete Discussion
+                    </DropdownMenuItem>
+                  )}
+                  {user?.id === post.user_id && !canModerateForum && (
+                    <DropdownMenuItem
+                      onClick={handleDeleteOwnPost}
+                      disabled={isDeletingOwn}
+                      className="text-destructive"
+                    >
+                      Delete Discussion
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </CardHeader>
@@ -711,9 +737,9 @@ export default function ForumPostPage() {
                               Accepted
                             </Badge>
                           )}
-                   <span className="text-xs text-muted-foreground">
-                     {reply.created_at ? formatDate(reply.created_at) : "Moments ago"}
-                   </span>
+                    <span className="text-xs text-muted-foreground">
+                      {reply.created_at ? formatDate(reply.created_at) : "Moments ago"}
+                    </span>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

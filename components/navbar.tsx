@@ -24,8 +24,18 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage } = useAuth()
+  const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage, canModerateForum } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
+  // Debug admin access
+  React.useEffect(() => {
+    console.log('Navbar admin check:', {
+      isAuthenticated,
+      canModerateForum,
+      userRole: user?.role,
+      userEmail: user?.email
+    })
+  }, [isAuthenticated, canModerateForum, user])
 
 
   return (
@@ -53,6 +63,14 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {canModerateForum && (
+              <Link
+                href="/admin/forum"
+                className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
+              >
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
 
@@ -80,6 +98,16 @@ export function Navbar() {
                   </div>
                 </div>
                 <DropdownMenuSeparator />
+                {canModerateForum && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin/forum">
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
@@ -125,6 +153,15 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {canModerateForum && (
+              <Link
+                href="/admin/forum"
+                className="text-sm font-medium py-2 transition-colors hover:text-primary text-muted-foreground"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Admin Dashboard
+              </Link>
+            )}
             {!isAuthenticated && (
               <div className="flex flex-col gap-2 pt-2 border-t">
                 <Button variant="ghost" onClick={() => { openAuthModal(); setIsMobileMenuOpen(false); }}>
