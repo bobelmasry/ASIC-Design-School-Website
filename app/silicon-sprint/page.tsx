@@ -37,7 +37,7 @@ const programSchedule = [
     sessions: [
       { time: "10:00 - 10:45", topic: "Physical Implementation Strategy (Mohamed Hosni)" },
       { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)" },
-      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdulmoniem)"},
+      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem)"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdulrahman)" },
       { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },

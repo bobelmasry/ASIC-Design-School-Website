@@ -4,79 +4,58 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { ArrowLeft } from "lucide-react"
 
 const speakers = {
   "tim-ansell": {
     name: "Tim Ansell",
-    title: "ASIC Design Expert",
     image: "/speakers/tim-ansell.jpg",
     description: "Tim Ansell is a leading expert in ASIC design and open-source EDA tools. He has extensive experience in chip design and has contributed to various open-source projects in the semiconductor industry.",
-    bio: "With over 15 years in the field, Tim has worked on multiple tape-outs and is passionate about democratizing access to ASIC technology through education and open-source tools.",
   },
   "mohamed-gaber": {
     name: "Mohamed Gaber",
-    title: "ASIC Design Engineer",
     image: "/speakers/mohamed-gaber.jpg",
-    description: "Mohamed Gaber specializes in ASIC design and has developed LibreLane, an open-source ASIC design flow. He is committed to advancing the field through innovative tools and education.",
-    bio: "Mohamed holds a degree in Electrical Engineering and has worked on several ASIC projects. He is actively involved in the open-source community and regularly contributes to forums and workshops.",
+    description: "Mohamed Gaber is a career developer of free and open source electronic design automation utilities. An Efabless alumus and member of the FOSSi Foundation, Gaber has been the lead maintainer of OpenLane since 2021 and the primary author of its rewrite, LibreLane.",
   },
   "mohamed-hosni": {
     name: "Mohamed Hosni",
-    title: "Physical Design Specialist",
-    image: "/speakers/mohamed-hosni.jpg",
-    description: "Mohamed Hosni is an expert in physical design and implementation strategies for ASICs. He has led multiple successful tape-outs and mentors aspiring engineers.",
-    bio: "With a background in semiconductor physics and extensive industry experience, Mohamed focuses on optimizing design flows and ensuring manufacturability of complex chips.",
+    image: "/mohamed-hosni.jpeg",
+    description: "Mohamed Hosni is a Senior ASIC Methodology Engineer at Qualcomm, specializing in signoff methodologies for advanced technology nodes. He previously worked at Efabless, where he contributed to 10+ open-source tape-outs using OpenLane, OpenROAD, and related tools on SKY130 and GF180 PDKs. He holds a B.Sc. in Nanoelectronics Engineering from Zewail City and is currently pursuing an M.Sc. in Electrical and Computer Engineering at Purdue University.",
   },
   "leo-moser": {
     name: "Leo Moser",
-    title: "FPGA and LibreLane Contributor",
     image: "/speakers/leo-moser.jpg",
     description: "Leo Moser works on FPGA integration and has made significant contributions to the LibreLane plugin for Greyhound FPGA, enhancing open-source ASIC workflows.",
-    bio: "A software engineer with a passion for hardware, Leo bridges the gap between software development and hardware design, making tools more accessible to developers.",
   },
-  "abdulmoniem": {
-    name: "Abdulmoniem",
-    title: "Formal Verification Expert",
-    image: "/speakers/abdulmoniem.jpg",
-    description: "Abdulmoniem specializes in formal design verification using SymbiYosys and is an advocate for rigorous verification methodologies in ASIC design.",
-    bio: "He has developed several verification frameworks and teaches best practices for ensuring design correctness through formal methods.",
+  "abdelmonem": {
+    name: "Abdelmonem",
+    image: "/Abdelmonem.jpeg",
+    description: "Abdelmonem is a digital IC Design and Verification Engineer at Pearl Semiconductor. Before that he earned his Bachelor of Engineering in Electronics and Communications from Cairo University in 2023. At Pearl Semiconductor, he is working on Phase-Locked Loop (PLL) solutions as part of advanced integrated circuit design and verification of wireless communication systems.",
   },
   "abdulrahman": {
     name: "Abdulrahman",
-    title: "Static Timing Analysis Specialist",
-    image: "/speakers/abdulrahman.jpg",
-    description: "Abdulrahman focuses on static timing analysis using OpenSTA and helps teams optimize timing closure in their ASIC designs.",
-    bio: "With expertise in timing analysis tools and methodologies, he ensures that designs meet performance requirements and are ready for fabrication.",
+    image: "/abdulrahman.jpeg",
+    description: "Abdelrahman Oun is a Senior Digital Design Engineer at Pearl Semiconductor with over 3 years of experience in the semiconductors industry. He holds a Bachelor's degree in Electronics and Communications Engineering from the Faculty of Engineering, Ain Shams University, graduating in 2022. Throughout his career, Abdelrahman has built a strong track record of contributions across multiple tape-outs, spanning the full chip development cycle. His work encompasses RTL feature implementation, block-level and system-level verification up to chip top, as well as backend implementation including timing closure and chip finishing.",
   },
   "basem": {
     name: "Basem",
-    title: "ASIC Implementation Lead",
     image: "/speakers/basem.jpg",
     description: "Basem leads practical sessions on ASIC implementation, covering synthesis, placement, routing, and signoff processes.",
-    bio: "An experienced engineer with hands-on knowledge of the entire ASIC flow, Basem trains engineers on using open-source tools effectively.",
   },
   "radwa": {
     name: "Radwa",
-    title: "Verification Engineer",
     image: "/speakers/radwa.jpg",
     description: "Radwa specializes in functional verification using Cocotb and ensures that ASIC designs are thoroughly tested before tape-out.",
-    bio: "She develops testbenches and verification environments, emphasizing the importance of comprehensive testing in the design process.",
   },
   "dr-dina-mahmoud": {
     name: "Dr. Dina Mahmoud",
-    title: "Hardware Security Researcher",
     image: "/speakers/dr-dina-mahmoud.jpg",
     description: "Dr. Dina Mahmoud is a researcher in hardware security, focusing on protecting ASIC designs from various threats and vulnerabilities.",
-    bio: "With a PhD in Computer Engineering, she conducts research on secure design practices and educates on emerging threats in semiconductor technology.",
   },
   "mohamed-kassem": {
     name: "Mohamed Kassem",
-    title: "ASIC Design Leader",
     image: "/speakers/mohamed-kassem.jpg",
     description: "Mohamed Kassem is a keynote speaker and leader in ASIC design, sharing insights on industry trends and future directions.",
-    bio: "He has led major ASIC projects and is committed to fostering the next generation of chip designers through education and mentorship.",
   },
 }
 
@@ -133,19 +112,12 @@ export default function SpeakerPage() {
             </div>
             <div className="flex-1">
               <CardTitle className="text-3xl mb-2">{speaker.name}</CardTitle>
-              <Badge variant="secondary" className="mb-4">{speaker.title}</Badge>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 {speaker.description}
               </p>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <h3>About {speaker.name}</h3>
-            <p>{speaker.bio}</p>
-          </div>
-        </CardContent>
       </Card>
     </div>
   )
