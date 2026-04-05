@@ -132,7 +132,6 @@ export function AuthModal() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Cpu className="h-6 w-6 text-primary" />
             <span className="font-semibold text-lg">Open Source ASIC Hub</span>
           </div>
           <DialogTitle className="text-center">
