@@ -50,14 +50,14 @@ const programSchedule: ScheduleDay[] = [
     sessions: [
       { time: "10:00 - 10:45", topic: "Physical Implementation Strategy (Mohamed Hosni)" },
       { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)" },
-      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem)"},
+      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem Sallam)"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)" },
       { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
       { time: "14:15 - 15:00", topic: "Lunch Break" },
       { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
       { time: "16:00 - 16:30", topic: "Coffee Break" },
-      { time: "16:30 - 17:30", topic: "(Salma Sultan)" },
+      { time: "16:30 - 17:30", topic: "Digital Verification with cocotb (Salma Sultan)" },
     ],
   },
   {
@@ -68,7 +68,7 @@ const programSchedule: ScheduleDay[] = [
     sessions: [
       { time: "10:00 - 10:45", topic: "DFT and Difetto (Mohamed Gaber)" },
       { time: "10:45 - 11:30", topic: "Multi-Project Chip Integration (Mohamed Hosni)" },
-      { time: "11:30 - 12:15", topic: "Practical Session: Cocotb (Radwa)" },
+      { time: "11:30 - 12:15", topic: "Practical Session: Cocotb (Radwa Gamal)" },
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:45", topic: "Practical Session: Final Signoff (Basem Hesham)" },
       { time: "13:45 - 14:45", topic: "Lunch Break" },
@@ -158,49 +158,6 @@ export default function SpringSchoolPage() {
               A comprehensive training program at The American University in Cairo
               for ASIC design using Open-source technologies.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 dark:border-primary/60 dark:text-primary" asChild>
-                <Link href="#curriculum">
-                  View Program
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Info */}
-      <section className="border-b mb-32">
-        <div className="container px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">April 6-8, 2026</p>
-                <p className="text-sm text-muted-foreground">3-Day Intensive</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">+ 2 Clinic Days</p>
-                <p className="text-sm text-muted-foreground">April 11 & 25</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <MapPin className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium">AUC Cairo</p>
-                <p className="text-sm text-muted-foreground">In-person</p>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
@@ -208,9 +165,6 @@ export default function SpringSchoolPage() {
       {/* Program Schedule */}
       <section id="curriculum" className="border-b scroll-mt-20">
         <div className="container px-4 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">The Program Schedule</h2>
-          </div>
           
           {/* Main Program Days */}
           <Tabs defaultValue="day1" className="w-full">
@@ -227,7 +181,7 @@ export default function SpringSchoolPage() {
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <MapPin className="h-4 w-4" />
-                      <span>{day.location}</span>
+                      <span className="text-lg text-blue-800 underline">{day.location}</span>
                     </div>
                   </CardHeader>
                   <CardContent>

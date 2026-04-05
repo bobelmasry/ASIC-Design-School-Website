@@ -12,12 +12,12 @@ interface Speaker {
 const speakers: Record<string, Speaker> = {
   "tim-ansell": {
     name: "Tim Ansell",
-    image: "/speakers/tim-ansell.jpg",
-    description: ["Tim Ansell is a leading expert in ASIC design and open-source EDA tools. He has extensive experience in chip design and has contributed to various open-source projects in the semiconductor industry."],
+    image: "/tim-ansell.jpeg",
+    description: ["Tim ‘Mithro’ Ansell is a pioneering figure in open-source silicon, known for his crucial role in democratizing chip design. Through initiatives like the SkyWater and GlobalFoundries open-source PDKs and the Open MPW program, he has significantly lowered barriers to entry, enabling innovation and access for individuals and smaller entities in semiconductor technology."],
   },
   "mohamed-gaber": {
     name: "Mohamed Gaber",
-    image: "/speakers/mohamed-gaber.jpg",
+    image: "/mohamed-gaber.jpeg",
     description: [
       "Mohamed Gaber is a career developer of free and open source electronic design automation utilities. An Efabless alumus and member of the FOSSi Foundation, Gaber has been the lead maintainer of OpenLane since 2021 and the primary author of its rewrite, LibreLane."
     ],
@@ -37,8 +37,8 @@ const speakers: Record<string, Speaker> = {
       "Leo Moser is an open source silicon advocate and aspiring chip designer. He is a LibreLane developer and has contributed to several of the open source PDKs. He has also designed several open-source chips himself, including Greyhound: a RISC-V SoC with embedded FPGA.",
     ],
   },
-  "abdelmonem": {
-    name: "Abdelmonem",
+  "abdelmonem-sallam": {
+    name: "Abdelmonem Sallam",
     image: "/Abdelmonem.jpeg",
     description: [
       "Abdelmonem is a digital IC Design and Verification Engineer at Pearl Semiconductor. Before that he earned his Bachelor of Engineering in Electronics and Communications from Cairo University in 2023.",
@@ -60,10 +60,12 @@ const speakers: Record<string, Speaker> = {
       "He leads practical sessions from RTL-to-GDSII implementation, guiding participants through the complete flow of synthesis, floorplanning, placement, and routing, followed by final signoff verification."
     ],
   },
-  "radwa": {
-    name: "Radwa",
-    image: "/speakers/radwa.jpg",
-    description: ["Radwa specializes in functional verification using Cocotb and ensures that ASIC designs are thoroughly tested before tape-out."],
+  "radwa-gamal": {
+    name: "Radwa Gamal",
+    image: "/radwa-gamal.jpg",
+    description: ["Radwa Gamal is a Teaching Assistant at The American University in Cairo (AUC). She holds a Bachelor of Science in Electronics and Communications Engineering from Ain Shams University, graduating in 2024.",
+      "She leads practical sessions in cocotb-based digital verification, guiding participants to build a UVM-inspired verification environment using PyUVM, cocotb, and Verilator."
+    ],
   },
   "mohamed-kassem": {
     name: "Mohamed Kassem",

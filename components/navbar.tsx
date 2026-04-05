@@ -43,13 +43,7 @@ export function Navbar() {
       <div className="container flex h-20 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <Image src="/small_logo.png" alt="Open Source ASIC Hub" width={40} height={40} className="h-18 w-24 text-primary" />
-            <div className="hidden sm:flex flex-col">
-              <span className="font-semibold text-lg">Open Source ASIC Hub</span>
-            </div>
-            <div className="flex flex-col sm:hidden">
-              <span className="font-semibold text-base">Open Source ASIC Hub</span>
-            </div>
+            <Image src="/small_logo.png" alt="Open Source ASIC Hub" width={40} height={40} className="h-14 w-20 mr-8 text-primary" />
           </Link>
           
           <nav className="hidden md:flex items-center gap-6">
