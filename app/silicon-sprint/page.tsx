@@ -188,7 +188,7 @@ export default function SpringSchoolPage() {
               </div>
               <div>
                 <p className="font-medium">+ 2 Clinic Days</p>
-                <p className="text-sm text-muted-foreground">April 11 & 18</p>
+                <p className="text-sm text-muted-foreground">April 11 & 25</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
