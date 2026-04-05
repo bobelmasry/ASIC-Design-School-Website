@@ -47,16 +47,16 @@ const speakers: Record<string, Speaker> = {
       "At Pearl Semiconductor, he is working on Phase-Locked Loop (PLL) solutions as part of advanced integrated circuit design and verification of wireless communication systems."
     ],
   },
-  "abdulrahman": {
-    name: "Abdulrahman",
+  "abdelrahman-oun": {
+    name: "Abdelrahman Oun",
     image: "/abdulrahman.jpeg",
     description: [
       "Abdelrahman Oun is a Senior Digital Design Engineer at Pearl Semiconductor with over 3 years of experience in the semiconductors industry. He holds a Bachelor's degree in Electronics and Communications Engineering from the Faculty of Engineering, Ain Shams University, graduating in 2022.",
       "Throughout his career, Abdelrahman has built a strong track record of contributions across multiple tape-outs, spanning the full chip development cycle. His work encompasses RTL feature implementation, block-level and system-level verification up to chip top, as well as backend implementation including timing closure and chip finishing."
     ],
   },
-  "basem": {
-    name: "Basem",
+  "basem-hesham": {
+    name: "Basem Hesham",
     image: "/speakers/basem.jpg",
     description: ["Basem leads practical sessions on ASIC implementation, covering synthesis, placement, routing, and signoff processes."],
   },
@@ -64,11 +64,6 @@ const speakers: Record<string, Speaker> = {
     name: "Radwa",
     image: "/speakers/radwa.jpg",
     description: ["Radwa specializes in functional verification using Cocotb and ensures that ASIC designs are thoroughly tested before tape-out."],
-  },
-  "dr-dina-mahmoud": {
-    name: "Dr. Dina Mahmoud",
-    image: "/speakers/dr-dina-mahmoud.jpg",
-    description: ["Dr. Dina Mahmoud is a researcher in hardware security, focusing on protecting ASIC designs from various threats and vulnerabilities."],
   },
   "mohamed-kassem": {
     name: "Mohamed Kassem",
@@ -78,6 +73,11 @@ const speakers: Record<string, Speaker> = {
       "He fundamentally believes that open-source hardware is the necessary foundation for scaling innovation in an increasingly connected and diverse world of devices. Mohamed builds the platforms and business models that are disrupting traditional semiconductor operations.",
       "By leveraging AI-native, no-code design workflows, he empowers a new generation of builders to bridge the gap from idea to silicon with unprecedented speed and efficiency. Whether through his pioneering work in the open-source community or his leadership in high-speed hardware development, his goal remains constant: lowering the barrier to entry for the next wave of global hardware innovation."
     ],
+  },
+  "salma": {
+    name: "Salma",
+    image: "/speakers/salma.jpg",
+    description: ["Salma is a digital design engineer with expertise in RTL design and verification, contributing to the development of high-performance ASICs."],
   },
 }
 
@@ -107,7 +107,7 @@ export function SpeakerModal({ speakerSlug, isOpen, onClose }: SpeakerModalProps
         <Card className="border-0 shadow-none">
           <CardContent className="p-0">
             <div className="flex flex-col gap-4 md:gap-6">
-              <div className="w-32 h-32 md:w-40 md:h-40 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 mx-auto md:mx-0">
+              <div className="w-32 h-32 md:w-40 md:h-40 bg-muted rounded-lg flex items-center justify-center flex-shrink-0 mx-auto">
                 <img
                   src={speaker.image}
                   alt={speaker.name}

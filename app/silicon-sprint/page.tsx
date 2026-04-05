@@ -41,7 +41,7 @@ const programSchedule = [
       { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)" },
       { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem)"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
-      { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdulrahman)" },
+      { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)" },
       { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
       { time: "14:15 - 15:00", topic: "Lunch Break" },
       { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
@@ -95,15 +95,15 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
     const [_, prefix, name] = match
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
     return (
-      <>
-        {prefix.trim()}{' '}
-        (<button
+      <div className="space-y-1">
+        <div className="font-medium">{prefix.trim()}</div>
+        <button
           onClick={() => onSpeakerClick(slug)}
-          className="text-primary hover:underline cursor-pointer bg-transparent border-none p-0 font-normal"
+          className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-none p-0 font-normal"
         >
           {name}
-        </button>)
-      </>
+        </button>
+      </div>
     )
   }
   return topic
@@ -218,7 +218,7 @@ export default function SpringSchoolPage() {
                               {firstColumn.map((session, idx) => (
                                 <div 
                                   key={idx} 
-                                  className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                                  className={"flex items-start gap-3 p-4 rounded-lg bg-muted/50"}
                                 >
                                   <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                                     {session.time}
