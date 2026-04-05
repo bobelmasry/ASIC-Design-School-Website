@@ -203,11 +203,11 @@ export default function SpringSchoolPage() {
                                   key={idx} 
                                   className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
                                 >
-                                  <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                  <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-lg font-medium">{renderTopic(session.topic)}</p>
+                                    <p className="text-md font-medium">{renderTopic(session.topic)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -218,11 +218,11 @@ export default function SpringSchoolPage() {
                                   key={idx + mid} 
                                   className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
                                 >
-                                  <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                  <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-lg font-medium">{renderTopic(session.topic)}</p>
+                                    <p className="text-md font-medium">{renderTopic(session.topic)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -256,11 +256,11 @@ export default function SpringSchoolPage() {
                           key={idx} 
                           className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
                         >
-                          <div className="text-lg font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                          <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
                             {session.time}
                           </div>
                           <div className="flex-1">
-                            <p className="text-lg font-medium">{session.topic}</p>
+                            <p className="text-md font-medium">{session.topic}</p>
                           </div>
                         </div>
                       ))}
