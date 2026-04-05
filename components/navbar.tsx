@@ -65,7 +65,7 @@ export function Navbar() {
             ))}
             {canModerateForum && (
               <Link
-                href="/admin/forum"
+                href="/admin"
                 className="text-sm font-medium transition-colors hover:text-primary text-muted-foreground"
               >
                 Admin
@@ -155,7 +155,7 @@ export function Navbar() {
             ))}
             {canModerateForum && (
               <Link
-                href="/admin/forum"
+                href="/admin"
                 className="text-sm font-medium py-2 transition-colors hover:text-primary text-muted-foreground"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

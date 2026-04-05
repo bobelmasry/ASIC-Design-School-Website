@@ -20,7 +20,7 @@
 ## Environment & Toolchain
 - Node: use >=18.18 (Next 16 requirement) with 20.x LTS preferred.
 - Package manager: repo ships `package-lock.json`; default to `npm` unless the user instructs otherwise.
-- Env vars: `.env*` ignored; populate `.env.local` with Supabase creds (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+- Env vars: `.env*` ignored; populate `.env.local` with Supabase creds (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` for admin operations).
 - Analytics/env toggles rely on `NEXT_PUBLIC_*`; never hardcode secrets.
 - Tailwind 4 is configured via `postcss.config.mjs` (plugin `@tailwindcss/postcss` only).
 - Build tolerates TS errors because `next.config.mjs` enables `typescript.ignoreBuildErrors`; run `npx tsc --noEmit` before merging sensitive work.

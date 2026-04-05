@@ -24,7 +24,7 @@ export default function HomePage() {
         <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
-              A launchpad for open silicon talent across the Middle East & North Africa
+              A launchpad for open silicon talent across the Middle East & Africa
             </h1>
             <div className="mx-auto max-w-2xl rounded-2xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-foreground/90">
               <p className="inline-flex flex-wrap items-center justify-center gap-2">
@@ -108,38 +108,6 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b">
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <div className="grid lg:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-balance">
-                Members of the ASIC Design Community
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {engineers.slice(0, 4).map((engineer) => (
-                <Card key={engineer.id} className="p-4 border-border/60 hover:border-primary/50 transition-colors">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={engineer.avatar} alt={engineer.name} className="h-12 w-12 rounded-full" />
-                    <div>
-                      <p className="font-medium text-sm">{engineer.name}</p>
-                      <p className="text-xs text-muted-foreground">{engineer.location.country}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {engineer.domains.slice(0, 2).map((domain) => (
-                      <Badge key={domain} variant="outline" className="text-xs">
-                        {domain}
-                      </Badge>
-                    ))}
-                  </div>
-                </Card>
-              ))}
             </div>
           </div>
         </div>
