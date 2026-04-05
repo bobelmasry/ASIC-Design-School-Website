@@ -14,11 +14,21 @@ import {
   BookOpen,
 } from "lucide-react"
 
-const programSchedule = [
+type ScheduleDay = {
+  date?: string
+  day?: string
+  title: string
+  location: string
+  sessions: { time: string; topic: string; type?: string }[]
+  icon?: any
+}
+
+const programSchedule: ScheduleDay[] = [
   {
     date: "April 6",
     day: "Day 1",
     title: "",
+    location: "Shafik Gabr",
     sessions: [
       { time: "09:30 - 10:00", topic: "Welcome & Registration" },
       { time: "10:00 - 10:30", topic: "Opening", type: "lecture" },
@@ -36,6 +46,7 @@ const programSchedule = [
     date: "April 7",
     day: "Day 2",
     title: "",
+    location: "Moataz Al Alfi",
     sessions: [
       { time: "10:00 - 10:45", topic: "Physical Implementation Strategy (Mohamed Hosni)" },
       { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)" },
@@ -53,6 +64,7 @@ const programSchedule = [
     date: "April 8",
     day: "Day 3",
     title: "",
+    location: "Shafik Gabr",
     sessions: [
       { time: "10:00 - 10:45", topic: "DFT and Difetto (Mohamed Gaber)" },
       { time: "10:45 - 11:30", topic: "Multi-Project Chip Integration (Mohamed Hosni)" },
@@ -67,10 +79,11 @@ const programSchedule = [
   },
 ]
 
-const clinicDays = [
+const clinicDays: ScheduleDay[] = [
   {
     date: "April 11",
     title: "Clinic Day 1",
+    location: "Shafik Gabr",
     sessions: [
       { time: "10:00 - 12:30", topic: "Fix errors and timing violations detected" },
       { time: "12:30 - 13:00", topic: "Lunch Break" },
@@ -79,8 +92,9 @@ const clinicDays = [
     ],
   },
   {
-    date: "April 18",
+    date: "April 25",
     title: "Clinic Day 2",
+    location: "P019",
     sessions: [
       { time: "10:00 - 12:30", topic: "Fix errors and timing violations detected" },
       { time: "12:30 - 13:00", topic: "Lunch Break" },
@@ -88,6 +102,8 @@ const clinicDays = [
     ],
   },
 ]
+
+const combinedSchedule = [...programSchedule, ...clinicDays]
 
 function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
   const match = topic.match(/^(.*)\(([^)]+)\)$/)
@@ -198,90 +214,82 @@ export default function SpringSchoolPage() {
           
           {/* Main Program Days */}
           <Tabs defaultValue="day1" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="day1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 1 - April 6</TabsTrigger>
-              <TabsTrigger value="day2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 2 - April 7</TabsTrigger>
-              <TabsTrigger value="day3" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Day 3 - April 8</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 lg:grid-cols-5 mb-8 h-auto">
+              <TabsTrigger value="day1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm">Day 1 - April 6</TabsTrigger>
+              <TabsTrigger value="day2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm">Day 2 - April 7</TabsTrigger>
+              <TabsTrigger value="day3" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm">Day 3 - April 8</TabsTrigger>
+              <TabsTrigger value="day4" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm">Clinic Day 1 - April 11</TabsTrigger>
+              <TabsTrigger value="day5" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-sm">Clinic Day 2 - April 25</TabsTrigger>
             </TabsList>
-            {programSchedule.map((day, index) => (
+            {combinedSchedule.map((day, index) => (
               <TabsContent key={day.date} value={`day${index + 1}`}>
                 <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
-                  <CardContent>
-                    <div className="grid lg:grid-cols-2 gap-3">
-                      {(() => {
-                        const mid = Math.ceil(day.sessions.length / 2)
-                        const firstColumn = day.sessions.slice(0, mid)
-                        const secondColumn = day.sessions.slice(mid)
-                        return (
-                          <>
-                            <div className="space-y-3">
-                              {firstColumn.map((session, idx) => (
-                                <div 
-                                  key={idx} 
-                                  className={"flex items-start gap-3 p-4 rounded-lg bg-muted/50"}
-                                >
-                                  <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                                    {session.time}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                            <div className="space-y-3">
-                              {secondColumn.map((session, idx) => (
-                                <div 
-                                  key={idx + mid} 
-                                  className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
-                                >
-                                  <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                                    {session.time}
-                                  </div>
-                                  <div className="flex-1">
-                                    <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        )
-                      })()}
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>{day.location}</span>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
-          </Tabs>
-
-          {/* Clinic Days */}
-          <div className="text-center mb-8 mt-16">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">Clinic Days</h3>
-          </div>
-          <Tabs defaultValue="clinic1" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="clinic1" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Clinic Day 1 - April 11</TabsTrigger>
-              <TabsTrigger value="clinic2" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Clinic Day 2 - April 18</TabsTrigger>
-            </TabsList>
-            {clinicDays.map((clinic, index) => (
-              <TabsContent key={clinic.date} value={`clinic${index + 1}`}>
-                <Card className="relative overflow-hidden border-gray-300 dark:border-gray-800">
+                  </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      {clinic.sessions.map((session, idx) => (
-                        <div 
-                          key={idx} 
-                          className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
-                        >
-                          <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                            {session.time}
+                    {day.title.startsWith("Clinic") ? (
+                      <div className="space-y-3">
+                        {day.sessions.map((session, idx) => (
+                          <div 
+                            key={idx} 
+                            className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                          >
+                            <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                              {session.time}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <p className="text-md font-medium">{session.topic}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="grid lg:grid-cols-2 gap-3">
+                        {(() => {
+                          const mid = Math.ceil(day.sessions.length / 2)
+                          const firstColumn = day.sessions.slice(0, mid)
+                          const secondColumn = day.sessions.slice(mid)
+                          return (
+                            <>
+                              <div className="space-y-3">
+                                {firstColumn.map((session, idx) => (
+                                  <div 
+                                    key={idx} 
+                                    className={"flex items-start gap-3 p-4 rounded-lg bg-muted/50"}
+                                  >
+                                    <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                      {session.time}
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="space-y-3">
+                                {secondColumn.map((session, idx) => (
+                                  <div 
+                                    key={idx + mid} 
+                                    className={"flex items-start gap-3 p-3 rounded-lg bg-muted/50"}
+                                  >
+                                    <div className="text-md font-mono text-muted-foreground whitespace-nowrap pt-0.5">
+                                      {session.time}
+                                    </div>
+                                    <div className="flex-1">
+                                      <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          )
+                        })()}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
