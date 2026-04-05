@@ -55,8 +55,10 @@ const speakers: Record<string, Speaker> = {
   },
   "basem-hesham": {
     name: "Basem Hesham",
-    image: "/speakers/basem.jpg",
-    description: ["Basem leads practical sessions on ASIC implementation, covering synthesis, placement, routing, and signoff processes."],
+    image: "/basem.jpg",
+    description: ["Basem Hesham is a Research Assistant at The American University in Cairo (AUC), specializing in physical implementation. He holds a Bachelor's degree in Electronics and Communications Engineering from the Faculty of Engineering, Zagazig University, graduating in 2024.",
+      "He leads practical sessions from RTL-to-GDSII implementation, guiding participants through the complete flow of synthesis, floorplanning, placement, and routing, followed by final signoff verification."
+    ],
   },
   "radwa": {
     name: "Radwa",

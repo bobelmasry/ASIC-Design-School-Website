@@ -9,7 +9,6 @@ import {
   ArrowRight,
   Github,
 } from "lucide-react"
-import { engineers } from "@/lib/placeholder-data"
 
 export default function HomePage() {
   const { openAuthModal, isAuthenticated } = useAuth()
