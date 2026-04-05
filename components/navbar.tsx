@@ -101,7 +101,7 @@ export function Navbar() {
                 {canModerateForum && (
                   <>
                     <DropdownMenuItem asChild>
-                      <Link href="/admin/forum">
+                      <Link href="/admin">
                         Admin Dashboard
                       </Link>
                     </DropdownMenuItem>
