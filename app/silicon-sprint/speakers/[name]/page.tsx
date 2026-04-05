@@ -55,7 +55,7 @@ const speakers = {
   "mohamed-kassem": {
     name: "Mohamed Kassem",
     image: "/kassem.png",
-    description: "My mission is to make custom silicon economically and operationally accessible—so creating a useful smart product doesn’t require massive teams, long cycles, or deep hardware expertise. I believe open-source hardware is the foundation for scaling innovation in a world of increasingly diverse, connected devices. I build platforms and business models that fundamentally change how the semiconductor industry operates. Combined with AI-native, no-code design workflows, it enables a new generation of builders to go from idea to silicon with unprecedented speed and efficiency.",
+    description: "Mohamed Kassem is on a mission to make custom silicon economically and operationally accessible to all. His work ensures that creating useful, smart products no longer requires massive teams, multi-year cycles, or deep specialized hardware expertise. He fundamentally believes that open-source hardware is the necessary foundation for scaling innovation in an increasingly connected and diverse world of devices. Mohamed builds the platforms and business models that are disrupting traditional semiconductor operations. By leveraging AI-native, no-code design workflows, he empowers a new generation of builders to bridge the gap from idea to silicon with unprecedented speed and efficiency. Whether through his pioneering work in the open-source community or his leadership in high-speed hardware development, his goal remains constant: lowering the barrier to entry for the next wave of global hardware innovation."
   },
 }
 
