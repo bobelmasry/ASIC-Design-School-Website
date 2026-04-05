@@ -34,9 +34,7 @@ const speakers: Record<string, Speaker> = {
     name: "Leo Moser",
     image: "/leo.jpeg",
     description: [
-      "Leo Moser is an open source silicon advocate and aspiring chip designer. He obtained his Master's degree at Graz University of Technology, majoring in microelectonics and IC design.",
-      "In his work, he designed Greyhound, a RISC-V SoC with tightly coupled FABulous eFPGA fabricated on IHP's SG13G2 process. Previously, Leo worked at Efabless, where he focused on PDK enablement for the IHP Open Source PDK and on analog automation with CACE.",
-      "He is excited about the future of the free and open source silicon community."
+      "Leo Moser is an open source silicon advocate and aspiring chip designer. He is a LibreLane developer and has contributed to several of the open source PDKs. He has also designed several open-source chips himself, including Greyhound: a RISC-V SoC with embedded FPGA.",
     ],
   },
   "abdelmonem": {
