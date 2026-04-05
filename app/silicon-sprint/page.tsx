@@ -1,10 +1,12 @@
 "use client"
 
+import * as React from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SpeakerModal } from "@/components/SpeakerModal"
 import {
   Calendar,
   MapPin,
@@ -87,7 +89,7 @@ const clinicDays = [
   },
 ]
 
-function renderTopic(topic: string) {
+function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
   const match = topic.match(/^(.*)\(([^)]+)\)$/)
   if (match) {
     const [_, prefix, name] = match
@@ -95,9 +97,12 @@ function renderTopic(topic: string) {
     return (
       <>
         {prefix.trim()}{' '}
-        (<Link href={`/silicon-sprint/speakers/${slug}`} className="text-primary hover:underline">
+        (<button
+          onClick={() => onSpeakerClick(slug)}
+          className="text-primary hover:underline cursor-pointer bg-transparent border-none p-0 font-normal"
+        >
           {name}
-        </Link>)
+        </button>)
       </>
     )
   }
@@ -105,6 +110,18 @@ function renderTopic(topic: string) {
 }
 
 export default function SpringSchoolPage() {
+  const [selectedSpeaker, setSelectedSpeaker] = React.useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+
+  const handleSpeakerClick = (slug: string) => {
+    setSelectedSpeaker(slug)
+    setIsModalOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setIsModalOpen(false)
+    setSelectedSpeaker(null)
+  }
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -207,7 +224,7 @@ export default function SpringSchoolPage() {
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-md font-medium">{renderTopic(session.topic)}</p>
+                                    <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -222,7 +239,7 @@ export default function SpringSchoolPage() {
                                     {session.time}
                                   </div>
                                   <div className="flex-1">
-                                    <p className="text-md font-medium">{renderTopic(session.topic)}</p>
+                                    <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
                                   </div>
                                 </div>
                               ))}
@@ -272,6 +289,12 @@ export default function SpringSchoolPage() {
           </Tabs>
         </div>
       </section>
+
+      <SpeakerModal
+        speakerSlug={selectedSpeaker}
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+      />
     </div>
   )
 }
