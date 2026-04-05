@@ -74,8 +74,8 @@ const speakers: Record<string, Speaker> = {
       "By leveraging AI-native, no-code design workflows, he empowers a new generation of builders to bridge the gap from idea to silicon with unprecedented speed and efficiency. Whether through his pioneering work in the open-source community or his leadership in high-speed hardware development, his goal remains constant: lowering the barrier to entry for the next wave of global hardware innovation."
     ],
   },
-  "salma": {
-    name: "Salma",
+  "salma-sultan": {
+    name: "Salma Sultan",
     image: "/speakers/salma.jpg",
     description: ["Salma is a digital design engineer with expertise in RTL design and verification, contributing to the development of high-performance ASICs."],
   },

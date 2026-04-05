@@ -57,7 +57,7 @@ const programSchedule: ScheduleDay[] = [
       { time: "14:15 - 15:00", topic: "Lunch Break" },
       { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
       { time: "16:00 - 16:30", topic: "Coffee Break" },
-      { time: "16:30 - 17:30", topic: "(Salma)" },
+      { time: "16:30 - 17:30", topic: "(Salma Sultan)" },
     ],
   },
   {

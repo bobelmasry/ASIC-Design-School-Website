@@ -6,7 +6,7 @@ import { ExternalLink, Github, Twitter, Mail } from "lucide-react"
 
 const openSourceProjects = [
   { name: "Caravel", url: "https://github.com/efabless/caravel" },
-  { name: "OpenLane", url: "https://github.com/The-OpenROAD-Project/OpenLane" },
+  { name: "Librelane", url: "https://github.com/librelane/librelane" },
   { name: "DFFRAM", url: "https://github.com/AUCOHL/DFFRAM" },
 ]
 
@@ -72,34 +72,34 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://github.com/The-OpenROAD-Project"
+                  href="https://docs.librelane.org"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
-                  OpenROAD Project
+                  Librelane Docs
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
               <li>
                 <a
-                  href="https://efabless.com"
+                  href="https://chipfoundry.io/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
-                  Efabless
+                  Chip Foundry
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
               <li>
                 <a
-                  href="https://skywater-pdk.readthedocs.io"
+                  href="https://openroad.rtfd.io"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
-                  SkyWater PDK Docs
+                  OpenROAD Docs
                   <ExternalLink className="h-3 w-3" />
                 </a>
               </li>
