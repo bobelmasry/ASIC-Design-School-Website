@@ -157,7 +157,7 @@ export const openSourceProjectsList: OpenSourceProject[] = [
   {
     id: "caravel_user_project",
     name: "Caravel User Project",
-    description: "User project designed for integration into the Caravel chip user space.",
+    description: "User project designed for integration into the Caravel chip user space.", 
     url: "https://github.com/chipfoundry/caravel_user_project",
     stars: 16,
   },
