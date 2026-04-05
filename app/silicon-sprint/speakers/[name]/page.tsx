@@ -24,8 +24,8 @@ const speakers = {
   },
   "leo-moser": {
     name: "Leo Moser",
-    image: "/speakers/leo-moser.jpg",
-    description: "Leo Moser works on FPGA integration and has made significant contributions to the LibreLane plugin for Greyhound FPGA, enhancing open-source ASIC workflows.",
+    image: "/leo.jpeg",
+    description: "Leo Moser is an open source silicon advocate and aspiring chip designer. He obtained his Master's degree at Graz University of Technology, majoring in microelectonics and IC design. In his work, he designed Greyhound, a RISC-V SoC with tightly coupled FABulous eFPGA fabricated on IHP's SG13G2 process. Previously, Leo worked at Efabless, where he focused on PDK enablement for the IHP Open Source PDK and on analog automation with CACE. He is excited about the future of the free and open source silicon community.",
   },
   "abdelmonem": {
     name: "Abdelmonem",
@@ -54,8 +54,8 @@ const speakers = {
   },
   "mohamed-kassem": {
     name: "Mohamed Kassem",
-    image: "/speakers/mohamed-kassem.jpg",
-    description: "Mohamed Kassem is a keynote speaker and leader in ASIC design, sharing insights on industry trends and future directions.",
+    image: "/kassem.png",
+    description: "My mission is to make custom silicon economically and operationally accessible—so creating a useful smart product doesn’t require massive teams, long cycles, or deep hardware expertise. I believe open-source hardware is the foundation for scaling innovation in a world of increasingly diverse, connected devices. I build platforms and business models that fundamentally change how the semiconductor industry operates. Combined with AI-native, no-code design workflows, it enables a new generation of builders to go from idea to silicon with unprecedented speed and efficiency.",
   },
 }
 
