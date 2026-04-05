@@ -140,7 +140,7 @@ export function AuthModal() {
           <DialogDescription className="text-center">
             {mode === "signin"
               ? "Sign in to connect with the ASIC engineering community"
-              : "Join the MENA ASIC engineering community"}
+              : ""}
           </DialogDescription>
         </DialogHeader>
 
