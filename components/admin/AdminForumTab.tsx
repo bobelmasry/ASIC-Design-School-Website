@@ -9,6 +9,7 @@ import {
   ThumbsUp,
   Clock,
   Trash2,
+  Pin,
 } from "lucide-react"
 import {
   AlertDialog,
@@ -31,6 +32,7 @@ type DatabasePost = {
   created_at?: string | null
   edited_at?: string | null
   isHidden?: boolean | null
+  isPinned?: boolean | null
   replies?: any[] | null
   replies_count?: number | null
   likes?: number | null
@@ -46,9 +48,11 @@ interface AdminForumTabProps {
   deletingPostId: string | null
   onHidePost: (postId: string) => void
   onUnhidePost: (postId: string) => void
+  onPinPost: (postId: string) => void
+  onUnpinPost: (postId: string) => void
 }
 
-export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhidePost }: AdminForumTabProps) {
+export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhidePost, onPinPost, onUnpinPost }: AdminForumTabProps) {
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Just now"
     const date = new Date(dateString)
@@ -129,6 +133,15 @@ export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhi
                               </div>
                             </div>
                             <div className="flex gap-1">
+                              <Button
+                                variant={post.isPinned ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => post.isPinned ? onUnpinPost(String(post.id)) : onPinPost(String(post.id))}
+                                disabled={deletingPostId === String(post.id)}
+                                className={`flex-shrink-0 ${post.isPinned ? "bg-blue-600 hover:bg-blue-700" : "text-blue-600 border-blue-600 hover:bg-blue-50"}`}
+                              >
+                                <Pin className="h-4 w-4" />
+                              </Button>
                               {post.isHidden ? (
                                 <Button
                                   variant="outline"

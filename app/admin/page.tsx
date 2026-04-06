@@ -23,6 +23,7 @@ type DatabasePost = {
   created_at?: string | null
   edited_at?: string | null
   isHidden?: boolean | null
+  isPinned?: boolean | null
   replies?: any[] | null
   replies_count?: number | null
   likes?: number | null
@@ -246,6 +247,50 @@ export default function AdminDashboard() {
     setDeletingPostId(null)
   }
 
+  const handlePinPost = async (postId: string) => {
+    setDeletingPostId(postId)
+
+    const { error } = await supabase
+      .from("posts")
+      .update({ isPinned: true })
+      .eq("id", postId)
+
+    if (error) {
+      alert(`Failed to pin post: ${error.message}`)
+      setDeletingPostId(null)
+      return
+    }
+
+    setPosts(posts.map(post =>
+      String(post.id) === postId
+        ? { ...post, isPinned: true }
+        : post
+    ))
+    setDeletingPostId(null)
+  }
+
+  const handleUnpinPost = async (postId: string) => {
+    setDeletingPostId(postId)
+
+    const { error } = await supabase
+      .from("posts")
+      .update({ isPinned: false })
+      .eq("id", postId)
+
+    if (error) {
+      alert(`Failed to unpin post: ${error.message}`)
+      setDeletingPostId(null)
+      return
+    }
+
+    setPosts(posts.map(post =>
+      String(post.id) === postId
+        ? { ...post, isPinned: false }
+        : post
+    ))
+    setDeletingPostId(null)
+  }
+
   if (!isAuthenticated || !canModerateForum) {
     return (
       <div className="container px-4 py-16 text-center">
@@ -327,6 +372,8 @@ export default function AdminDashboard() {
             deletingPostId={deletingPostId}
             onHidePost={handleHidePost}
             onUnhidePost={handleUnhidePost}
+            onPinPost={handlePinPost}
+            onUnpinPost={handleUnpinPost}
           />
         </TabsContent>
 

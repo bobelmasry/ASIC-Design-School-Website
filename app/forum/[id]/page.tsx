@@ -64,6 +64,7 @@ type DatabasePost = {
   created_at?: string | null
   edited_at?: string | null
   isHidden?: boolean | null
+  isPinned?: boolean | null
   replies?: PostReply[] | null
   replies_count?: number | null
   likes?: number | null

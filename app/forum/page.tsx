@@ -18,6 +18,7 @@ import {
   ThumbsUp,
   Clock,
   Filter,
+  Pin,
 } from "lucide-react"
 
 type DatabasePost = {
@@ -35,6 +36,7 @@ type DatabasePost = {
   user_full_name?: string | null
   json_likes?: string[] | null
   isHidden?: boolean | null
+  isPinned?: boolean | null
 }
 
 type ForumPostWithAuthor = {
@@ -45,6 +47,7 @@ type ForumPostWithAuthor = {
   createdAt: string
   replies: number
   likes: number
+  isPinned: boolean
   author: {
     id: string
     name: string
@@ -76,12 +79,9 @@ function ForumPageContent() {
       let query = supabase
         .from("posts")
         .select("*")
+        .eq("isHidden", false)
+        .order("isPinned", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false })
-
-      // Filter out hidden posts for regular users
-      if (!canModerateForum) {
-        query = query.eq("isHidden", false)
-      }
 
       const { data: postRows, error } = await query
 
@@ -109,6 +109,7 @@ function ForumPageContent() {
           createdAt: post.created_at ?? new Date().toISOString(),
           replies: post.replies_count ?? post.replies ?? 0,
           likes: post.likes ?? (Array.isArray(post.json_likes) ? post.json_likes.length : 0),
+          isPinned: post.isPinned ?? false,
           author: {
             id: post.user_id ?? "unknown",
             name,
@@ -149,10 +150,14 @@ function ForumPageContent() {
       )
     }
 
-    // Sort posts by newest first (database does not expose popularity metadata)
-    postsToFilter.sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )
+  // Sort posts by pinned status first, then by newest first (database does not expose popularity metadata)
+  postsToFilter.sort((a, b) => {
+    // Pinned posts always come first
+    if (a.isPinned && !b.isPinned) return -1
+    if (!a.isPinned && b.isPinned) return 1
+    // If both are pinned or both are not pinned, sort by date
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  })
 
     return postsToFilter
   }, [posts, selectedCategory, searchQuery])
@@ -343,6 +348,9 @@ function ForumPageContent() {
                               <h3 className="font-semibold hover:text-primary transition-colors line-clamp-1">
                                 {post.title}
                               </h3>
+                              {post.isPinned && (
+                                <Pin className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                              )}
                             </div>
                             <Badge variant="outline" className="shrink-0 text-xs">
                               {post.category}

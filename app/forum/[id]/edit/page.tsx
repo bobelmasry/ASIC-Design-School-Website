@@ -38,6 +38,8 @@ type DatabasePost = {
   category?: string | null
   created_at?: string | null
   edited_at?: string | null
+  isHidden?: boolean | null
+  isPinned?: boolean | null
   replies?: any[] | null
   replies_count?: number | null
   likes?: number | null
