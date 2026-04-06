@@ -127,7 +127,7 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
               rel="noopener noreferrer"
               className="text-sm text-blue-500 hover:underline"
             >
-              wafer.space/auc26
+              slides
             </a>
           )}
           {slug === "mohamed-gaber" && (
