@@ -100,23 +100,6 @@ export default function ProjectsPage() {
               )}
         </div>
       </section>
-
-      <section className="flex-1">
-        <div className="container px-4 py-8">
-              {/* Featured Projects */}
-                <div className="mb-12">
-                  <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                    Silicon Sprint SP26 Projects
-                  </h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* projects will be added here as they are completed */}
-                    <div className="border-2 border-dashed rounded-lg p-6 flex items-center justify-center text-muted-foreground">
-                      Coming Soon
-                    </div>
-                  </div>
-                </div>
-        </div>
-      </section>
     </div>
   )
 }

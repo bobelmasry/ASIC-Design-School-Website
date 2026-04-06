@@ -61,6 +61,13 @@ export const forumCategories: ForumCategory[] = [
     icon: GitBranch,
   },
   {
+    id: "silicon-sprint-sp26-projects",
+    name: "Silicon Sprint SP26 Projects",
+    description: "Projects and discussions from Silicon Sprint SP26",
+    color: "bg-indigo-500",
+    icon: GitBranch,
+  },
+  {
     id: "jobs",
     name: "Jobs",
     description: "Job postings, career advice, and professional opportunities",
