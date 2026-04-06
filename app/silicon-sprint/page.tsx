@@ -130,6 +130,16 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
               wafer.space/auc26
             </a>
           )}
+          {slug === "mohamed-gaber" && (
+            <a
+              href="https://drive.google.com/file/d/1ksYEgGr2fBxmM1dTbJwVan_1DhpXb92P/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-500 hover:underline"
+            >
+              Slides
+            </a>
+          )}
         </div>
       </div>
     )
