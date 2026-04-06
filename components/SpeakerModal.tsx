@@ -78,7 +78,7 @@ const speakers: Record<string, Speaker> = {
   },
   "salma-sultan": {
     name: "Salma Sultan",
-    image: "/speakers/salma.jpg",
+    image: "/salma-sultan.jpeg",
     description: ["Salma is a digital design engineer with expertise in RTL design and verification, contributing to the development of high-performance ASICs."],
   },
 }

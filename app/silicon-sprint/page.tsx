@@ -145,18 +145,14 @@ export default function SpringSchoolPage() {
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="container px-4 py-16 md:py-24 relative">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-2 mb-6">
-              <Badge variant="outline">Spring School</Badge>
-            </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
-              Silicon Sprint
+              Silicon Sprint 2026
             </h1>
             <p className="text-xl md:text-2xl font-medium text-foreground/80 mb-4">
               Digital ASIC Design with Open-Source EDA Tools
             </p>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl">
-              A comprehensive training program at The American University in Cairo
-              for ASIC design using Open-source technologies.
+              The American University in Cairo presents Silicon Sprint, a comprehensive hands-on training program in digital ASIC design using fully open-source EDA tools. Participants master the complete flow from RTL to GDSII — including synthesis, place-and-route, timing analysis, and verification — while gaining practical, industry-relevant skills. A standout feature is the rare opportunity to fabricate their own chip designs on real silicon for free through a professional tape-out process.
             </p>
           </div>
         </div>
