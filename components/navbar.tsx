@@ -27,16 +27,6 @@ export function Navbar() {
   const { user, isAuthenticated, signOut, openAuthModal, canAccessMembersPage, canModerateForum } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
-  // Debug admin access
-  React.useEffect(() => {
-    console.log('Navbar admin check:', {
-      isAuthenticated,
-      canModerateForum,
-      userRole: user?.role,
-      userEmail: user?.email
-    })
-  }, [isAuthenticated, canModerateForum, user])
-
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

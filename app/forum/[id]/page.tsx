@@ -54,6 +54,7 @@ type PostReply = {
   isAccepted?: boolean
   liked_user_ids?: string[] | null
   attachments?: Attachment[] | null
+  user_role?: string
 }
 
 type DatabasePost = {
@@ -70,6 +71,7 @@ type DatabasePost = {
   likes?: number | null
   user_id?: string | null
   user_full_name?: string | null
+  user_role?: string | null
   json_likes?: string[] | null
   attachments?: Attachment[] | null
 }
@@ -382,6 +384,7 @@ export default function ForumPostPage() {
       content: pendingContent,
       user_id: user?.id,
       user_full_name: authorName,
+      user_role: user?.role || 'member',
       user_avatar:
         user?.avatar ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=0ea5e9&color=fff`,
@@ -610,6 +613,7 @@ export default function ForumPostPage() {
                     <AvatarFallback>{postAuthorName.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span>{postAuthorName}</span>
+                  {post?.user_role === 'admin' && <span className="text-xs text-muted-foreground">(admin)</span>}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
@@ -727,8 +731,11 @@ export default function ForumPostPage() {
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{replyAuthorName}</span>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{replyAuthorName}</span>
+                            {reply.user_role === 'admin' && <span className="text-xs text-muted-foreground">(admin)</span>}
+                          </div>
                           {reply.isAccepted && (
                             <Badge
                               variant="secondary"
@@ -738,9 +745,9 @@ export default function ForumPostPage() {
                               Accepted
                             </Badge>
                           )}
-                    <span className="text-xs text-muted-foreground">
-                      {reply.created_at ? formatDate(reply.created_at) : "Moments ago"}
-                    </span>
+                          <span className="text-xs text-muted-foreground">
+                            {reply.created_at ? formatDate(reply.created_at) : "Moments ago"}
+                          </span>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

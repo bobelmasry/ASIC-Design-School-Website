@@ -32,7 +32,7 @@ import {
 
 export default function NewPostPage() {
   const router = useRouter()
-  const { isAuthenticated, openAuthModal } = useAuth()
+  const { isAuthenticated, openAuthModal, user } = useAuth()
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
   const [uploadError, setUploadError] = React.useState<string | null>(null)
@@ -108,6 +108,7 @@ export default function NewPostPage() {
         category: formData.category,
         user_id: userData?.user?.id,
         user_full_name: fullName,
+        user_role: user?.role || 'member',
         attachments: uploadedAttachments,
         isHidden: false,
       })

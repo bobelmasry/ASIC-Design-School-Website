@@ -34,6 +34,7 @@ type DatabasePost = {
   likes?: number | null
   user_id?: string | null
   user_full_name?: string | null
+  user_role?: string | null
   json_likes?: string[] | null
   isHidden?: boolean | null
   isPinned?: boolean | null
@@ -52,6 +53,7 @@ type ForumPostWithAuthor = {
     id: string
     name: string
     avatar?: string
+    role: string
   }
 }
 
@@ -98,6 +100,8 @@ function ForumPageContent() {
       const mappedPosts: ForumPostWithAuthor[] = normalizedPosts.map((post) => {
         const name = post.user_full_name || "Community Member"
         const avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0ea5e9&color=fff`
+        const userId = post.user_id ?? "unknown"
+        const role = post.user_role ?? "member"
 
         return {
           id: String(post.id),
@@ -111,9 +115,10 @@ function ForumPageContent() {
           likes: post.likes ?? (Array.isArray(post.json_likes) ? post.json_likes.length : 0),
           isPinned: post.isPinned ?? false,
           author: {
-            id: post.user_id ?? "unknown",
+            id: userId,
             name,
             avatar,
+            role,
           },
         }
       })
@@ -362,15 +367,15 @@ function ForumPageContent() {
                           </p>
 
                           <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                              <Avatar className="h-4 w-4">
-                                <AvatarImage src={post.author.avatar} />
-                                <AvatarFallback className="text-[8px]">
-                                  {post.author.name.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              {post.author.name}
-                            </span>
+                              <span className="flex items-center gap-1">
+                                <Avatar className="h-4 w-4">
+                                  <AvatarImage src={post.author.avatar} />
+                                  <AvatarFallback className="text-[8px]">
+                                    {post.author.name.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                {post.author.name} {post.author.role === 'admin' && <span className="text-xs text-muted-foreground">(admin)</span>}
+                              </span>
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
                               {formatDate(post.createdAt)}
