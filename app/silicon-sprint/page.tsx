@@ -113,12 +113,24 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
     return (
       <div className="space-y-1">
         <div className="font-medium">{prefix.trim()}</div>
-        <button
-          onClick={() => onSpeakerClick(slug)}
-          className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-none p-0 font-normal"
-        >
-          {name}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onSpeakerClick(slug)}
+            className="text-sm text-primary hover:underline cursor-pointer bg-transparent border-none p-0 font-normal"
+          >
+            {name}
+          </button>
+          {slug === "tim-ansell" && (
+            <a
+              href="https://wafer.space/auc26"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-500 hover:underline"
+            >
+              wafer.space/auc26
+            </a>
+          )}
+        </div>
       </div>
     )
   }

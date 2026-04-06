@@ -13,7 +13,7 @@ const speakers: Record<string, Speaker> = {
   "tim-ansell": {
     name: "Tim Ansell",
     image: "/tim-ansell.jpeg",
-    description: ["Tim ‘Mithro’ Ansell is a pioneering figure in open-source silicon, known for his crucial role in democratizing chip design. Through initiatives like the SkyWater and GlobalFoundries open-source PDKs and the Open MPW program, he has significantly lowered barriers to entry, enabling innovation and access for individuals and smaller entities in semiconductor technology."],
+    description: ["Tim 'Mithro' Ansell is a pioneering figure in open-source silicon, known for his crucial role in democratizing chip design. Through initiatives like the SkyWater and GlobalFoundries open-source PDKs and the Open MPW program, he has significantly lowered barriers to entry, enabling innovation and access for individuals and smaller entities in semiconductor technology."],
   },
   "mohamed-gaber": {
     name: "Mohamed Gaber",
