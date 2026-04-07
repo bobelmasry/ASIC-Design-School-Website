@@ -81,6 +81,13 @@ export const forumCategories: ForumCategory[] = [
     color: "bg-gray-500",
     icon: FileText,
   },
+  {
+    id: "silicon-sprint-sp26-announcements",
+    name: "Silicon Sprint 2026 Announcements",
+    description: "Official announcements and updates related to Silicon Sprint SP26",
+    color: "bg-yellow-500",
+    icon: MessageSquare,
+  }
 ]
 
 export const openSourceProjectsList: OpenSourceProject[] = [

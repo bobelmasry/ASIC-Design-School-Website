@@ -79,7 +79,7 @@ const speakers: Record<string, Speaker> = {
   "salma-sultan": {
     name: "Salma Sultan",
     image: "/salma-sultan.jpeg",
-    description: ["Salma is a digital design engineer with expertise in RTL design and verification, contributing to the development of high-performance ASICs."],
+    description: ["A Digital Design and Verification Engineer who graduated with honors from Cairo University in 2022 with a B.Sc. in Electronics and Communications Engineering. Her professional experience includes roles at Pearl Semiconductor and Wasiela, where she specialized in digital verification using UVM, RTL design, open source digital verification technologies and hardware algorithm development."],
   },
 }
 
