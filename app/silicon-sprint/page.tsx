@@ -52,7 +52,7 @@ const programSchedule: ScheduleDay[] = [
       { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)", slides: "https://drive.google.com/file/d/1fFZwgoz6OES-jErUPs55MulHUcBhlxa8/view?usp=sharing" },
       { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem Sallam)", slides: "https://drive.google.com/file/d/1miDgRRiVVTdeB9C4rUvcaafIlsgFk4XT/view?usp=sharing", examples: "https://drive.google.com/file/d/1zCmTklELKQxxZDU4FnXWs3z3SvA2dQtL/view?usp=sharing"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
-      { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)" },
+      { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)", slides: "https://docs.google.com/presentation/d/1-LU7Usa1kdFBHA-rGm3NR9sBmxJF2xAH/edit?usp=sharing&ouid=105113756179876167247&rtpof=true&sd=true" },
       { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
       { time: "14:15 - 15:00", topic: "Lunch Break" },
       { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
