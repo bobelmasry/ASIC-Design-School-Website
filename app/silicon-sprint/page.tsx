@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -164,31 +165,57 @@ export default function SpringSchoolPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative border-b bg-gradient-to-b from-primary/5 via-primary/10 to-background overflow-hidden">
+      <section className="relative border-b bg-linear-to-b from-primary/5 via-primary/10 to-background overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="container px-4 py-16 md:py-24 relative">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
-              Silicon Sprint 2026
-            </h1>
-            <p className="text-xl md:text-2xl font-medium text-foreground/80 mb-4">
-              Digital ASIC Design with Open-Source EDA Tools
-            </p>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl">
-              The American University in Cairo presents Silicon Sprint, a comprehensive hands-on training program in digital ASIC design using fully open-source EDA tools. Participants master the complete flow from RTL to GDSII — including synthesis, place-and-route, timing analysis, and verification — while gaining practical, industry-relevant skills. A standout feature is the rare opportunity to fabricate their own chip designs on real silicon for free through a professional tape-out process.
-            </p>
-            <p className="text-md text-muted-foreground">
-              The event is supported by{" "}
-              <a
-                href="https://engineering.cmu.edu/afretec/index.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
-              >
-                Afretec
-              </a>
-              .
-            </p>
+          <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-balance">
+                Silicon Sprint 2026
+              </h1>
+              <p className="text-xl md:text-2xl font-medium text-foreground/80 mb-4">
+                Digital ASIC Design with Open-Source EDA Tools
+              </p>
+              <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl">
+                The American University in Cairo presents Silicon Sprint, a comprehensive hands-on training program in digital ASIC design using fully open-source EDA tools. Participants master the complete flow from RTL to GDSII — including synthesis, place-and-route, timing analysis, and verification — while gaining practical, industry-relevant skills. A standout feature is the rare opportunity to fabricate their own chip designs on real silicon for free through a professional tape-out process.
+              </p>
+              <p className="text-md text-muted-foreground">
+                The event is supported by{" "}
+                <a
+                  href="https://engineering.cmu.edu/afretec/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-medium"
+                >
+                  Afretec
+                </a>
+                .
+              </p>
+            </div>
+
+            <aside className="mx-auto w-full max-w-105">
+              <div className="rounded-2xl border border-border/70 bg-white/85 p-5 shadow-sm backdrop-blur-sm dark:bg-white/90">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  Supporting Partner
+                </p>
+                <a
+                  href="https://engineering.cmu.edu/afretec/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                  aria-label="Afretec Network"
+                >
+                  <Image
+                    src="/afretec_network_nobg.png"
+                    alt="Afretec Network by Carnegie Mellon-Africa"
+                    width={640}
+                    height={640}
+                    className="h-auto w-full"
+                    priority
+                  />
+                </a>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
