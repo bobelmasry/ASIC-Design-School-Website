@@ -177,6 +177,18 @@ export default function SpringSchoolPage() {
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl">
               The American University in Cairo presents Silicon Sprint, a comprehensive hands-on training program in digital ASIC design using fully open-source EDA tools. Participants master the complete flow from RTL to GDSII — including synthesis, place-and-route, timing analysis, and verification — while gaining practical, industry-relevant skills. A standout feature is the rare opportunity to fabricate their own chip designs on real silicon for free through a professional tape-out process.
             </p>
+            <p className="text-md text-muted-foreground">
+              The event is supported by{" "}
+              <a
+                href="https://engineering.cmu.edu/afretec/index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline font-medium"
+              >
+                Afretec
+              </a>
+              .
+            </p>
           </div>
         </div>
       </section>
