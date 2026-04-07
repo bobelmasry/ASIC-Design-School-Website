@@ -20,7 +20,7 @@ type ScheduleDay = {
   day?: string
   title: string
   location: string
-  sessions: { time: string; topic: string; type?: string; slides?: string; examples?: string }[]
+  sessions: { time: string; topic: string; type?: string; slides?: string; examples?: string; docs?: string }[]
   icon?: any
 }
 
@@ -37,9 +37,9 @@ const programSchedule: ScheduleDay[] = [
       { time: "11:30 - 12:00", topic: "Coffee Break" },
       { time: "12:00 - 13:00", topic: "Open-Source Chip Design, Librelane (Mohamed Gaber)", slides: "https://drive.google.com/file/d/1ksYEgGr2fBxmM1dTbJwVan_1DhpXb92P/view?usp=sharing" },
       { time: "13:00 - 14:00", topic: "Lunch Break" },
-      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem Hesham)", examples: "https://example.com/env-setup-examples" },
+      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE0.html" },
       { time: "15:00 - 15:30", topic: "Break" },
-      { time: "15:30 - 16:30", topic: "Running the flow - from synthesis to power network (Basem Hesham)" },
+      { time: "15:30 - 16:30", topic: "Running the flow - from synthesis to power network (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE1.html" },
     ],
     icon: BookOpen,
   },
@@ -54,9 +54,9 @@ const programSchedule: ScheduleDay[] = [
       { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem Sallam)", slides: "https://drive.google.com/file/d/1miDgRRiVVTdeB9C4rUvcaafIlsgFk4XT/view?usp=sharing", examples: "https://drive.google.com/file/d/1zCmTklELKQxxZDU4FnXWs3z3SvA2dQtL/view?usp=sharing"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)", slides: "https://docs.google.com/presentation/d/1-LU7Usa1kdFBHA-rGm3NR9sBmxJF2xAH/edit?usp=sharing&ouid=105113756179876167247&rtpof=true&sd=true" },
-      { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
+      { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE2.html" },
       { time: "14:15 - 15:00", topic: "Lunch Break" },
-      { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)" },
+      { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE3.html" },
       { time: "16:00 - 16:30", topic: "Coffee Break" },
       { time: "16:30 - 17:30", topic: "Digital Verification using Pyuvm and cocotb (Salma Sultan)", slides: "https://salmas-talk.vercel.app" },
     ],
@@ -106,7 +106,7 @@ const clinicDays: ScheduleDay[] = [
 
 const combinedSchedule = [...programSchedule, ...clinicDays]
 
-function renderTopic(session: { time: string; topic: string; type?: string; slides?: string; examples?: string }, onSpeakerClick: (slug: string) => void) {
+function renderTopic(session: { time: string; topic: string; type?: string; slides?: string; examples?: string; docs?: string }, onSpeakerClick: (slug: string) => void) {
   const topic = session.topic
   const match = topic.match(/^(.*)\(([^)]+)\)$/)
   if (match) {
@@ -129,7 +129,7 @@ function renderTopic(session: { time: string; topic: string; type?: string; slid
               rel="noopener noreferrer"
               className="text-sm text-blue-500 hover:underline"
             >
-              slides
+              Slides
             </a>
           )}
           {session.examples && (
@@ -139,7 +139,17 @@ function renderTopic(session: { time: string; topic: string; type?: string; slid
               rel="noopener noreferrer"
               className="text-sm text-blue-500 hover:underline"
             >
-              examples
+              Examples
+            </a>
+          )}
+          {session.docs && (
+            <a
+              href={session.docs}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-500 hover:underline"
+            >
+              Docs
             </a>
           )}
         </div>
