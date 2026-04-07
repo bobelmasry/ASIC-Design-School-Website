@@ -291,6 +291,24 @@ export default function AdminDashboard() {
     setDeletingPostId(null)
   }
 
+  const handleUpdateCategory = async (postId: string, category: string) => {
+    const { error } = await supabase
+      .from("posts")
+      .update({ category })
+      .eq("id", postId)
+
+    if (error) {
+      alert(`Failed to update category: ${error.message}`)
+      return
+    }
+
+    setPosts(posts.map(post =>
+      String(post.id) === postId
+        ? { ...post, category }
+        : post
+    ))
+  }
+
   if (!isAuthenticated || !canModerateForum) {
     return (
       <div className="container px-4 py-16 text-center">
@@ -374,6 +392,7 @@ export default function AdminDashboard() {
             onUnhidePost={handleUnhidePost}
             onPinPost={handlePinPost}
             onUnpinPost={handleUnpinPost}
+            onUpdateCategory={handleUpdateCategory}
           />
         </TabsContent>
 

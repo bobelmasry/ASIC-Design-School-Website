@@ -10,6 +10,7 @@ import {
   Clock,
   Trash2,
   Pin,
+  Edit,
 } from "lucide-react"
 import {
   AlertDialog,
@@ -23,6 +24,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
+import { forumCategories } from "@/lib/placeholder-data"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type DatabasePost = {
   id: string | number
@@ -50,9 +59,10 @@ interface AdminForumTabProps {
   onUnhidePost: (postId: string) => void
   onPinPost: (postId: string) => void
   onUnpinPost: (postId: string) => void
+  onUpdateCategory: (postId: string, category: string) => void
 }
 
-export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhidePost, onPinPost, onUnpinPost }: AdminForumTabProps) {
+export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhidePost, onPinPost, onUnpinPost, onUpdateCategory }: AdminForumTabProps) {
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Just now"
     const date = new Date(dateString)
@@ -142,6 +152,45 @@ export function AdminForumTab({ posts, error, deletingPostId, onHidePost, onUnhi
                               >
                                 <Pin className="h-4 w-4" />
                               </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-orange-600 border-orange-600 hover:bg-orange-50 flex-shrink-0"
+                                  >
+                                    Edit Category
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Change Category</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Select a new category for this post.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <div className="py-4">
+                                    <Select
+                                      defaultValue={post.category || ""}
+                                      onValueChange={(value) => onUpdateCategory(String(post.id), value)}
+                                    >
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select category" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {forumCategories.map((category) => (
+                                          <SelectItem key={category.id} value={category.id}>
+                                            {category.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Done</AlertDialogCancel>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                               {post.isHidden ? (
                                 <Button
                                   variant="outline"
