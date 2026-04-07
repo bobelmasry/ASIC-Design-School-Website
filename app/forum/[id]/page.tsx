@@ -670,7 +670,7 @@ export default function ForumPostPage() {
         <CardContent>
           {adminActionError && <p className="text-sm text-destructive mb-3">{adminActionError}</p>}
           <div className="prose prose-neutral dark:prose-invert max-w-none mb-6">
-             <p className="leading-relaxed whitespace-pre-wrap">{post.content}</p>
+             <p className="leading-relaxed">{parseLinks(post.content || "")}</p>
           </div>
           <AttachmentsGrid attachments={post.attachments} />
 
@@ -785,8 +785,8 @@ export default function ForumPostPage() {
                            </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <p className="text-sm leading-relaxed mb-3 whitespace-pre-wrap">
-                        {reply.content}
+                      <p className="text-sm leading-relaxed mb-3">
+                        {parseLinks(reply.content)}
                       </p>
                       <AttachmentsGrid attachments={reply.attachments} />
                       <Button
@@ -875,3 +875,37 @@ export default function ForumPostPage() {
 
 const cryptoIdFallback = () =>
   Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
+
+// Utility function to parse and render links in text
+const parseLinks = (text: string) => {
+  // Regular expression to match URLs
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+
+  // Split text by URLs and map to React elements
+  const parts = text.split(urlRegex)
+
+  return parts.map((part, index) => {
+    if (urlRegex.test(part)) {
+      // This part is a URL, wrap it in an anchor tag
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline break-all"
+        >
+          {part}
+        </a>
+      )
+    } else {
+      // This part is regular text, preserve line breaks
+      return part.split('\n').map((line, lineIndex, lineArray) => (
+        <React.Fragment key={`${index}-${lineIndex}`}>
+          {line}
+          {lineIndex < lineArray.length - 1 && <br />}
+        </React.Fragment>
+      ))
+    }
+  })
+}
