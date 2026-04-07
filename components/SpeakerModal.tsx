@@ -71,9 +71,7 @@ const speakers: Record<string, Speaker> = {
     name: "Mohamed Kassem",
     image: "/kassem.png",
     description: [
-      "Mohamed Kassem is on a mission to make custom silicon economically and operationally accessible to all. His work ensures that creating useful, smart products no longer requires massive teams, multi-year cycles, or deep specialized hardware expertise.",
-      "He fundamentally believes that open-source hardware is the necessary foundation for scaling innovation in an increasingly connected and diverse world of devices. Mohamed builds the platforms and business models that are disrupting traditional semiconductor operations.",
-      "By leveraging AI-native, no-code design workflows, he empowers a new generation of builders to bridge the gap from idea to silicon with unprecedented speed and efficiency. Whether through his pioneering work in the open-source community or his leadership in high-speed hardware development, his goal remains constant: lowering the barrier to entry for the next wave of global hardware innovation."
+      "Mohamed Kassem is CEO and Co-Founder of NativeChips, a company building an AI-powered platform that turns natural language into manufactured silicon. NativeChips automates the entire chip design flow using multi-agent AI — from a plain English description of what you need to a tapeout-ready design — making custom chips accessible to companies that were never able to afford them or have the expertise to make them before. Mohamed is also the founder of ChipFoundry, a community initiative making chip fabrication accessible to startups, researchers, and independent designers at a fraction of traditional cost. Before NativeChips, as CTO of Efabless, he built the chipIgnite platform and the open-source silicon infrastructure behind hundreds of community-driven tapeouts — helping turn open-source chip design from a research concept into real chips in real packages shipped to real people.",
     ],
   },
   "salma-sultan": {

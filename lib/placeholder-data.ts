@@ -75,6 +75,13 @@ export const forumCategories: ForumCategory[] = [
     icon: Briefcase,
   },
   {
+    id: "announcements",
+    name: "Announcements",
+    description: "Official announcements, updates, and important community notices",
+    color: "bg-amber-500",
+    icon: MessageSquare,
+  },
+  {
     id: "miscellaneous",
     name: "Miscellaneous",
     description: "General discussions, off-topic chats, and miscellaneous topics",
