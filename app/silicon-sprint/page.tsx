@@ -19,7 +19,7 @@ type ScheduleDay = {
   day?: string
   title: string
   location: string
-  sessions: { time: string; topic: string; type?: string }[]
+  sessions: { time: string; topic: string; type?: string; slides?: string; examples?: string }[]
   icon?: any
 }
 
@@ -32,11 +32,11 @@ const programSchedule: ScheduleDay[] = [
     sessions: [
       { time: "09:30 - 10:00", topic: "Welcome & Registration" },
       { time: "10:00 - 10:30", topic: "Opening", type: "lecture" },
-      { time: "10:30 - 11:30", topic: "Keynote Session (Tim Ansell)" },
+      { time: "10:30 - 11:30", topic: "Keynote Session (Tim Ansell)", slides: "https://wafer.space/auc26" },
       { time: "11:30 - 12:00", topic: "Coffee Break" },
-      { time: "12:00 - 13:00", topic: "Open-Source Chip Design, Librelane (Mohamed Gaber)" },
+      { time: "12:00 - 13:00", topic: "Open-Source Chip Design, Librelane (Mohamed Gaber)", slides: "https://drive.google.com/file/d/1ksYEgGr2fBxmM1dTbJwVan_1DhpXb92P/view?usp=sharing" },
       { time: "13:00 - 14:00", topic: "Lunch Break" },
-      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem Hesham)" },
+      { time: "14:00 - 15:00", topic: "Practical Session: Environment Setup - Running Synthesis Exploration (Basem Hesham)", examples: "https://example.com/env-setup-examples" },
       { time: "15:00 - 15:30", topic: "Break" },
       { time: "15:30 - 16:30", topic: "Running the flow - from synthesis to power network (Basem Hesham)" },
     ],
@@ -48,9 +48,9 @@ const programSchedule: ScheduleDay[] = [
     title: "",
     location: "Moataz Al Alfi",
     sessions: [
-      { time: "10:00 - 10:45", topic: "Physical Implementation Strategy (Mohamed Hosni)" },
-      { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)" },
-      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem Sallam)"},
+      { time: "10:00 - 10:45", topic: "Physical Implementation Strategy (Mohamed Hosni)", slides: "https://drive.google.com/file/d/1E1Fh80G-JvfwB8BfyVTs9FNPOGuiGsac/view?usp=sharing" },
+      { time: "10:45 - 11:30", topic: "Greyhound FPGA and the Fabulous LibreLane Plugin (Leo Moser)", slides: "https://drive.google.com/file/d/1fFZwgoz6OES-jErUPs55MulHUcBhlxa8/view?usp=sharing" },
+      { time: "11:30 - 12:15", topic: "Assertions & Covergroups. Using SymbiYosys for formal design verification (Abdelmonem Sallam)", slides: "https://drive.google.com/file/d/1miDgRRiVVTdeB9C4rUvcaafIlsgFk4XT/view?usp=sharing", examples: "https://drive.google.com/file/d/1zCmTklELKQxxZDU4FnXWs3z3SvA2dQtL/view?usp=sharing"},
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:30", topic: "Static Timing Analysis using OpenSTA (Abdelrahman Oun)" },
       { time: "13:30 - 14:15", topic: "Practical Session: Placement & CTS (Basem Hesham)" },
@@ -105,7 +105,8 @@ const clinicDays: ScheduleDay[] = [
 
 const combinedSchedule = [...programSchedule, ...clinicDays]
 
-function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
+function renderTopic(session: { time: string; topic: string; type?: string; slides?: string; examples?: string }, onSpeakerClick: (slug: string) => void) {
+  const topic = session.topic
   const match = topic.match(/^(.*)\(([^)]+)\)$/)
   if (match) {
     const [_, prefix, name] = match
@@ -120,9 +121,9 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
           >
             {name}
           </button>
-          {slug === "tim-ansell" && (
+          {session.slides && (
             <a
-              href="https://wafer.space/auc26"
+              href={session.slides}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-500 hover:underline"
@@ -130,14 +131,14 @@ function renderTopic(topic: string, onSpeakerClick: (slug: string) => void) {
               slides
             </a>
           )}
-          {slug === "mohamed-gaber" && (
+          {session.examples && (
             <a
-              href="https://drive.google.com/file/d/1ksYEgGr2fBxmM1dTbJwVan_1DhpXb92P/view?usp=sharing"
+              href={session.examples}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-blue-500 hover:underline"
             >
-              Slides
+              examples
             </a>
           )}
         </div>
@@ -214,7 +215,7 @@ export default function SpringSchoolPage() {
                               {session.time}
                             </div>
                             <div className="flex-1">
-                              <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                              <p className="text-md font-medium">{renderTopic(session, handleSpeakerClick)}</p>
                             </div>
                           </div>
                         ))}
@@ -227,7 +228,7 @@ export default function SpringSchoolPage() {
                           const secondColumn = day.sessions.slice(mid)
                           return (
                             <>
-                              <div className="space-y-3">
+                               <div className="space-y-3">
                                 {firstColumn.map((session, idx) => (
                                   <div 
                                     key={idx} 
@@ -237,12 +238,12 @@ export default function SpringSchoolPage() {
                                       {session.time}
                                     </div>
                                     <div className="flex-1">
-                                      <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                                      <p className="text-md font-medium">{renderTopic(session, handleSpeakerClick)}</p>
                                     </div>
                                   </div>
                                 ))}
                               </div>
-                              <div className="space-y-3">
+                               <div className="space-y-3">
                                 {secondColumn.map((session, idx) => (
                                   <div 
                                     key={idx + mid} 
@@ -252,7 +253,7 @@ export default function SpringSchoolPage() {
                                       {session.time}
                                     </div>
                                     <div className="flex-1">
-                                      <p className="text-md font-medium">{renderTopic(session.topic, handleSpeakerClick)}</p>
+                                      <p className="text-md font-medium">{renderTopic(session, handleSpeakerClick)}</p>
                                     </div>
                                   </div>
                                 ))}
