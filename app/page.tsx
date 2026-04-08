@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth-context"
 import {
@@ -18,8 +19,18 @@ export default function HomePage() {
       <section className="relative overflow-hidden mb-32">
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
         <div className="absolute -top-24 right-10 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
-        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+        <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
           <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="mb-6">
+              <Image
+                src="/large_logo1.png"
+                alt="Open Source ASIC Hub"
+                width={320}
+                height={240}
+                className="mx-auto h-auto w-auto max-w-56"
+                priority
+              />
+            </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-balance">
               A launchpad for open silicon talent across the Middle East & Africa
             </h1>
