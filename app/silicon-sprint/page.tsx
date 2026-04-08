@@ -58,7 +58,7 @@ const programSchedule: ScheduleDay[] = [
       { time: "14:15 - 15:00", topic: "Lunch Break" },
       { time: "15:00 - 16:00", topic: "Practical Session: Routing (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE3.html" },
       { time: "16:00 - 16:30", topic: "Coffee Break" },
-      { time: "16:30 - 17:30", topic: "Digital Verification using Pyuvm and cocotb (Salma Sultan)", slides: "https://salmas-talk.vercel.app" },
+      { time: "16:30 - 17:30", topic: "Digital Verification using Pyuvm and cocotb (Salma Sultan)", slides: "https://salmas-talk.vercel.app", "examples": "This is Salma’s example (from yesterday): https://drive.google.com/drive/folders/1M_ctISLqdPZ0a-_ZZ86Key-rF5HDt8c6?usp=drive_link" },
     ],
   },
   {
