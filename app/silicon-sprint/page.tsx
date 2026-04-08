@@ -68,7 +68,7 @@ const programSchedule: ScheduleDay[] = [
     location: "Shafik Gabr",
     sessions: [
       { time: "10:00 - 10:45", topic: "Design for Testing and Fault (Mohamed Gaber)", slides: "https://drive.google.com/file/d/1kLSx_spoS17FHUGNksKq80f-QElAsxby/view?usp=sharing" },
-      { time: "10:45 - 11:30", topic: "Multi-Project Chip Integration (Mohamed Hosni)" },
+      { time: "10:45 - 11:30", topic: "Multi-Project Chip Integration (Mohamed Hosni)", slides: "https://drive.google.com/file/d/18cQgGXea_OPcCRX_Gh9kL_zhGXYblLG5/view?usp=sharing" },
       { time: "11:30 - 12:15", topic: "Practical Session: Cocotb (Radwa Gamal)" },
       { time: "12:15 - 12:45", topic: "Coffee Break" },
       { time: "12:45 - 13:45", topic: "Practical Session: Final Signoff (Basem Hesham)" },
