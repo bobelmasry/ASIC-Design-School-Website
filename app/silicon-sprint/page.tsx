@@ -75,7 +75,7 @@ const programSchedule: ScheduleDay[] = [
       { time: "13:45 - 14:45", topic: "Lunch Break" },
       { time: "14:45 - 15:45", topic: "Practical: Macro-First Hardening (Basem Hesham)" },
       { time: "15:45 - 16:15", topic: "Break" },
-      { time: "16:15 - 17:00", topic: "Keynote Session (Mohamed Kassem)" },
+      { time: "16:15 - 17:00", topic: "Keynote Session: Sustaining Open Source Silicon Ecosystem - How to Make it Real! (Mohamed Kassem)" },
     ],
   },
 ]
