@@ -92,8 +92,8 @@ export function UserTagging({
     const textAfterCursor = value.slice(cursorPosition)
     
     // We wrap the name in special characters to make it easier for our regex to find the end of the name
-    // This is a common pattern for mention systems
-    const taggedName = `@${user.name}`
+    // Using a non-standard bracket-like approach that we can easily target with regex
+    const taggedName = `@${user.name}@`
     const newValue = `${textBeforeAt}${taggedName} ${textAfterCursor}`
     
     setMentionedUsers(prev => new Map(prev).set(user.id, user.name))

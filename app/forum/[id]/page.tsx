@@ -920,9 +920,8 @@ const cryptoIdFallback = () =>
 const parseLinks = (text: string) => {
   // Regular expression to match URLs and @mentions
   // Match URLs starting with http
-  // Mentions match @ followed by a name. We use a non-greedy approach that looks for word characters
-  // and allows for spaces, but stops if it hits a common sentence-ending character or double newline.
-  const urlRegex = /(https?:\/\/[^\s]+|@[a-zA-Z0-9.\-_]+(?:\s[a-zA-Z0-9.\-_]+){1,3}(?=\s|$|\n|[,.!]))/g
+  // Mentions match @Name Name@ format for exact name capture
+  const urlRegex = /(https?:\/\/[^\s]+|@[^@\n]+@)/g
 
   // Split text by regex matches and map to React elements
   const parts = text.split(urlRegex)
@@ -942,11 +941,12 @@ const parseLinks = (text: string) => {
           {part}
         </a>
       )
-    } else if (part.startsWith('@')) {
-      // This part is a mention
+    } else if (part.startsWith('@') && part.endsWith('@')) {
+      // This part is a mention, strip the trailing @ for display
+      const displayName = part.slice(0, -1)
       return (
         <span key={index} className="text-primary font-medium bg-primary/10 px-1 rounded whitespace-nowrap">
-          {part}
+          {displayName}
         </span>
       )
     } else {
