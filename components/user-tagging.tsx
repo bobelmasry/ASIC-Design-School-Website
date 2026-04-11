@@ -22,7 +22,7 @@ interface UserTaggingProps {
   id?: string
 }
 
-export function UserTagging({
+export const UserTagging = React.memo(function UserTagging({
   value,
   onChange,
   onSelect,
@@ -148,4 +148,4 @@ export function UserTagging({
       )}
     </div>
   )
-}
+})

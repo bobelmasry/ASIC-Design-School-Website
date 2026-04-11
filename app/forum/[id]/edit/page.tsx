@@ -17,13 +17,6 @@ import {
   Plus,
   X,
 } from "lucide-react"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { supabase } from "@/lib/supabase"
 import {
   uploadAttachments,
@@ -49,6 +42,8 @@ type DatabasePost = {
   user_full_name?: string | null
   json_likes?: string[] | null
   attachments?: Attachment[] | null
+  is_markdown?: boolean | null
+  mentioned_user_ids?: string[] | null
 }
 
 export default function EditPostPage() {
@@ -72,6 +67,18 @@ export default function EditPostPage() {
 
   const [existingAttachments, setExistingAttachments] = React.useState<Attachment[]>([])
   const [attachmentsToRemove, setAttachmentsToRemove] = React.useState<Set<string>>(new Set())
+
+  const handleContentChange = React.useCallback((value: string) => {
+    setFormData((prev) => ({ ...prev, content: value }))
+  }, [])
+
+  const handleMentionIdsChange = React.useCallback((ids: string[]) => {
+    setFormData((prev) => ({ ...prev, mentionedUserIds: ids }))
+  }, [])
+
+  const handleIsMarkdownChange = React.useCallback((checked: boolean) => {
+    setFormData((prev) => ({ ...prev, isMarkdown: checked }))
+  }, [])
 
   React.useEffect(() => {
     const loadPost = async () => {
@@ -260,27 +267,23 @@ export default function EditPostPage() {
             </div>
 
             {/* Category */}
-            <div className="space-y-8">
+            <div className="space-y-2">
               <label htmlFor="category" className="text-sm font-medium">
                 Category <span className="text-destructive">*</span>
               </label>
-              <Select
+              <select
+                id="category"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 dark:border-gray-800"
                 value={formData.category}
-                onValueChange={(value) => setFormData((prev) => ({ ...prev, category: value }))}
+                onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
               >
-                <SelectTrigger className="border-gray-300 dark:border-gray-800">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {forumCategories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      <span className="flex items-center gap-2">
-                        {category.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <option value="" disabled>Select a category</option>
+                {forumCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Content */}
@@ -293,7 +296,7 @@ export default function EditPostPage() {
                   <Switch
                     id="markdown-mode"
                     checked={formData.isMarkdown}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMarkdown: checked }))}
+                    onCheckedChange={handleIsMarkdownChange}
                   />
                   <label htmlFor="markdown-mode" className="text-xs text-muted-foreground cursor-pointer">
                     Markdown
@@ -304,8 +307,8 @@ export default function EditPostPage() {
                 id="content"
                 placeholder={formData.isMarkdown ? "Markdown supported... Tag users with @" : "Describe your question or topic in detail. Tag users with @"}
                 value={formData.content}
-                onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
-                onMentionIdsChange={(ids) => setFormData((prev) => ({ ...prev, mentionedUserIds: ids }))}
+                onChange={handleContentChange}
+                onMentionIdsChange={handleMentionIdsChange}
                 rows={10}
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 dark:border-gray-800"
               />

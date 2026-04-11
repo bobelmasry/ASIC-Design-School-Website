@@ -3,6 +3,7 @@
 import * as React from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
 
 // Utility function to parse and render links and @mentions in text
 export const parseLinks = (text: string) => {
@@ -57,11 +58,28 @@ interface ForumContentProps {
 }
 
 export function ForumContent({ content, isMarkdown, className = "" }: ForumContentProps) {
+  // Preprocess mentions to render them consistently in markdown
+  const preprocessContent = (text: string) => {
+    if (!text) return text
+
+    // Replace @name@ with styled HTML for mentions
+    const mentionRegex = /(@[^@\n]+@)/g
+    return text.replace(mentionRegex, (match) => {
+      const displayName = match.slice(0, -1) // Strip trailing @
+      return `<span class="text-primary font-medium bg-primary/10 px-1 rounded inline-block">${displayName}</span>`
+    })
+  }
+
+  const processedContent = isMarkdown ? preprocessContent(content) : content
+
   return (
     <div className={`prose prose-neutral dark:prose-invert max-w-none ${className}`}>
       {isMarkdown ? (
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {content}
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw]}
+        >
+          {processedContent}
         </ReactMarkdown>
       ) : (
         <div className="leading-relaxed">{parseLinks(content)}</div>
