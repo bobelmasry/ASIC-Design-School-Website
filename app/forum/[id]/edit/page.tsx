@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/components/auth-context"
+import { UserTagging } from "@/components/user-tagging"
 import { Switch } from "@/components/ui/switch"
 import { forumCategories } from "@/lib/placeholder-data"
 import {
@@ -296,13 +297,13 @@ export default function EditPostPage() {
                   </label>
                 </div>
               </div>
-              <Textarea
+              <UserTagging
                 id="content"
-                placeholder={formData.isMarkdown ? "Markdown supported..." : "Describe your question or topic in detail."}
+                placeholder={formData.isMarkdown ? "Markdown supported... Tag users with @" : "Describe your question or topic in detail. Tag users with @"}
                 value={formData.content}
-                onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
+                onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
                 rows={10}
-                className="border-gray-300 dark:border-gray-800"
+                className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 dark:border-gray-800"
               />
             </div>
 

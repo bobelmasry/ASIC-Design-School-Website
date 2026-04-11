@@ -21,6 +21,7 @@ import {
   type Attachment,
 } from "@/lib/attachments"
 import { AttachmentsGrid } from "@/components/attachments-grid"
+import { UserTagging } from "@/components/user-tagging"
 import { Switch } from "@/components/ui/switch"
 import {
   ArrowLeft,
@@ -853,11 +854,12 @@ export default function ForumPostPage() {
                          </label>
                        </div>
                      </div>
-                     <Textarea
-                       placeholder={isMarkdownReply ? "Markdown supported..." : "Share your thoughts or answer..."}
+                     <UserTagging
+                       placeholder={isMarkdownReply ? "Markdown supported... Tag users with @" : "Share your thoughts or answer... Tag users with @"}
                        value={replyContent}
-                       onChange={(e) => setReplyContent(e.target.value)}
+                       onChange={setReplyContent}
                        rows={4}
+                       className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                      />
                    </div>
                    <div>
@@ -910,16 +912,16 @@ export default function ForumPostPage() {
 const cryptoIdFallback = () =>
   Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
 
-// Utility function to parse and render links in text
+// Utility function to parse and render links and @mentions in text
 const parseLinks = (text: string) => {
-  // Regular expression to match URLs
-  const urlRegex = /(https?:\/\/[^\s]+)/g
+  // Regular expression to match URLs and @mentions
+  const urlRegex = /(https?:\/\/[^\s]+|@[a-zA-Z0-9\s]+?(?=\s|$|\n|[,.!]))/g
 
-  // Split text by URLs and map to React elements
+  // Split text by regex matches and map to React elements
   const parts = text.split(urlRegex)
 
   return parts.map((part, index) => {
-    if (urlRegex.test(part)) {
+    if (part.startsWith('http')) {
       // This part is a URL, wrap it in an anchor tag
       return (
         <a
@@ -931,6 +933,13 @@ const parseLinks = (text: string) => {
         >
           {part}
         </a>
+      )
+    } else if (part.startsWith('@')) {
+      // This part is a mention
+      return (
+        <span key={index} className="text-primary font-medium bg-primary/10 px-1 rounded">
+          {part}
+        </span>
       )
     } else {
       // This part is regular text, preserve line breaks
