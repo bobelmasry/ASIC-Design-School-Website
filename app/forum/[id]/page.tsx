@@ -920,7 +920,8 @@ const cryptoIdFallback = () =>
 const parseLinks = (text: string) => {
   // Regular expression to match URLs and @mentions
   // Match URLs starting with http
-  // Mentions match @Name Name@ format for exact name capture
+  // Mentions match @Name Name@ format for exact name capture.
+  // We use () to capture groups so split() includes them in parts array.
   const urlRegex = /(https?:\/\/[^\s]+|@[^@\n]+@)/g
 
   // Split text by regex matches and map to React elements
