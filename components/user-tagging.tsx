@@ -2,9 +2,8 @@
 
 import * as React from "react"
 import { supabase } from "@/lib/supabase"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command"
 import { useAuth } from "@/components/auth-context"
 
 type UserSuggestion = {
@@ -35,18 +34,17 @@ export function UserTagging({
 }: UserTaggingProps) {
   const [open, setOpen] = React.useState(false)
   const [suggestions, setSuggestions] = React.useState<UserSuggestion[]>([])
-  const [mentionedIds, setMentionedIds] = React.useState<Set<string>>(new Set())
+  const [mentionedUsers, setMentionedUsers] = React.useState<Map<string, string>>(new Map())
   const [cursorPosition, setCursorPosition] = React.useState(0)
-  const [searchQuery, setSearchQuery] = React.useState("")
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const { user: currentUser } = useAuth()
 
-  // Update parent when mentionedIds change
+  // Sync mentions with parent when map changes
   React.useEffect(() => {
     if (onMentionIdsChange) {
-      onMentionIdsChange(Array.from(mentionedIds))
+      onMentionIdsChange(Array.from(mentionedUsers.keys()))
     }
-  }, [mentionedIds, onMentionIdsChange])
+  }, [mentionedUsers, onMentionIdsChange])
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value
@@ -54,27 +52,13 @@ export function UserTagging({
     onChange(newValue)
     setCursorPosition(position)
 
-    // Cleanup mentionedIds if names are deleted from text
-    const currentMentionedIds = new Set(mentionedIds)
-    let changed = false
-    currentMentionedIds.forEach(id => {
-      // This is a simple check; in a robust app we'd track tokens
-      // For now, if the user name isn't in the text anymore, remove the ID
-      // We don't have the names here easily without extra state, so we'll 
-      // rely on the handleSelectUser to add them and manual cleanup isn't strictly 
-      // required for this prototype unless names are removed.
-    })
-
-    // Check if we are typing a tag
     const textBeforeCursor = newValue.slice(0, position)
     const atIndex = textBeforeCursor.lastIndexOf("@")
 
     if (atIndex !== -1) {
       const query = textBeforeCursor.slice(atIndex + 1)
-      // Only trigger if @ is at start or after a space
       if (atIndex === 0 || textBeforeCursor[atIndex - 1] === " " || textBeforeCursor[atIndex - 1] === "\n") {
         if (!query.includes(" ")) {
-          setSearchQuery(query)
           setOpen(true)
           fetchUsers(query)
           return
@@ -106,18 +90,21 @@ export function UserTagging({
   const handleSelectUser = (user: UserSuggestion) => {
     const textBeforeAt = value.slice(0, value.lastIndexOf("@", cursorPosition - 1))
     const textAfterCursor = value.slice(cursorPosition)
-    const newValue = `${textBeforeAt}@${user.name} ${textAfterCursor}`
     
-    setMentionedIds(prev => new Set([...prev, user.id]))
+    // We wrap the name in special characters to make it easier for our regex to find the end of the name
+    // This is a common pattern for mention systems
+    const taggedName = `@${user.name}`
+    const newValue = `${textBeforeAt}${taggedName} ${textAfterCursor}`
+    
+    setMentionedUsers(prev => new Map(prev).set(user.id, user.name))
     onChange(newValue)
     setOpen(false)
     if (onSelect) onSelect(user)
     
-    // Refocus textarea
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus()
-        const newPos = textBeforeAt.length + user.name.length + 2
+        const newPos = textBeforeAt.length + taggedName.length + 1
         textareaRef.current.setSelectionRange(newPos, newPos)
       }
     }, 0)
@@ -130,6 +117,7 @@ export function UserTagging({
         ref={textareaRef}
         value={value}
         onChange={handleTextChange}
+        onSelect={(e) => setCursorPosition((e.target as HTMLTextAreaElement).selectionStart)}
         placeholder={placeholder}
         rows={rows}
         className={className}

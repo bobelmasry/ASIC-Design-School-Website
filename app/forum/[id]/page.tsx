@@ -919,14 +919,16 @@ const cryptoIdFallback = () =>
 // Utility function to parse and render links and @mentions in text
 const parseLinks = (text: string) => {
   // Regular expression to match URLs and @mentions
-  // Mentions match @ followed by word characters and spaces until a non-word/non-space character that isn't part of a name
-  // This version is more greedy to capture full names
-  const urlRegex = /(https?:\/\/[^\s]+|@[a-zA-Z0-9.\-_]+(?:\s[a-zA-Z0-9.\-_]+)*)/g
+  // Match URLs starting with http
+  // Mentions match @ followed by a name. We use a non-greedy approach that looks for word characters
+  // and allows for spaces, but stops if it hits a common sentence-ending character or double newline.
+  const urlRegex = /(https?:\/\/[^\s]+|@[a-zA-Z0-9.\-_]+(?:\s[a-zA-Z0-9.\-_]+){1,3}(?=\s|$|\n|[,.!]))/g
 
   // Split text by regex matches and map to React elements
   const parts = text.split(urlRegex)
 
   return parts.map((part, index) => {
+    if (!part) return null
     if (part.startsWith('http')) {
       // This part is a URL, wrap it in an anchor tag
       return (
@@ -943,7 +945,7 @@ const parseLinks = (text: string) => {
     } else if (part.startsWith('@')) {
       // This part is a mention
       return (
-        <span key={index} className="text-primary font-medium bg-primary/10 px-1 rounded">
+        <span key={index} className="text-primary font-medium bg-primary/10 px-1 rounded whitespace-nowrap">
           {part}
         </span>
       )
