@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuth } from "@/components/auth-context"
+import { Switch } from "@/components/ui/switch"
 import { forumCategories } from "@/lib/placeholder-data"
 import {
   ArrowLeft,
@@ -42,6 +43,7 @@ export default function NewPostPage() {
     category: "",
     content: "",
     tags: [] as string[],
+    isMarkdown: false,
   })
   const [tagInput, setTagInput] = React.useState("")
 
@@ -100,7 +102,7 @@ export default function NewPostPage() {
       }
     }
 
-    const { data, error } = await supabase
+        const { data, error } = await supabase
       .from("posts")
       .insert({
         title: formData.title,
@@ -111,6 +113,7 @@ export default function NewPostPage() {
         user_role: user?.role || 'member',
         attachments: uploadedAttachments,
         isHidden: false,
+        is_markdown: formData.isMarkdown,
       })
       .select()
 
@@ -203,12 +206,24 @@ export default function NewPostPage() {
 
             {/* Content */}
             <div className="space-y-2">
-              <label htmlFor="content" className="text-sm font-medium">
-                Content <span className="text-destructive">*</span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="content" className="text-sm font-medium">
+                  Content <span className="text-destructive">*</span>
+                </label>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="markdown-mode"
+                    checked={formData.isMarkdown}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMarkdown: checked }))}
+                  />
+                  <label htmlFor="markdown-mode" className="text-xs text-muted-foreground cursor-pointer">
+                    Markdown
+                  </label>
+                </div>
+              </div>
               <Textarea
                 id="content"
-                placeholder="Describe your question or topic in detail."
+                placeholder={formData.isMarkdown ? "Markdown supported..." : "Describe your question or topic in detail."}
                 value={formData.content}
                 onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
                 rows={10}

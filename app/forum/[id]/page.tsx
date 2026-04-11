@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import Link from "next/link"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -19,6 +21,7 @@ import {
   type Attachment,
 } from "@/lib/attachments"
 import { AttachmentsGrid } from "@/components/attachments-grid"
+import { Switch } from "@/components/ui/switch"
 import {
   ArrowLeft,
   ThumbsUp,
@@ -55,6 +58,7 @@ type PostReply = {
   liked_user_ids?: string[] | null
   attachments?: Attachment[] | null
   user_role?: string
+  is_markdown?: boolean | null
 }
 
 type DatabasePost = {
@@ -74,6 +78,7 @@ type DatabasePost = {
   user_role?: string | null
   json_likes?: string[] | null
   attachments?: Attachment[] | null
+  is_markdown?: boolean | null
 }
 
 const normalizePost = (data: DatabasePost | null): DatabasePost | null => {
@@ -104,6 +109,7 @@ export default function ForumPostPage() {
   const router = useRouter()
   const { openAuthModal, isAuthenticated, user, canModerateForum } = useAuth()
   const [replyContent, setReplyContent] = React.useState("")
+  const [isMarkdownReply, setIsMarkdownReply] = React.useState(false)
   const [likedPost, setLikedPost] = React.useState(false)
   const [likedReplies, setLikedReplies] = React.useState<Set<string>>(new Set())
 
@@ -382,6 +388,7 @@ export default function ForumPostPage() {
     const newReply: PostReply = {
       id: replyId,
       content: pendingContent,
+      is_markdown: isMarkdownReply,
       user_id: user?.id,
       user_full_name: authorName,
       user_role: user?.role || 'member',
@@ -670,7 +677,13 @@ export default function ForumPostPage() {
         <CardContent>
           {adminActionError && <p className="text-sm text-destructive mb-3">{adminActionError}</p>}
           <div className="prose prose-neutral dark:prose-invert max-w-none mb-6">
-             <p className="leading-relaxed">{parseLinks(post.content || "")}</p>
+             {post.is_markdown ? (
+               <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                 {post.content || ""}
+               </ReactMarkdown>
+             ) : (
+               <p className="leading-relaxed">{parseLinks(post.content || "")}</p>
+             )}
           </div>
           <AttachmentsGrid attachments={post.attachments} />
 
@@ -785,9 +798,15 @@ export default function ForumPostPage() {
                            </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-                      <p className="text-sm leading-relaxed mb-3">
-                        {parseLinks(reply.content)}
-                      </p>
+                      <div className="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed mb-3">
+                        {reply.is_markdown ? (
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {reply.content}
+                          </ReactMarkdown>
+                        ) : (
+                          parseLinks(reply.content)
+                        )}
+                      </div>
                       <AttachmentsGrid attachments={reply.attachments} />
                       <Button
                         variant={likedReplies.has(reply.id) ? "default" : "ghost"}
@@ -820,12 +839,27 @@ export default function ForumPostPage() {
                   <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 space-y-4">
-                   <Textarea
-                     placeholder="Share your thoughts or answer..."
-                     value={replyContent}
-                     onChange={(e) => setReplyContent(e.target.value)}
-                     rows={4}
-                   />
+                   <div className="space-y-2">
+                     <div className="flex items-center justify-between">
+                       <label className="text-sm font-medium">Your Message</label>
+                       <div className="flex items-center space-x-2">
+                         <Switch
+                           id="reply-markdown-mode"
+                           checked={isMarkdownReply}
+                           onCheckedChange={setIsMarkdownReply}
+                         />
+                         <label htmlFor="reply-markdown-mode" className="text-xs text-muted-foreground cursor-pointer">
+                           Markdown
+                         </label>
+                       </div>
+                     </div>
+                     <Textarea
+                       placeholder={isMarkdownReply ? "Markdown supported..." : "Share your thoughts or answer..."}
+                       value={replyContent}
+                       onChange={(e) => setReplyContent(e.target.value)}
+                       rows={4}
+                     />
+                   </div>
                    <div>
                      <label className="text-sm font-medium">Attachments</label>
                       <input
