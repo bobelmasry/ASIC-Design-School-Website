@@ -67,6 +67,7 @@ export default function EditPostPage() {
     category: "",
     content: "",
     isMarkdown: false,
+    mentionedUserIds: [] as string[],
   })
 
   const [existingAttachments, setExistingAttachments] = React.useState<Attachment[]>([])
@@ -102,6 +103,7 @@ export default function EditPostPage() {
         category: data.category || "",
         content: data.content || "",
         isMarkdown: !!data.is_markdown,
+        mentionedUserIds: data.mentioned_user_ids || [],
       })
       setExistingAttachments(data.attachments || [])
       setError(null)
@@ -166,6 +168,7 @@ export default function EditPostPage() {
         category: formData.category,
         attachments: finalAttachments,
         is_markdown: formData.isMarkdown,
+        mentioned_user_ids: formData.mentionedUserIds,
         edited_at: new Date().toISOString(),
       })
       .eq("id", post.id)
@@ -302,6 +305,7 @@ export default function EditPostPage() {
                 placeholder={formData.isMarkdown ? "Markdown supported... Tag users with @" : "Describe your question or topic in detail. Tag users with @"}
                 value={formData.content}
                 onChange={(value) => setFormData((prev) => ({ ...prev, content: value }))}
+                onMentionIdsChange={(ids) => setFormData((prev) => ({ ...prev, mentionedUserIds: ids }))}
                 rows={10}
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border-gray-300 dark:border-gray-800"
               />

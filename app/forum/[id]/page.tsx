@@ -60,6 +60,7 @@ type PostReply = {
   attachments?: Attachment[] | null
   user_role?: string
   is_markdown?: boolean | null
+  mentioned_user_ids?: string[] | null
 }
 
 type DatabasePost = {
@@ -111,6 +112,7 @@ export default function ForumPostPage() {
   const { openAuthModal, isAuthenticated, user, canModerateForum } = useAuth()
   const [replyContent, setReplyContent] = React.useState("")
   const [isMarkdownReply, setIsMarkdownReply] = React.useState(false)
+  const [mentionedUserIds, setMentionedUserIds] = React.useState<string[]>([])
   const [likedPost, setLikedPost] = React.useState(false)
   const [likedReplies, setLikedReplies] = React.useState<Set<string>>(new Set())
 
@@ -390,6 +392,7 @@ export default function ForumPostPage() {
       id: replyId,
       content: pendingContent,
       is_markdown: isMarkdownReply,
+      mentioned_user_ids: mentionedUserIds,
       user_id: user?.id,
       user_full_name: authorName,
       user_role: user?.role || 'member',
@@ -858,6 +861,7 @@ export default function ForumPostPage() {
                        placeholder={isMarkdownReply ? "Markdown supported... Tag users with @" : "Share your thoughts or answer... Tag users with @"}
                        value={replyContent}
                        onChange={setReplyContent}
+                       onMentionIdsChange={setMentionedUserIds}
                        rows={4}
                        className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                      />
