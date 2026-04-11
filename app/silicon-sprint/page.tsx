@@ -87,11 +87,11 @@ const clinicDays: ScheduleDay[] = [
     title: "Clinic Day 1",
     location: "Shafik Gabr",
     sessions: [
-      { time: "10:00 - 11:00", topic: "Practical: Macro-First Hardening (Basem Hesham)", "docs": "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE4.html" },
-      { time: "11:00 - 12:30", topic: "Fix errors and timing violations detected" },
-      { time: "12:30 - 13:00", topic: "Lunch Break" },
-      { time: "13:00 - 15:00", topic: "Fix errors and timing violations detected" },
-      { time: "15:00 - 15:30", topic: "Coffee Break" },
+      { time: "10:00 - 11:00", topic: "Practical: Macro-First Hardening (Basem Hesham)", "docs": "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE5.html" },
+      { time: "11:00 - 11:30", topic: "Coffee Break" },
+      { time: "11:30 - 13:00", topic: "Project: UART-to-APB Master Bridge" },
+      { time: "13:00 - 14:00", topic: "Lunch Break" },
+      { time: "14:00 - 15:00", topic: "Hardening for OpenFrame Multi-Project (Basem Hesham)", docs: "https://silicon-sprint-auc.readthedocs.io/en/latest/MODULE6.html#" },
     ],
   },
   {
